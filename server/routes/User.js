@@ -1,4 +1,7 @@
+const multer = require('multer')
 const express = require('express')
+const path = require('path');
+const fs = require('fs');
 
 const router = express.Router()
 const User = require('../models/User')
@@ -72,5 +75,42 @@ router.post('/:username/delete/post', (req,res) => {
 		.catch(e => res.status(500).send("Error."));
 })
 
+let storage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, 'public/images/avatars')
+	},
+	filename: (req, file, cb) => {
+		cb(null, `${req.params.username}_${Date.now()}.png`)
+	}
+})
+
+const upload = multer({storage: storage});
+
+router.post('/:username/edit/info/profilePicture', upload.single('newImage'), (req,res, next) => {
+	const { username } = req.params;
+
+	if(!req.file)
+		res.status(500).json(
+			{
+				code: 500,
+				response: "Error."
+			}
+		);
+
+	User.findOneAndUpdate({ username }, { profilePic: `images/avatars/${req.file.filename}` }, { new: true, useFindAndModify: false })
+		.then(updatedUser => {
+			res.status(200).json(
+				{
+					code: 200,
+					response: {
+						message: 'Photo changed successfully!',
+						path: updatedUser.profilePic,
+						updatedUser
+					}
+				}
+			)
+		})
+		.catch(e => res.status(500).send(e));
+})
 
 module.exports = router

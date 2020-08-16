@@ -23,8 +23,8 @@ class Home extends Component {
 		return (
 			<div className="home">
 				<div className="row h-100">
-					<div className="col-8 d-none d-md-flex flex-column justify-content-center pl-5 home__left">
-						<h1 className="display-4 text-light home__left__text">						
+					<div className="col-8 d-none d-md-flex flex-column justify-content-end pl-5 home__left">
+						<h1 className="display-5 text-light home__left__text">						
 							Deflect your attention
 							<br/>
 							on the current moment.

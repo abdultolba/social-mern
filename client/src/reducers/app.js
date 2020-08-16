@@ -4,8 +4,10 @@ import {
 	LOGOUT, 
 	TOGGLE_NAVBAR, 
 	SET_LOGIN_LOADING, 
-	RECONNECT 
+	RECONNECT,
+	SET_PROFILE_PICTURE
 } from '../actions/app'
+import { parseImageUrl } from '../utils/util';
 
 const defaultState = {
 	navbar: { isVisible: false },
@@ -37,10 +39,18 @@ export default (state = defaultState, action) => {
 					isLoading
 				}
 			}
+		case SET_PROFILE_PICTURE:
+			return {
+				...state,
+				logged: {
+					...state.logged,
+					profilePic: parseImageUrl(action.payload.url)
+				}
+			}
 		case SIGN_UP:
 		case SIGN_IN:
-			const { username, email, token, profilePic, description, _id } = action.payload
-			localStorage.setItem('last_session', JSON.stringify({ ...action.payload }))
+			const { username, email, token, profilePic, description, _id } = action.payload;
+			localStorage.setItem('last_session', JSON.stringify({...action.payload}));
 			return {
 				...state,
 				logged: {
@@ -49,18 +59,20 @@ export default (state = defaultState, action) => {
 					token,
 					username,
 					email,
-					profilePic,,
+					profilePic: parseImageUrl(profilePic),
+					description,
 					_id
 				}
 			}
 		case RECONNECT:
-			const { last_session } = action.payload
+			const { last_session } = action.payload;
 			return {
 				...state,
 				logged: {
+					...last_session,
 					isLoading: false,
-					isLogged: true,
-					...last_session
+					isLogged: true,					
+					profilePic: parseImageUrl(last_session.profilePic)
 				}
 			}
 		case LOGOUT:
