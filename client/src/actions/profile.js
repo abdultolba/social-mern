@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 export const FETCH_PROFILE = 'FETCH_PROFILE',
-	FETCH_POSTS = 'FETCH_POSTS',
-	NEW_POST = 'NEW_POST',
-	RESTART_STATE = 'RESTART_STATE'
+			 FETCH_POSTS = 'FETCH_POSTS',
+			 NEW_POST = 'NEW_POST',
+			 RESTART_STATE = 'RESTART_STATE'
+			 DELETE_POST = 'DELETE_POST'
 
 export const fetchProfile = username => {
 	return dispatch => {
@@ -60,4 +61,22 @@ export const restartState = data => {
 	return dispatch => dispatch({
 		type: RESTART_STATE
 	})
+}
+
+export const deletePost = data => {
+	return (dispatch, getState) => {
+		const state = getState();
+		const { username, postId } = data;
+		const { token } = state.app.logged;
+
+		axios.post(`http://localhost:3000/user/${username}/delete/post`, { postId, token })
+			.then(res => {
+				console.log(res);
+				dispatch({
+					type: DELETE_POST,
+					payload: { ...res.data.response }
+				})
+			})
+			.catch(e => console.log(e));
+	}
 }

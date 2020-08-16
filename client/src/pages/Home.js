@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import RegisterForm from '../components/RegisterForm'
 import LoginForm from '../components/LoginForm'
+import Logo from '../assets/images/logo.png'
 import { connect } from 'react-redux'
 
 class Home extends Component {
@@ -22,7 +23,7 @@ class Home extends Component {
 		return (
 			<div className="home">
 				<div className="row h-100">
-					<div className="col-6 d-none d-md-flex flex-column justify-content-end pl-5 home__left">
+					<div className="col-8 d-none d-md-flex flex-column justify-content-center pl-5 home__left">
 						<h1 className="display-4 text-light home__left__text">						
 							Deflect your attention
 							<br/>
@@ -31,16 +32,26 @@ class Home extends Component {
 						{/* TODO: Name this application, not sure I like friend.ly */}
 						<p className="lead text-light home__left__text">friend.ly - reconnect with your friends.</p>
 					</div>
-					<div className="col-12 col-md-6 home__right d-flex flex-column justify-content-end">
-						<div className="row flex-column align-content-end pr-md-5">
-							<div className="col-md-8 col-12 px-4 py-4">
-								<div className="card">
+					<div className="col-12 col-md-4 bg-white home__right d-flex flex-column justify-content-center">
+						<div className="row justify-content-center">
+							<div className="col-6">
+								<img src={Logo} className="mx-auto d-block img-fluid" />
+							</div>
+						</div>
+						<div className="row pr-md-3">
+							<div className="col-12 px-4">
+								<div className="card border-0 rounded-0">
 									<div className="card-body">
 										<RegisterForm />
 										<hr/>
 										<LoginForm />
 									</div>
 								</div>
+								<p className="text-center text-muted mt-1">
+									8/16/2020
+									<br/>
+									Last update
+								</p>
 							</div>
 						</div>
 					</div>

@@ -3,6 +3,7 @@ import {
 	FETCH_POSTS, 
 	FETCH_PROFILE, 
 	RESTART_STATE,
+	DELETE_POST
 } from '../actions/profile'
 
 const defaultState = {
@@ -47,6 +48,14 @@ export default (state = defaultState, action) => {
 			return { 
 					...state,
 					...action.payload.response 
+			}
+		case DELETE_POST:
+			return {
+				...state,
+				posts: {
+					...state.posts,
+					items: state.posts.items.filter(post => post._id != action.payload._id)
+				}
 			}	
 		case RESTART_STATE:
 			return defaultState

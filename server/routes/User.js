@@ -11,7 +11,7 @@ router.get('/:username', (req,res) => {
 		.then(user => 
 			user 
 				? res.status(200).json({code: 200, response: user})
-				: res.status(404).json({code: 404, response: "Error: Coudln't find user."}))
+				: res.status(404).json({code: 404, response: "Error: Couldn't find user."}))
 		.catch(e => res.send(500).json({error: 'Error'}));
 
 });
@@ -49,7 +49,27 @@ router.post('/:username/new/post', (req,res) => {
 				})
 			})			
 		})
-		.catch(e => res.status(500).send("There were an error"))
+		.catch(e => res.status(500).send("Error."))
+})
+
+router.post('/:username/delete/post', (req,res) => {
+	const { username: profile } = req.params;
+	const { postId } = req.body;
+	const { _id: authorId,username } = req.user;
+	Post.findById(postId)
+		.then(post => {
+			if(authorId == post.author || username == post.profile){
+				Post.findByIdAndRemove(post._id)
+					.then(removedPost => res.status(200).json({
+						code: 200,
+						response: post
+					}))
+			}
+			else{
+				res.status(500).send("Error: Not your post.")
+			}
+		})
+		.catch(e => res.status(500).send("Error."));
 })
 
 
