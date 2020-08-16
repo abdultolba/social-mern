@@ -7,6 +7,7 @@ const methodOverride = require('method-override')
 const bodyParser = require('body-parser')
 const jwt = require('jsonwebtoken')
 const cors = require('cors')
+const path = require('path')
 
 const { SECRET_KEY } = require('./config')
 const AuthRoutes = require('./routes/Auth')
@@ -18,6 +19,7 @@ app.use(cors())
 app.use(methodOverride())
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
+app.use("/", express.static(path.join(__dirname, 'public')))
 
 app.use((req,res,next) => {
 	const { token } = req.body
