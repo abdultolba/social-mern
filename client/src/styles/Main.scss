@@ -2,6 +2,7 @@
 @import "./pages/Home.scss";
 @import "./pages/Profile.scss";
 @import "./components/Post.scss";
+@import "./components/Navbar.scss";
 
 body {
   margin: 0 !important;
@@ -16,4 +17,10 @@ body {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.d-text-underline {
+  &:hover {
+    text-decoration-line: underline;
+  }
 }
