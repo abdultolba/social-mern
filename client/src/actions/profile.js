@@ -1,14 +1,15 @@
 import axios from 'axios';
 
 export const FETCH_PROFILE = 'FETCH_PROFILE',
-			 FETCH_POSTS = 'FETCH_POSTS',
-			 NEW_POST = 'NEW_POST';
+	FETCH_POSTS = 'FETCH_POSTS',
+	NEW_POST = 'NEW_POST',
+	RESTART_STATE = 'RESTART_STATE'
 
 export const fetchProfile = username => {
 	return dispatch => {
 		axios.get(`http://localhost:3000/user/${username}`)
 			.then(res => {
-				if(res.data.code == 200){
+				if (res.data.code == 200) {
 					dispatch({
 						type: FETCH_PROFILE,
 						payload: { ...res.data }
@@ -19,16 +20,21 @@ export const fetchProfile = username => {
 }
 
 export const fetchPosts = username => {
-	return dispatch => {
-		axios.get(`http://localhost:3000/user/${username}/posts`)
-			.then(res => {
-				if(res.data.code == 200){
-					dispatch({
-						type: FETCH_POSTS,
-						payload: { posts: res.data.response.reverse() }
-					})
-				}
-			}).catch(e => console.log(e));
+	return (dispatch, getState) => {
+		const { offset, quantity, morePosts } = getState().profile.posts;
+
+		if (morePosts)
+			axios.get(`http://localhost:3000/user/${username}/posts?offset=${offset}&quantity=${quantity}`)
+				.then(res => {
+					if (res.data.code == 200)
+						dispatch({
+							type: FETCH_POSTS,
+							payload: {
+								posts: res.data.response
+							}
+						})
+				})
+				.catch(e => console.log(e));
 	}
 }
 
@@ -40,7 +46,7 @@ export const newPost = (data) => {
 
 		axios.post(`http://localhost:3000/user/${username}/new/post`, { message, token })
 			.then(res => {
-				if(res.data.code == 200)
+				if (res.data.code == 200)
 					dispatch({
 						type: NEW_POST,
 						payload: { newPost: res.data.response }
@@ -48,4 +54,10 @@ export const newPost = (data) => {
 			})
 			.catch(e => console.log(e));
 	}
+}
+
+export const restartState = data => {
+	return dispatch => dispatch({
+		type: RESTART_STATE
+	})
 }

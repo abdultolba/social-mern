@@ -2,29 +2,54 @@ import {
 	NEW_POST, 
 	FETCH_POSTS, 
 	FETCH_PROFILE, 
+	RESTART_STATE,
 } from '../actions/profile'
 
 const defaultState = {
 	username: null,
 	description: null,
 	profilePic: null,	
-	posts: [1]	
+	posts: {
+		isThereMore: true,
+		offset: 0,
+		quantity: 5,		
+		items: []
+	}
 }
 
 export default (state = defaultState, action) => {
 	switch(action.type) {
 		case NEW_POST:			
 			return {
-				...state,
-				posts: [action.payload.newPost, ...state.posts]
+				...state.posts,
+				posts: [action.payload.newPost, ...state.posts.items]
 			}
 		case FETCH_POSTS:
+			if(!!action.payload.posts.length)
+				return {
+					...state,
+					posts: {
+						...state.posts,
+						quantity: state.posts.quantity,
+						offset: state.posts.offset + state.posts.quantity,
+						items: [...state.posts.items,...action.payload.posts]
+					}
+			}
+
 			return {
 				...state,
-				posts: action.payload.posts
+				posts: {
+					...state.posts,
+					isThereMore: false
+				}
 			}
 		case FETCH_PROFILE:
-			return { ...action.payload.response }	
+			return { 
+					...state,
+					...action.payload.response 
+			}	
+		case RESTART_STATE:
+			return defaultState
 		default:
 			return state
 	}
