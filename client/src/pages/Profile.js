@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 
 import { fetchProfile, newPost, fetchPosts, restartState } from '../actions/profile'
 import VerifiedBadge from '../components/VerifiedBadge'
+import DiscoverUser from '../components/DiscoverUser'
 import { toggleNavbar } from '../actions/app'
 import Loading from '../components/Loading'
 import Post from '../components/Post'
@@ -60,7 +61,7 @@ class Profile extends Component {
 											@{this.props.user.username}
 											{this.props.user.verified && <VerifiedBadge />}
 										</h5>
-										{this.props.logged.username == this.props.match.params.id &&
+										{this.props.user.ownProfile &&
 											<Link to="/settings">
 												<i className="fas fa-cog ml-1"></i>
 											</Link>
@@ -73,6 +74,13 @@ class Profile extends Component {
 						</div>
 					</div>
 				</div>
+				{this.props.user.ownProfile && 
+					<div className="row justify-content-center mb-3">
+						<div className="col-12 col-md-6 d-flex justify-content-center">
+							<DiscoverUser />
+						</div>
+					</div>
+				}
 				<div className="row justify-content-center">
 					<div className="col-12 col-md-10 justify-content-center d-flex">
 						<div className="card w-100 mb-3 rounded-0" style={{ "maxWidth": "540px" }}>
@@ -107,7 +115,7 @@ class Profile extends Component {
 						)
 					}
 				</div>
-				<BottomScrollListener onBottom={() => { this.props.fetchPosts(this.props.match.params.id) }} />
+				<BottomScrollListener onBottom={() => { this.props.fetchPosts(this.props.user.username) }} />
 			</div>
 		)
 	}

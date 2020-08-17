@@ -3,6 +3,7 @@
 @import "./pages/Profile.scss";
 @import "./components/Post.scss";
 @import "./components/Navbar.scss";
+@import "./components/DiscoverUser.scss";
 
 body {
   margin: 0 !important;
@@ -32,4 +33,5 @@ body {
 }
 
 .btn {
-	border-radius: 0px;
+  border-radius: 0px;
+}
