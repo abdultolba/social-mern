@@ -5,7 +5,8 @@ import {
 	TOGGLE_NAVBAR, 
 	SET_LOGIN_LOADING, 
 	RECONNECT,
-	SET_PROFILE_PICTURE
+	SET_PROFILE_PICTURE,
+	RESET_LAST_CONNECTION
 } from '../actions/app'
 import { parseImageUrl } from '../utils/util';
 
@@ -47,6 +48,14 @@ export default (state = defaultState, action) => {
 					profilePic: parseImageUrl(action.payload.url)
 				}
 			}
+		case SET_PROFILE_DESCRIPTION:
+			return {
+				...state,
+				logged: {
+					...state.logged,
+					description: action.payload.description
+				}
+			}
 		case SIGN_UP:
 		case SIGN_IN:
 			const { username, email, token, profilePic, description, _id } = action.payload;
@@ -75,6 +84,9 @@ export default (state = defaultState, action) => {
 					profilePic: parseImageUrl(last_session.profilePic)
 				}
 			}
+		case RESET_LAST_CONNECTION:
+			localStorage.setItem('last_session', JSON.stringify({...state.logged}))
+			return state
 		case LOGOUT:
 			return {
 				...state,

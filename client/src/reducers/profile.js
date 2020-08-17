@@ -23,26 +23,18 @@ const defaultState = {
 
 export default (state = defaultState, action) => {
 	switch(action.type) {
-		case SET_LOADING_POSTS:
+		case FETCH_PROFILE:
 			return {
 				...state,
-				posts: {
-					...state.posts,
-					loading: action.payload.loading
-				}			
-			}
-		case NEW_POST:			
-			return {
-				...state.posts,
-				posts: [action.payload.newPost, ...state.posts.items]
-			}
+				...action.payload.response,
+				profilePic: parseImageUrl(action.payload.response.profilePic)
+			}			
 		case FETCH_POSTS:
 			if(!!action.payload.posts.length)
 				return {
 					...state,
 					posts: {
 						...state.posts,
-						quantity: state.posts.quantity,
 						offset: state.posts.offset + state.posts.quantity,
 						items: [
 							...state.posts.items,
@@ -55,8 +47,7 @@ export default (state = defaultState, action) => {
 							}))
 						]
 					}
-			}
-
+				}
 			return {
 				...state,
 				posts: {
@@ -64,11 +55,29 @@ export default (state = defaultState, action) => {
 					isThereMore: false
 				}
 			}
-		case FETCH_PROFILE:
-			return { 
-					...state,
-					...action.payload.response,
-					profilePic: parseImageUrl(action.payload.response.profilePic) 
+		case SET_LOADING_POSTS:
+			return {
+				...state,
+				posts: {
+					...state.posts,
+					loading: action.payload.loading
+				}			
+			}
+		case NEW_POST:			
+			return {
+				...state,
+				posts: {
+					...state.posts,
+					items: [
+						{
+							...action.payload.newPost,
+							author: {
+								...action.payload.newPost.author,
+								profilePic: parseImageUrl(action.payload.newPost.author.profilePic)
+							}
+						}, 
+						...state.posts.items]
+				}
 			}
 		case DELETE_POST:
 			return {
@@ -77,7 +86,7 @@ export default (state = defaultState, action) => {
 					...state.posts,
 					items: state.posts.items.filter(post => post._id != action.payload._id)
 				}
-			}	
+			}
 		case RESTART_STATE:
 			return defaultState
 		default:
