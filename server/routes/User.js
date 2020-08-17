@@ -75,6 +75,26 @@ router.post('/:username/delete/post', (req,res) => {
 		.catch(e => res.status(500).send("Error."));
 })
 
+router.post('/:username/edit/info/description', (req,res) => {
+	const { username } = req.params;
+	const { description } = req.body;
+	if(req.user.username != username)
+		return res.status(401).json({ code: 401, response: "Error: Unauthorized Request"});
+
+	User.findOneAndUpdate({ username }, { description: description }, { new: true, useFindAndModify: false })
+		.then(updatedUser => res.status(200).json(
+			{
+				code: 200,
+				response: {
+					message: 'Success. The description has been updated.',
+					newDescription: updatedUser.description,
+					updatedUser
+				}
+			})
+		)
+		.catch(e => res.status(500).send(e));
+})
+
 let storage = multer.diskStorage({
 	destination: (req, file, cb) => {
 		cb(null, 'public/images/avatars')

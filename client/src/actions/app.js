@@ -6,7 +6,9 @@ export const TOGGLE_NAVBAR = 'TOGGLE_NAVBAR',
 				RECONNECT = 'RECONNECT',
 				LOGOUT = 'LOGOUT',
 				SET_LOGIN_LOADING = 'SET_LOGIN_LOADING',
-				SET_PROFILE_PICTURE = 'SET_PROFILE_PICTURE'
+				SET_PROFILE_PICTURE = 'SET_PROFILE_PICTURE',
+				RESET_LAST_CONNECTION = 'RESET_LAST_CONNECTION',
+				SET_PROFILE_DESCRIPTION = 'SET_PROFILE_DESCRIPTION'
 
 
 export const setLoginLoad = (value) => {
@@ -16,6 +18,12 @@ export const setLoginLoad = (value) => {
 			value
 		}
 	})
+}
+
+export const resetLastConnection = () => {
+	return dispatch => dispatch({
+			type: RESET_LAST_CONNECTION
+		});
 }
 
 export const reconnect = (last_session) => {
@@ -86,12 +94,14 @@ export const signIn = ({username, password}) => {
 }
 
 export const setProfilePic = url => {
-	return dispatch => dispatch({
-		type: SET_PROFILE_PICTURE,
-		payload: {
-			url
-		}
-	})
+	return dispatch => {
+		dispatch({
+			type: SET_PROFILE_PICTURE,
+			payload: { url }
+		})
+
+		dispatch(resetLastConnection())
+	}
 }
 
 export const toggleNavbar = (value) => {
@@ -101,4 +111,15 @@ export const toggleNavbar = (value) => {
 			value
 		}
 	})
+}
+
+export const setDescription = description => {
+	return dispatch => {
+		dispatch({
+			type: SET_PROFILE_DESCRIPTION,
+			payload: { description }
+		})
+		``
+		dispatch(resetLastConnection())
+	}
 }

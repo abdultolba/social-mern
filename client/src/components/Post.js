@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link, withRouter } from 'react-router-dom'
+import VerifiedBadge from '../components/VerifiedBadge'
 import { connect } from 'react-redux'
 
 import { deletePost } from '../actions/profile'
@@ -22,7 +23,12 @@ const Post = (props) => (
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         }
-                        {props.author && <span className="mb-0"><Link to={'/u/' + props.author.username}>@{props.author.username}</Link></span>}
+                        {props.author && 
+	    					<span className="mb-0">
+	    						<Link to={'/u/' + props.author.username}>@{props.author.username}</Link> 
+	    						{props.author.verified && <VerifiedBadge />}
+	    					</span>
+	    				}
                         <p className="mb-0">{props.message}</p>
                     </div>
                 </div>
