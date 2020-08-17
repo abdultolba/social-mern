@@ -113,7 +113,7 @@ router.post('/:username/edit/info/profilePicture', upload.single('newImage'), (r
 		res.status(500).json(
 			{
 				code: 500,
-				response: "Error."
+				response: "Error: Your profile photo could not be saved. Please try again later. "
 			}
 		);
 

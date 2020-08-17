@@ -8,13 +8,17 @@ export const FETCH_PROFILE = 'FETCH_PROFILE',
 			 SET_LOADING_POSTS = 'SET_LOADING_POSTS'
 
 export const fetchProfile = username => {
-	return dispatch => {
+	return (dispatch, getState) => {
+		const state = getState()
 		axios.get(`http://localhost:3000/user/${username}`)
 			.then(res => {
 				if (res.data.code == 200) {
 					dispatch({
 						type: FETCH_PROFILE,
-						payload: { ...res.data }
+						payload: {
+							...res.data.response,
+							ownProfile: state.app.logged.username == res.data.response.username
+						}
 					})
 				}
 			})
