@@ -8,8 +8,7 @@ const User = require('../models/User')
 const Post = require('../models/Post')
 
 router.get('/:username', (req,res) => {
-	const { username } = req.params;
-
+	let { username } = req.params
 	User.findOne({username})
 		.then(user => 
 			user 
