@@ -11,8 +11,7 @@ export const discoverUsers = () => {
 	return dispatch => {
 		dispatch(setLoading(true))
 		API.get('discover/users')
-			.then(res => {			
-				dispatch(setLoading(false))				
+			.then(res => {						
 				if(res.data.code == 200)
 					dispatch({
 						type: DISCOVER_USERS,
@@ -20,6 +19,9 @@ export const discoverUsers = () => {
 					})
 			})
 			.catch(e => console.log(e))
+			.then(() => {
+				dispatch(setLoading(false));
+			})
 	}
 }
 
