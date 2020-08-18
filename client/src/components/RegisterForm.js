@@ -27,10 +27,7 @@ class RegisterForm extends Component {
 				<form onSubmit={this.handleSubmit}>
 					<fieldset disabled={this.props.isLoading}>						
 						<div className="form-group">
-							<input type="email" name="email" id="email" className="form-control border-0 rounded-0" placeholder="ex.: animefan1996@gmail.com" />
-						</div>
-						<div className="form-group">
-							<input type="text" name="username" id="username" className="form-control border-0 rounded-0" placeholder="animefan1996" />
+							<input type="text" name="username" id="username" className="form-control border-0 rounded-0" placeholder="Username" />
 						</div>
 						<div className="form-group">
 							<input type="password" name="password" id="password" className="form-control border-0 rounded-0" placeholder="••••••" />

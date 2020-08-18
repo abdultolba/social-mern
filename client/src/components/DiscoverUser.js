@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
 import { discoverUsers, restartState } from '../actions/discover'
@@ -13,6 +13,12 @@ class DiscoverUser extends Component {
 
 	componentDidMount() {
 		this.props.discoverUsers()
+	}
+
+	componentDidUpdate(prevProps) {
+	    if (this.props.location !== prevProps.location) {
+			this.props.discoverUsers();	
+		}
 	}
 
 	componentWillUnmount() {
@@ -57,4 +63,4 @@ const dispatchToProps = dispatch => ({
 	restartState: () => dispatch(restartState())
 })
 
-export default connect(stateToProps, dispatchToProps)(DiscoverUser)
+export default connect(stateToProps, dispatchToProps)(withRouter(DiscoverUser))

@@ -5,7 +5,8 @@ import {
 	RESTART_STATE,
 	DELETE_POST,
 	SET_LOADING_POSTS,
-	LIKE_POST } from '../actions/profile'
+	LIKE_POST,
+	UNLIKE_POST } from '../actions/profile'
 import { parseImageUrl } from '../utils/util'
 
 const defaultState = {
@@ -69,6 +70,24 @@ export default (state = defaultState, action) => {
 								likes: likedPost.likes,
 								likedBy: likedPost.likedBy,
 								liked: true
+							}
+							: post
+						)
+				}
+			}
+		case UNLIKE_POST:
+			const { unlikedPost } = action.payload
+			return {
+				...state,
+				posts: {
+					...state.posts,
+					items: 
+						state.posts.items.map(post => post._id == unlikedPost._id 
+							? {
+								...post,
+								likes: unlikedPost.likes,
+								likedBy: unlikedPost.likedBy,
+								liked: false
 							}
 							: post
 						)

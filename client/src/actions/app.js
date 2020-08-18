@@ -1,14 +1,16 @@
 import axios from 'axios'
+import cogoToast from 'cogo-toast'
 
 export const TOGGLE_NAVBAR = 'TOGGLE_NAVBAR',
-				SIGN_UP = 'SIGN_UP',
-				SIGN_IN = 'SIGN_IN',
-				RECONNECT = 'RECONNECT',
-				LOGOUT = 'LOGOUT',
-				SET_LOGIN_LOADING = 'SET_LOGIN_LOADING',
-				SET_PROFILE_PICTURE = 'SET_PROFILE_PICTURE',
-				RESET_LAST_CONNECTION = 'RESET_LAST_CONNECTION',
-				SET_PROFILE_DESCRIPTION = 'SET_PROFILE_DESCRIPTION'
+	SIGN_UP = 'SIGN_UP',
+	SIGN_IN = 'SIGN_IN',
+	RECONNECT = 'RECONNECT',
+	LOGOUT = 'LOGOUT',
+	SET_LOGIN_LOADING = 'SET_LOGIN_LOADING',
+	SET_PROFILE_PICTURE = 'SET_PROFILE_PICTURE',
+	RESET_LAST_CONNECTION = 'RESET_LAST_CONNECTION',
+	SET_PROFILE_DESCRIPTION = 'SET_PROFILE_DESCRIPTION',
+	ERROR = 'ERROR'
 
 
 export const setLoginLoad = (value) => {
@@ -22,8 +24,8 @@ export const setLoginLoad = (value) => {
 
 export const resetLastConnection = () => {
 	return dispatch => dispatch({
-			type: RESET_LAST_CONNECTION
-		});
+		type: RESET_LAST_CONNECTION
+	});
 }
 
 export const reconnect = (last_session) => {
@@ -50,15 +52,44 @@ export const logout = () => {
 	}
 }
 
-export const signUp = ({username, email, password}) => {
+export const signUp = ({username, password}) => {
 	return dispatch => {
 		dispatch(setLoginLoad(true))
 
-		axios.post('http://localhost:3000/auth/sign-up', { email, username, password })
+		axios.post('http://localhost:3000/auth/sign-up', { username, password })
 			.then(res => {
-				if(res.data.code == 200){					
+				if (res.data.code == 200) {
+					cogoToast.success(`Welcome, @${res.data.response.username}!`, { 
+					    position: 'bottom-right'
+					});
 					dispatch({
 						type: SIGN_UP,
+						payload: {
+							...res.data.response
+						}
+					})
+				}
+			})
+			.catch(e => {
+				cogoToast.error(e.response.data.response, { 
+				    position: 'bottom-right'
+				})
+				dispatch(setLoginLoad(false))
+			})
+	}
+}
+
+export const signIn = ({ username, password }) => {
+	return dispatch => {
+		dispatch(setLoginLoad(true))
+		axios.post('http://localhost:3000/auth/sign-in', { username, password })
+			.then(res => {
+				if (res.data.code == 200) {
+					cogoToast.success(`Welcome back @${res.data.response.username}!`, { 
+					    position: 'bottom-right'
+					})
+					dispatch({
+						type: SIGN_IN,
 						payload: {
 							...res.data.response
 						}
@@ -72,29 +103,11 @@ export const signUp = ({username, email, password}) => {
 	}
 }
 
-export const signIn = ({username, password}) => {
-	return dispatch => {
-		dispatch(setLoginLoad(true))
-		axios.post('http://localhost:3000/auth/sign-in', { username, password })
-			.then(res => {
-				if(res.data.code == 200){
-					dispatch({
-							type: SIGN_IN,
-							payload: {
-								...res.data.response
-							}
-						})
-				}
-			})
-			.catch(e => {
-				console.log(e)
-				dispatch(setLoginLoad(false))
-			})
-	}
-}
-
 export const setProfilePic = url => {
 	return dispatch => {
+		cogoToast.success(`Profile photo updated!`, { 
+		    position: 'bottom-right'
+		})
 		dispatch({
 			type: SET_PROFILE_PICTURE,
 			payload: { url }
@@ -115,11 +128,14 @@ export const toggleNavbar = (value) => {
 
 export const setDescription = description => {
 	return dispatch => {
+		cogoToast.success(`Description updated!`, { 
+		    position: 'bottom-right'
+		})
 		dispatch({
 			type: SET_PROFILE_DESCRIPTION,
 			payload: { description }
 		})
-		``
+			``
 		dispatch(resetLastConnection())
 	}
 }
