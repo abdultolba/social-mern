@@ -8,7 +8,6 @@ const jwt = require('jsonwebtoken')
 const cors = require('cors')
 const path = require('path')
 
-const { SECRET_KEY } = require('./config')
 const AuthRoutes = require('./routes/Auth')
 const PostRoutes = require('./routes/Post')
 const UserRoutes = require('./routes/User')
@@ -21,17 +20,6 @@ app.use(methodOverride())
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 app.use("/", express.static(path.join(__dirname, 'public')))
-
-app.use((req,res,next) => {
-	const token = req.header('auth_token')
-	if(token) {
-		jwt.verify(token, SECRET_KEY, (err, decoded) => {
-			if(err) return console.log(err)
-			req.user = decoded.data
-		})
-	}
-	next()
-})
 
 app.use('/auth', AuthRoutes)
 app.use('/user', UserRoutes)

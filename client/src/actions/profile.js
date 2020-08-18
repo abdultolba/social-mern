@@ -135,7 +135,7 @@ export const deletePost = data => {
 
 		API.post(`user/${username}/delete/post`, { postId })
 			.then(res => {
-				cogoToast.success(`Your post has been deleted.`, { 
+				cogoToast.warn(`Your post has been deleted.`, { 
 				    position: 'bottom-right'
 				})
 				dispatch({

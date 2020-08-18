@@ -8,6 +8,8 @@ const router = express.Router()
 const User = require('../models/User')
 const Post = require('../models/Post')
 
+const isAuth = require('../middlewares/auth')
+
 router.get('/:username', (req,res) => {
 	let { username } = req.params
 	User.findOne({username})
@@ -38,6 +40,7 @@ router.get('/:username/posts', (req,res) => {
 })
 
 router.get('/:username/likes', (req,res) => {
+	// TODO: Search by username
 	Post.find({likedBy: { $in: '5db63be3e070d70df8fa8761' }})
 		.limit(2)
 		.exec((err, posts) => {
@@ -45,7 +48,7 @@ router.get('/:username/likes', (req,res) => {
 		})
 })
 
-router.post('/:username/new/post', (req,res) => {
+router.post('/:username/new/post', isAuth, (req,res) => {
 	const { username: profile } = req.params
 	const { message } = req.body
 	const { _id: author } = req.user
@@ -63,7 +66,7 @@ router.post('/:username/new/post', (req,res) => {
 		.catch(e => res.status(500).send("Error."))
 })
 
-router.post('/:username/delete/post', (req,res) => {
+router.post('/:username/delete/post', isAuth, (req,res) => {
 	const { username: profile } = req.params;
 	const { postId } = req.body;
 	const { _id: authorId,username } = req.user;
@@ -83,7 +86,7 @@ router.post('/:username/delete/post', (req,res) => {
 		.catch(e => res.status(500).send("Error."));
 })
 
-router.post('/:username/edit/info/description', (req,res) => {
+router.post('/:username/edit/info/description', isAuth, (req,res) => {
 	const { username } = req.params;
 	const { description } = req.body;
 	if(req.user.username != username)
