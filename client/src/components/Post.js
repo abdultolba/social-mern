@@ -3,7 +3,7 @@ import { Link, withRouter } from 'react-router-dom'
 import VerifiedBadge from '../components/VerifiedBadge'
 import { connect } from 'react-redux'
 
-import { deletePost } from '../actions/profile'
+import { deletePost, likePost } from '../actions/profile'
 
 const Post = (props) => (
     <div className="card post w-100 mb-3 rounded-0" style={{ "maxWidth": "540px" }}>
@@ -23,15 +23,23 @@ const Post = (props) => (
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         }
-                        {props.author && 
-	    					<span className="mb-0">
-	    						<Link to={'/u/' + props.author.username}>@{props.author.username}</Link> 
-	    						{props.author.verified && <VerifiedBadge />}
-	    					</span>
-	    				}
+                        {props.author &&
+                            <span className="mb-0">
+                                <Link to={'/u/' + props.author.username}>@{props.author.username}</Link>
+                                {props.author.verified && <VerifiedBadge />}
+                            </span>
+                        }
                         <p className="mb-0">{props.message}</p>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div className="card-footer px-0 py-0 d-flex justify-content-around">
+            <div className="w-50 text-center cursor-pointer post__option px-2 py-2" onClick={() => props.likePost(props._id)}>
+                <span><i className={`mr-1 fas fa-heart ${props.liked ? 'text-brand' : ''}`}></i> {props.likes}</span>
+            </div>
+            <div className="w-50 text-center cursor-pointer post__option px-2 py-2">
+                <span>Comment</span>
             </div>
         </div>
     </div>
@@ -42,7 +50,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    deletePost: data => dispatch(deletePost(data))
+    deletePost: data => dispatch(deletePost(data)),
+    likePost: postId => dispatch(likePost(postId))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Post))
