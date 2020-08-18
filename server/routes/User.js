@@ -1,7 +1,8 @@
-const multer = require('multer')
+const mongoose = require('mongoose')
 const express = require('express')
-const path = require('path');
-const fs = require('fs');
+const multer = require('multer')
+const path = require('path')
+const fs = require('fs')
 
 const router = express.Router()
 const User = require('../models/User')
@@ -33,6 +34,14 @@ router.get('/:username/posts', (req,res) => {
 				code: 200,
 				response: posts
 			})
+		})
+})
+
+router.get('/:username/likes', (req,res) => {
+	Post.find({likedBy: { $in: '5db63be3e070d70df8fa8761' }})
+		.limit(2)
+		.exec((err, posts) => {
+			res.send(posts)
 		})
 })
 
