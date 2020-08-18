@@ -2,7 +2,7 @@
 import React, { Component } from 'react'
 import BottomScrollListener from 'react-bottom-scroll-listener'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 
 import { fetchProfile, newPost, fetchPosts, restartState } from '../actions/profile'
 import VerifiedBadge from '../components/VerifiedBadge'
@@ -48,6 +48,9 @@ class Profile extends Component {
 	render() {
 		return (
 			<div className="container mt-5 pt-5 animated fadeIn">
+				{(!this.props.user.username && !this.props.user.loading) && 
+					<Redirect to='/404' />
+				}
 				<div className="row justify-content-center">
 					<div className="col-12 col-md-10 justify-content-center d-flex">
 						<div className="card mb-3 rounded-0 animated fadeIn" style={{ "maxWidth": "540px" }}>

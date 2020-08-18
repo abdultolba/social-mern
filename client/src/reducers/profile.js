@@ -3,6 +3,7 @@ import {
 	FETCH_POSTS, 
 	FETCH_PROFILE, 
 	RESTART_STATE,
+	SET_LOADING,
 	DELETE_POST,
 	SET_LOADING_POSTS,
 	LIKE_POST,
@@ -10,6 +11,7 @@ import {
 import { parseImageUrl } from '../utils/util'
 
 const defaultState = {
+	loading: true,
 	username: null,
 	description: null,
 	profilePic: null,	
@@ -92,6 +94,11 @@ export default (state = defaultState, action) => {
 							: post
 						)
 				}
+			}
+		case SET_LOADING:
+			return {
+				...state,
+				loading: action.payload.loading
 			}
 		case SET_LOADING_POSTS:
 			return {
