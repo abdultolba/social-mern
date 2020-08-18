@@ -1,8 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const Post = require('../models/Post')
 
-router.post('/:id/like', (req,res) => {
+const Post = require('../models/Post')
+const isAuth = require('../middlewares/auth')
+
+router.post('/:id/like', isAuth, (req,res) => {
 	const { id } = req.params
 
 	if(!req.user)
@@ -27,7 +29,7 @@ router.post('/:id/like', (req,res) => {
 		.catch(e => res.status(500).send("Error"))
 })
 
-router.post('/:id/unlike', (req,res) => {
+router.post('/:id/unlike', isAuth, (req,res) => {
 	const { id } = req.params;
 
 	if(!req.user)

@@ -1,12 +1,16 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+
 import RegisterForm from '../components/RegisterForm'
 import LoginForm from '../components/LoginForm'
+
+import { toggleNavbar } from '../actions/app'
 import Logo from '../assets/images/logo.png'
-import { connect } from 'react-redux'
 
 class Home extends Component {
 	constructor(props){
 		super(props)
+		this.props.toggleNavbar(false)
 	}
 
 	componentDidMount() {
@@ -61,9 +65,13 @@ class Home extends Component {
 	}
 }
 
-const stateToProps = state => ({
+const mapStateToProps = state => ({
 	isLogged: state.app.logged.isLogged,
 	user: state.app.logged.username
 })
 
-export default connect(stateToProps)(Home)
+const mapDispatchToProps = dispatch => ({
+	toggleNavbar: value => dispatch(toggleNavbar(value))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home)

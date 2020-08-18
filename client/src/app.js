@@ -8,6 +8,9 @@ import AppRouter from './routes/AppRouter'
 import './styles/Main.scss'
 
 const store = Store()
+
+store.subscribe(() => { console.log(store.getState()) })
+
 const last_session = localStorage.getItem('last_session')
 
 if(last_session)
