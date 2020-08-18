@@ -7,21 +7,21 @@ const API = new api()
 export const FETCH_PROFILE = 'FETCH_PROFILE',
 	FETCH_POSTS = 'FETCH_POSTS',
 	NEW_POST = 'NEW_POST',
-	RESTART_STATE = 'RESTART_STATE'
 	DELETE_POST = 'DELETE_POST',
+	RESTART_STATE = 'RESTART_STATE',
+	SET_LOADING = 'SET_LOADING',
 	SET_LOADING_POSTS = 'SET_LOADING_POSTS',
 	LIKE_POST = 'LIKE_POST',
 	UNLIKE_POST = 'UNLIKE_POST'
 
-export const fetchProfile = username => {
+export const fetchProfile = (username) => {
 	return (dispatch, getState) => {
 		const state = getState()
-		const { offset, quantity, isThereMore } = state.profile.posts
-		const { _id: id } = state.app.logged
+		dispatch(setLoading(true))
 
 		API.get(`user/${username}`)
 			.then(res => {
-				if (res.data.code == 200) {
+				if (res.data.code == 200)
 					dispatch({
 						type: FETCH_PROFILE,
 						payload: {
@@ -29,17 +29,36 @@ export const fetchProfile = username => {
 							ownProfile: state.app.logged.username == res.data.response.username
 						}
 					})
+			})
+			.catch(e => {
+				switch (e.response.status) {
+					case 404:
+						cogoToast.danger("404: User not found", {
+							position: 'bottom-right'
+						})
+						break
+					default:
+						cogoToast.danger("Unexpected error", {
+							position: 'bottom-right'
+						})
+						break
 				}
+			})
+			.then(() => {
+				dispatch(setLoading(false))
 			})
 	}
 }
 
-export const fetchPosts = username => {
+export const fetchPosts = (username) => {
 	return (dispatch, getState) => {
-		const { offset, quantity, morePosts } = getState().profile.posts
+		const state = getState()
+		const { offset, quantity, isThereMore } = state.profile.posts
+		const { _id: id } = state.app.logged
 
-		if (morePosts) {
+		if (isThereMore) {
 			dispatch(setLoadingPosts(true))
+
 			API.get(`user/${username}/posts?offset=${offset}&quantity=${quantity}`)
 				.then(res => {
 					if (res.data.code == 200)
@@ -52,18 +71,19 @@ export const fetchPosts = username => {
 								}))
 							}
 						})
+
 					dispatch(setLoadingPosts(false))
 				})
 				.catch(e => console.log(e))
 		} else {
-			cogoToast.info(`You've reached the bottom!`, { 
-			    position: 'bottom-right'
+			cogoToast.info(`You have reached the bottom :O!`, {
+				position: 'bottom-right'
 			})
 		}
 	}
 }
 
-export const likePost = postId => {
+export const likePost = (postId) => {
 	return (dispatch, getState) => {
 		const state = getState()
 
@@ -72,86 +92,100 @@ export const likePost = postId => {
 				if (res.data.code == 200)
 					dispatch({
 						type: LIKE_POST,
-						payload: { likedPost: res.data.response }
+						payload: {
+							likedPost: res.data.response
+						}
 					})
 			})
 			.catch(e => console.log(e))
 	}
 }
 
-export const unlikePost = postId => {
+export const unlikePost = (postId) => {
 	return (dispatch, getState) => {
 		const state = getState()
-		
+
 		API.post(`post/${postId}/unlike`)
-			.then(res => {				
-				if(res.data.code == 200){
-					cogoToast.success(`Post submitted`, { 
-					    position: 'bottom-right'
-					})
+			.then(res => {
+				if (res.data.code == 200)
 					dispatch({
 						type: UNLIKE_POST,
 						payload: {
 							unlikedPost: res.data.response
 						}
 					})
-				}
 			})
-			.catch(e => {
-				cogoToast.error(`Something went wrong while submitting your post.`, { 
-				    position: 'bottom-right'
-				})
-			})
+			.catch(e => console.log(e))
 	}
 }
 
-export const newPost = data => {
+export const newPost = (data) => {
 	return (dispatch, getState) => {
 		const state = getState()
 		const { username, message } = data
 
 		API.post(`user/${username}/new/post`, { message })
 			.then(res => {
-				if (res.data.code == 200)
+				if (res.data.code == 200) {
+					cogoToast.success(`Post submitted`, {
+						position: 'bottom-right'
+					})
 					dispatch({
 						type: NEW_POST,
-						payload: { newPost: res.data.response }
+						payload: {
+							newPost: res.data.response
+						}
 					})
+				}
 			})
-			.catch(e => console.log(e))
+			.catch(e => {
+				cogoToast.error(`There were an error submitting your post.`, {
+					position: 'bottom-right'
+				})
+			})
 	}
 }
 
-export const restartState = data => {
-	return dispatch => dispatch({
-		type: RESTART_STATE
-	})
-}
-
-export const deletePost = data => {
+export const deletePost = (data) => {
 	return (dispatch, getState) => {
 		const state = getState()
 		const { username, postId } = data
-
 		API.post(`user/${username}/delete/post`, { postId })
 			.then(res => {
-				cogoToast.warn(`Your post has been deleted.`, { 
-				    position: 'bottom-right'
+				cogoToast.warn(`Post deleted`, {
+					position: 'bottom-right'
 				})
 				dispatch({
 					type: DELETE_POST,
-					payload: { ...res.data.response }
+					payload: {
+						...res.data.response
+					}
 				})
 			})
 			.catch(e => console.log(e))
 	}
 }
 
-export const setLoadingPosts = loading => {
+export const setLoadingPosts = (loading) => {
 	return dispatch => dispatch({
 		type: SET_LOADING_POSTS,
 		payload: {
 			loading
 		}
+	})
+}
+
+export const setLoading = loading => {
+	return dispatch => dispatch({
+		type: SET_LOADING,
+		payload: {
+			loading
+		}
+	})
+}
+
+export const restartState = (data) => {
+	return dispatch => dispatch({
+		type: RESTART_STATE
 	})
 }
