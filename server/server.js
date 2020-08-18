@@ -10,6 +10,7 @@ const path = require('path')
 
 const { SECRET_KEY } = require('./config')
 const AuthRoutes = require('./routes/Auth')
+const PostRoutes = require('./routes/Post')
 const UserRoutes = require('./routes/User')
 const DiscoverRoutes = require('./routes/Discover');
 const app = express()
@@ -35,6 +36,7 @@ app.use((req,res,next) => {
 app.use('/auth', AuthRoutes)
 app.use('/user', UserRoutes)
 app.use('/discover', DiscoverRoutes)
+app.use('/post', PostRoutes)
 
 app.listen(PORT, () => {
 	console.log(`Server runinng on port ${PORT}`)

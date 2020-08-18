@@ -1,15 +1,19 @@
 import axios from 'axios';
 
 export const FETCH_PROFILE = 'FETCH_PROFILE',
-			 FETCH_POSTS = 'FETCH_POSTS',
-			 NEW_POST = 'NEW_POST',
-			 RESTART_STATE = 'RESTART_STATE'
-			 DELETE_POST = 'DELETE_POST',
-			 SET_LOADING_POSTS = 'SET_LOADING_POSTS'
+	FETCH_POSTS = 'FETCH_POSTS',
+	NEW_POST = 'NEW_POST',
+	RESTART_STATE = 'RESTART_STATE'
+DELETE_POST = 'DELETE_POST',
+	SET_LOADING_POSTS = 'SET_LOADING_POSTS',
+	LIKE_POST = 'LIKE_POST'
 
 export const fetchProfile = username => {
 	return (dispatch, getState) => {
 		const state = getState()
+		const { offset, quantity, isThereMore } = state.profile.posts
+		const { _id: id } = state.app.logged
+
 		axios.get(`http://localhost:3000/user/${username}`)
 			.then(res => {
 				if (res.data.code == 200) {
@@ -29,21 +33,41 @@ export const fetchPosts = username => {
 	return (dispatch, getState) => {
 		const { offset, quantity, morePosts } = getState().profile.posts;
 
-		if (morePosts){
+		if (morePosts) {
 			dispatch(setLoadingPosts(true));
 			axios.get(`http://localhost:3000/user/${username}/posts?offset=${offset}&quantity=${quantity}`)
+				.then(res => {
+					if (res.data.code == 200)
+						dispatch({
+							type: FETCH_POSTS,
+							payload: {
+								posts: res.data.response.map(post => ({
+									...post,
+									liked: post.likedBy.includes(id)
+								}))
+							}
+						})
+					dispatch(setLoadingPosts(false));
+				})
+				.catch(e => console.log(e));
+		}
+	}
+}
+
+export const likePost = (postId) => {
+	return (dispatch, getState) => {
+		const state = getState()
+		const { token } = state.app.logged
+
+		axios.post(`http://localhost:3000/post/${postId}/like`, { token })
 			.then(res => {
 				if (res.data.code == 200)
-				dispatch({
-					type: FETCH_POSTS,
-					payload: {
-						posts: res.data.response
-					}
-				})
-				dispatch(setLoadingPosts(false));
+					dispatch({
+						type: LIKE_POST,
+						payload: { likedPost: res.data.response }
+					})
 			})
-			.catch(e => console.log(e));
-		}
+			.catch(e => console.log(e))
 	}
 }
 
