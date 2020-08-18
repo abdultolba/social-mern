@@ -1,5 +1,8 @@
 import axios from 'axios'
 import cogoToast from 'cogo-toast'
+import api from '../api/api';
+
+const API = new api()
 
 export const TOGGLE_NAVBAR = 'TOGGLE_NAVBAR',
 	SIGN_UP = 'SIGN_UP',
@@ -56,7 +59,7 @@ export const signUp = ({username, password}) => {
 	return dispatch => {
 		dispatch(setLoginLoad(true))
 
-		axios.post('http://localhost:3000/auth/sign-up', { username, password })
+		API.post('auth/sign-up', { username, password })
 			.then(res => {
 				if (res.data.code == 200) {
 					cogoToast.success(`Welcome, @${res.data.response.username}!`, { 
@@ -82,7 +85,7 @@ export const signUp = ({username, password}) => {
 export const signIn = ({ username, password }) => {
 	return dispatch => {
 		dispatch(setLoginLoad(true))
-		axios.post('http://localhost:3000/auth/sign-in', { username, password })
+		API.post('auth/sign-in', { username, password })
 			.then(res => {
 				if (res.data.code == 200) {
 					cogoToast.success(`Welcome back @${res.data.response.username}!`, { 
