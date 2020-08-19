@@ -19,12 +19,17 @@ app.use(cors())
 app.use(methodOverride())
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
-app.use("/", express.static(path.join(__dirname, 'public')))
 
+app.use("/", express.static(path.join(__dirname, 'public')))
 app.use('/auth', AuthRoutes)
 app.use('/user', UserRoutes)
 app.use('/discover', DiscoverRoutes)
 app.use('/post', PostRoutes)
+app.use(express.static('../client/dist'));
+
+app.get('*', (req,res) => {
+	res.sendFile(path.resolve(__dirname, '..', 'client', 'dist', 'index.html'));
+})
 
 app.listen(PORT, () => {
 	console.log(`Server runinng on port ${PORT}`)
