@@ -11,7 +11,7 @@ const path = require('path')
 const AuthRoutes = require('./routes/Auth')
 const PostRoutes = require('./routes/Post')
 const UserRoutes = require('./routes/User')
-const DiscoverRoutes = require('./routes/Discover');
+const DiscoverRoutes = require('./routes/Discover')
 const app = express()
 const PORT = 3000
 
@@ -25,10 +25,10 @@ app.use('/auth', AuthRoutes)
 app.use('/user', UserRoutes)
 app.use('/discover', DiscoverRoutes)
 app.use('/post', PostRoutes)
-app.use(express.static('../client/dist'));
+app.use(express.static('../client/dist'))
 
 app.get('*', (req,res) => {
-	res.sendFile(path.resolve(__dirname, '..', 'client', 'dist', 'index.html'));
+	res.sendFile(path.resolve(__dirname, '..', 'client', 'dist', 'index.html'))
 })
 
 app.listen(PORT, () => {

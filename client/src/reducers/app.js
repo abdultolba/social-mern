@@ -11,7 +11,7 @@ import {
 import { parseImageUrl } from '../utils/util';
 
 const defaultState = {
-	navbar: { isVisible: false },
+	navbar: { isVisible: true },
 	logged: {
 		isLoading: false,
 		isLogged: false,

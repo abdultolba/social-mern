@@ -16,7 +16,12 @@ class AppRouter extends Component {
 			<BrowserRouter>
 				<Switch>
 					<Route path="/" component={Home} exact />
-					<Route path="/u/:id" component={Profile} />
+					<Fragment>
+						<div className="d-flex">
+							<Route path="/u/:id" component={Profile} />
+							<Navbar />
+						</div>
+					</Fragment>
 					<Route component={Error} />
 				</Switch>
 			</BrowserRouter>
