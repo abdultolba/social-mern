@@ -31,7 +31,9 @@ class Api {
 							break;	
 					}
 
-					cogoToast.error(`${status}: ${data.message}`);
+					cogoToast.error(`${status}: ${data.message}`, {
+						position: 'bottom-right'
+					})
 					rej(e);
 				})
 		})
@@ -60,7 +62,9 @@ class Api {
 							break	
 					}
 
-					cogoToast.error(`${status}: ${data.message}`)
+					cogoToast.error(`${status}: ${data.message}`, {
+						position: 'bottom-right'
+					})
 					rej(e)
 				})
 		})
