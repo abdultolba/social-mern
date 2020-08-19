@@ -1,34 +1,42 @@
 .post {
-  transition: 0.5s box-shadow, 0.5s transform;
+  transition: 0.5s all;
 
-  &__image {
-    transition: 0.5s all;
-  }
+  &__avatar {
+    position: absolute;
+    width: 75px;
+    top: -40px;
 
-  &__option {
-    transition: 0.2s all;
-
-    i {
-      transition: 0.2s all;
-    }
-
-    &:hover {
-      background-color: $brand-color;
-      color: #ffffff;
-
-      i {
-        color: #ffffff;
-      }
+    &__image {
+      z-index: 11;
+      position: relative;
     }
   }
 
-  &:hover {
-    box-shadow: 0px 20px 26px -25px rgba(0, 0, 0, 0.5);
-    transform: translateY(-5px);
-
-    .post__image {
-      transform: scale(1.2);
-      filter: grayscale(100%);
-    }
+  &__username {
+    position: absolute;
+    top: 25px;
+    left: 90px;
+    background-color: white;
+    padding: 0 30px;
+    border-radius: 50px;
+    left: 60px;
+    z-index: 10;
   }
+}
+
+&__likes {
+  position: absolute;
+  bottom: -15px;
+  right: 30px;
+}
+
+&__delete {
+  position: absolute;
+  bottom: -15px;
+  right: 110px;
+}
+
+&:hover {
+  box-shadow: 0px 8px 27px -7px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
 }

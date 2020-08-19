@@ -14,7 +14,6 @@ class AppRouter extends Component {
 	render(){
 		return (
 			<BrowserRouter>
-				<Navbar />
 				<Switch>
 					<Route path="/" component={Home} exact />
 					<Route path="/u/:id" component={Profile} />
