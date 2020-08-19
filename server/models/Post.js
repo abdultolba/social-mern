@@ -7,6 +7,12 @@ const postSchema = new Schema({
 	createdAt: {type: Date, default: Date.now},
 	profile: String,
 	message: String,
+	extra: {
+		type: {
+			value: String,
+			extraType: String
+		}
+	},
 	likes: {type: Number, default: 0},
 	likedBy: [{type: mongoose.Schema.Types.ObjectId, ref: User}],
 })

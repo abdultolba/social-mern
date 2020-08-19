@@ -1,11 +1,12 @@
 
 import React, { Component } from 'react'
 import { toggleNavbar } from '../actions/app'
-import { fetchProfile, newPost, fetchPosts, restartState } from '../actions/profile'
+import { fetchProfile, newPost, fetchPosts, restartState, toggleSidenav } from '../actions/profile'
 import BottomScrollListener from 'react-bottom-scroll-listener'
 import { connect } from 'react-redux'
 
 import Post from '../components/Post'
+import Auth from '../components/Auth'
 import Loading from '../components/Loading'
 import { logout } from '../actions/app'
 import '../styles/pages/Profile.scss'
@@ -14,13 +15,24 @@ class Profile extends Component {
 	constructor(props) {
 		super(props)
 
+		this.state = {
+			youtubeInput: false
+		}
+
 		this.handleNewPost = this.handleNewPost.bind(this)
 		this.fetchPosts = this.fetchPosts.bind(this)
 		this.initializeProfile = this.initializeProfile.bind(this)
+		this.toggleYoutubeInput = this.toggleYoutubeInput.bind(this)
 	}
 
 	componentDidMount() {
 		this.initializeProfile()
+	}
+
+	toggleYoutubeInput() {
+		this.setState(prevState => ({
+			youtubeInput: !prevState.youtubeInput
+		}))
 	}
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
@@ -39,10 +51,15 @@ class Profile extends Component {
 
 		this.props.newPost({
 			username: this.props.match.params.id,
-			message: e.target.message.value
+			message: e.target.message.value,
+			extra: {
+				value: e.target.extra.value,
+				extraType: 'youtube'
+			}
 		})
 
 		e.target.message.value = ''
+		e.target.extra.value = ''
 	}
 
 	fetchPosts() {
@@ -57,56 +74,62 @@ class Profile extends Component {
 
 	render(){
 		return (
-			<div className="d-flex profile w-100">
-				<div className="d-none d-md-flex position-relative sidenav flex-column">
-					<div>
+			<div className="d-flex flex-column flex-md-row profile w-100">
+				<div className={"d-flex sidenav flex-column " + (!this.props.profile.visibleSidenav ? 'sidenav--inactive' : '')}>
+					<div className="sidenav__description">
 						<img src={this.props.profile.profilePic}
-							 className="img-fluid rounded-circle sidenav__avatar mx-auto d-block mt-5"/>
-					</div>
-					<div className="mt-2 sidenav__description">
+							 className="img-fluid rounded-circle sidenav__avatar mx-auto d-block mt-5 mb-2"/>
 						<p className="text-center text-white title mt-3">@{this.props.profile.username}</p>
 						<p className="text-left text-white description px-5">{this.props.profile.description}</p>
 						<div className="d-flex flex-column justify-content-between h-100">
 							<div className="d-flex justify-content-between px-5">
 								<div>
 									<p className="text-white mb-0">314 Followers</p>
-									<p className="text-white mb-0">159 Followings</p>
+									<p className="text-white mb-0">159 Following</p>
 								</div>
 								<div>
-									<p className="text-white mb-0">219 Likes</p>
+									<p className="text-white mb-0">265 Likes</p>
 									<p className="text-white mb-0">36 Posts</p>
 								</div>
-							</div>
-							<div className="mt-3">
-								<p className="text-white text-center cursor-pointer" onClick={this.props.logout}>Log Out</p>
 							</div>
 						</div>
 					</div>
 				</div>
+				<div className={"sidenav__toggle border rounded-circle cursor-pointer " + (!this.props.profile.visibleSidenav ? 'sidenav__toggle--open' : '')} onClick={this.props.toggleSidenav}>
+					<p className="my-0 py-0"><i className="fas fa-arrow-left"></i></p>
+				</div>
 				<BottomScrollListener onBottom={this.fetchPosts}>
 					{scrollRef => (
 						<div className="d-flex position-relative profile__body justify-content-center flex-wrap" ref={scrollRef}>
-							<div className="profile__body__textarea w-100 my-4">
+							<Auth>
+								<div className="profile__body__textarea w-100 my-4">
 								<div className="card border-0">
 									<div className="card-body">
 										<form onSubmit={this.handleNewPost}>
 											<div className="form-group">
-										<textarea
-											id="message"
-											name="message"
-											className="form-control rounded-0 profile__body__textarea__input"
-											rows="5"
-											placeholder="What you thinking?">
-										</textarea>
+												<textarea
+													id="message"
+													name="message"
+													className="form-control rounded-0 profile__body__textarea__input"
+													rows="5"
+													placeholder="What are you up to?">
+												</textarea>
+											</div>
+											<div className="form-group">
+												<input name="extra" id="extra" className={"form-control mt-2 " + (this.state.youtubeInput ? 'd-flex' : 'd-none')} placeholder="https://www.youtube.com/watch?v=_OBlgSz8sSM"/>
 											</div>
 											<div className="form-group">
 												<button type="submit" className="btn btn-success rounded-pill float-right profile__body__textarea__button">POST</button>
+												<button type="button" onClick={this.toggleYoutubeInput} className="btn btn-danger text-white rounded-pill float-right px-3 mx-2">
+													<i className="fab fa-youtube"></i>
+												</button>
 											</div>
 										</form>
 									</div>
 								</div>
 							</div>
-							<div className="profile__body__posts w-100">
+							</Auth>
+							<div className="profile__body__posts w-100 mt-5">
 								<div className="d-flex flex-column">
 									{this.props.profile.posts.items.map((post, i) => <Post {...post} key={post.message + '_' + i}/>)}
 									{this.props.profile.posts.loading && <div className="d-flex justify-content-center"><Loading classes="my-5"/></div>}
@@ -120,14 +143,15 @@ class Profile extends Component {
 	}
 }
 
-const stateToProps = state => ({
+const mapStateToProps = state => ({
 	logged: state.app.logged,
 	ownsProfile: state.profile.ownProfile,
-	profile: state.profile.ownProfile ? {...state.profile, ...state.app.logged} : state.profile
+	profile: state.profile
 })
 
-const dispatchToProps = dispatch => ({
+const mapDispatchToProps = dispatch => ({
 	toggleNavbar: value => dispatch(toggleNavbar(value)),
+	toggleSidenav: () => dispatch(toggleSidenav()),
 	fetchProfile: value => dispatch(fetchProfile(value)),
 	newPost: value => dispatch(newPost(value)),
 	fetchPosts: value => dispatch(fetchPosts(value)),
@@ -135,4 +159,4 @@ const dispatchToProps = dispatch => ({
 	logout: () => dispatch(logout())
 })
 
-export default connect(stateToProps, dispatchToProps)(Profile)
+export default connect(mapStateToProps, mapDispatchToProps)(Profile)

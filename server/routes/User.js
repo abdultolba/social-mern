@@ -50,10 +50,16 @@ router.get('/:username/likes', (req,res) => {
 
 router.post('/:username/new/post', isAuth, (req,res) => {
 	const { username: profile } = req.params
-	const { message } = req.body
+	let { message, extra = null } = req.body
 	const { _id: author } = req.user
 
-	new Post({ author, profile, message })
+	if (extra.value && extra.extraType) {
+		extra.value = extra.value.split('=')[1];
+	} else {
+		extra = null;
+	}
+
+	new Post({ author, profile, message, extra })
 		.save()
 		.then(newPost => {
 			Post.populate(newPost, {path: 'author'}, (err, populatedPost) => {
@@ -63,7 +69,7 @@ router.post('/:username/new/post', isAuth, (req,res) => {
 				})
 			})			
 		})
-		.catch(e => res.status(500).send("Error."))
+		.catch(e => res.status(500).send("Sorry, your post couldn't be saved."))
 })
 
 router.post('/:username/edit/info/description', isAuth, (req,res) => {
