@@ -10,7 +10,7 @@ router.get('/users', (req, res) => {
             if (err) return res.status(500).send('Error counting the users.')
             const random = Math.floor(Math.random() * (count - 6))
             User.find({})
-                .limit(6)
+                .limit(20)
                 .skip(random)
                 .exec((err, result) => {
                     if(err) 

@@ -5,11 +5,13 @@ import thunk from 'redux-thunk'
 import appReducer from './reducers/app'
 import profileReducer from './reducers/profile'
 import postsReducer from './reducers/posts'
+import usersReducer from './reducers/users'
 
 const reducers = combineReducers({
 	app: appReducer,
 	profile: profileReducer,
-	posts: postsReducer
+	posts: postsReducer,
+	users: usersReducer
 })
 
 const store = createStore(reducers, composeWithDevTools(applyMiddleware(thunk)))
