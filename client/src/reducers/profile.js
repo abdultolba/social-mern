@@ -1,6 +1,5 @@
 import {
 	FETCH_PROFILE,
-	NEW_POST,
 	RESTART_STATE,
 	SET_LOADING,
 	TOGGLE_SIDENAV
@@ -32,20 +31,6 @@ export default (state = defaultState, action) => {
 			return {
 				...state,
 				loading: action.payload.loading
-			}
-		case NEW_POST:
-			return {
-				...state,
-				posts: {
-					...state.posts,
-					items: [{
-						...action.payload.newPost,
-						author: {
-							...action.payload.newPost.author,
-							profilePic: parseImageUrl(action.payload.newPost.author.profilePic)
-						}
-					}, ...state.posts.items]
-				}
 			}
 		case RESTART_STATE:
 			return defaultState

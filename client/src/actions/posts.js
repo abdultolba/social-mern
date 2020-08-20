@@ -5,6 +5,7 @@ import api from '../api/api'
 const API = new api()
 
 export const FETCH_USER_POSTS = 'FETCH_USER_POSTS',
+    NEW_POST = 'NEW_POST',
     DISCOVER_POSTS = 'DISCOVER_POSTS',
     DELETE_POST = 'DELETE_POST',
     RESTART_STATE = 'RESTART_STATE',
@@ -76,6 +77,37 @@ export const discoverPosts = username => {
                 })
             }
         }
+    }
+}
+
+export const newPost = data => {
+    return (dispatch, getState) => {
+        const state = getState()
+        const { username: profile } = state.profile
+        const { username, message } = data
+
+        API.post(`user/${username}/new/post`, { ...data })
+            .then(res => {
+                if (res.data.code == 200) {
+                    cogoToast.success(`Post submitted`, {
+                        position: 'bottom-right'
+                    })
+
+                    if (username == profile) {
+                        dispatch({
+                            type: NEW_POST,
+                            payload: {
+                                newPost: res.data.response
+                            }
+                        })
+                    }
+                }
+            })
+            .catch(e => {
+                cogoToast.error(`There were an error submitting your post 😬`, {
+                    position: 'bottom-right'
+                })
+            })
     }
 }
 

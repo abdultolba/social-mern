@@ -5,6 +5,7 @@ import api from '../api/api';
 const API = new api()
 
 export const TOGGLE_NAVBAR = 'TOGGLE_NAVBAR',
+	TOGGLE_POST_MODAL = 'TOGGLE_POST_MODAL',
 	SIGN_UP = 'SIGN_UP',
 	SIGN_IN = 'SIGN_IN',
 	RECONNECT = 'RECONNECT',
@@ -28,7 +29,13 @@ export const setLoginLoad = (value) => {
 export const resetLastConnection = () => {
 	return dispatch => dispatch({
 		type: RESET_LAST_CONNECTION
-	});
+	})
+}
+
+export const togglePostModal = () => {
+	return dispatch => dispatch({
+		type: TOGGLE_POST_MODAL
+	})
 }
 
 export const reconnect = (last_session) => {
@@ -55,15 +62,15 @@ export const logout = () => {
 	}
 }
 
-export const signUp = ({username, password}) => {
+export const signUp = ({ username, password }) => {
 	return dispatch => {
 		dispatch(setLoginLoad(true))
 
 		API.post('auth/sign-up', { username, password })
 			.then(res => {
 				if (res.data.code == 200) {
-					cogoToast.success(`Welcome, @${res.data.response.username}!`, { 
-					    position: 'bottom-right'
+					cogoToast.success(`Welcome, @${res.data.response.username}!`, {
+						position: 'bottom-right'
 					});
 					dispatch({
 						type: SIGN_UP,
@@ -74,8 +81,8 @@ export const signUp = ({username, password}) => {
 				}
 			})
 			.catch(e => {
-				cogoToast.error(e.response.data.response, { 
-				    position: 'bottom-right'
+				cogoToast.error(e.response.data.response, {
+					position: 'bottom-right'
 				})
 				dispatch(setLoginLoad(false))
 			})
@@ -88,8 +95,8 @@ export const signIn = ({ username, password }) => {
 		API.post('auth/sign-in', { username, password })
 			.then(res => {
 				if (res.data.code == 200) {
-					cogoToast.success(`Welcome back @${res.data.response.username}!`, { 
-					    position: 'bottom-right'
+					cogoToast.success(`Welcome back @${res.data.response.username}!`, {
+						position: 'bottom-right'
 					})
 					dispatch({
 						type: SIGN_IN,
@@ -108,8 +115,8 @@ export const signIn = ({ username, password }) => {
 
 export const setProfilePic = url => {
 	return dispatch => {
-		cogoToast.success(`Profile photo updated!`, { 
-		    position: 'bottom-right'
+		cogoToast.success(`Profile photo updated!`, {
+			position: 'bottom-right'
 		})
 		dispatch({
 			type: SET_PROFILE_PICTURE,
@@ -131,8 +138,8 @@ export const toggleNavbar = (value) => {
 
 export const setDescription = description => {
 	return dispatch => {
-		cogoToast.success(`Description updated!`, { 
-		    position: 'bottom-right'
+		cogoToast.success(`Description updated!`, {
+			position: 'bottom-right'
 		})
 		dispatch({
 			type: SET_PROFILE_DESCRIPTION,

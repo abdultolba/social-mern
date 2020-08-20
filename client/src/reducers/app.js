@@ -3,6 +3,7 @@ import {
 	SIGN_IN, 
 	LOGOUT, 
 	TOGGLE_NAVBAR, 
+	TOGGLE_POST_MODAL,
 	SET_LOGIN_LOADING, 
 	RECONNECT,
 	SET_PROFILE_PICTURE,
@@ -11,7 +12,12 @@ import {
 import { parseImageUrl } from '../utils/util';
 
 const defaultState = {
-	navbar: { isVisible: true },
+	postModal: {
+		isVisible: false
+	},
+	navbar: { 
+		isVisible: true
+	},
 	logged: {
 		isLoading: false,
 		isLogged: false,
@@ -31,6 +37,13 @@ export default (state = defaultState, action) => {
 			return {
 				...state,
 				navbar: { isVisible }
+			}
+		case TOGGLE_POST_MODAL:
+			return {
+				...state,
+				postModal: {
+					isVisible: !state.postModal.isVisible
+				}
 			}
 		case SET_LOGIN_LOADING:
 			const { value: isLoading } = action.payload
