@@ -4,7 +4,9 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import Home from '../pages/Home'
 import Profile from '../pages/Profile'
 import Error from '../pages/Error'
-import Explore from '../pages/Explore';
+import Explore from '../pages/Explore'
+
+import NewPostModal from '../components/NewPostModal'
 import Navbar from '../components/Navbar'
 
 class AppRouter extends Component {
@@ -19,6 +21,7 @@ class AppRouter extends Component {
 					<Route path="/" component={Home} exact />
 					<Fragment>
 						<div className="d-flex page">
+							<NewPostModal />
 							<Route path="/explore" component={Explore} />
 							<Route path="/u/:id" component={Profile} />
 							<Navbar />
