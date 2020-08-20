@@ -1,11 +1,10 @@
 import React, {Component} from 'react'
 import { Link, withRouter } from 'react-router-dom'
-import ReactTooltip from "react-tooltip"
 import { connect } from 'react-redux'
+import cogoToast from "cogo-toast"
 import Moment from 'react-moment'
 
-import { deletePost, likePost, unlikePost } from '../actions/profile'
-import cogoToast from "cogo-toast"
+import { likePost, unlikePost, deletePost } from '../actions/posts'
 
 class Post extends Component {
 	constructor(props) {
