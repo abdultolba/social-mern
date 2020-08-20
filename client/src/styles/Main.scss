@@ -1,16 +1,28 @@
-@import "./Card.scss";
+$theme-colors: (
+  "brand": #43fd9b,
+);
+
+@import "node_modules/bootstrap/scss/bootstrap";
 
 @import "./pages/Home.scss";
 @import "./pages/Profile.scss";
 @import "./components/Post.scss";
+@import "./components/UserCard.scss";
 @import "./components/Navbar.scss";
 @import "./components/DiscoverUser.scss";
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins/_breakpoints";
 
 body {
   margin: 0 !important;
   padding: 0 !important;
   background-color: #ffffff;
   overflow-x: hidden;
+}
+
+.montserrat {
+  font-family: "Montserrat", sans-serif;
 }
 
 .sh-1 {
@@ -48,4 +60,15 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #cbcbcb;
+}
+
+.page {
+  padding: 75px 0 0 0;
+  min-width: 0;
+}
+
+@include media-breakpoint-up(md) {
+  .page {
+    padding: 0 75px 0 0;
+  }
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 import RegisterForm from '../components/RegisterForm'
 import LoginForm from '../components/LoginForm'
@@ -70,13 +71,9 @@ class Home extends Component {
 												</a>
 											</>
 										}
+										<Link to="/explore" className="mx-auto d-block mt-3 text-center cursor-pointer">I want to explore first 🧭</Link>
 									</div>
 								</div>
-								<p className="text-center text-muted mt-1">
-									8/16/2020
-									<br/>
-									Last update
-								</p>
 							</div>
 						</div>
 					</div>

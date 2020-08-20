@@ -4,20 +4,22 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import Home from '../pages/Home'
 import Profile from '../pages/Profile'
 import Error from '../pages/Error'
+import Explore from '../pages/Explore';
 import Navbar from '../components/Navbar'
 
 class AppRouter extends Component {
-	constructor(props){
+	constructor(props) {
 		super(props)
 	}
 
-	render(){
+	render() {
 		return (
 			<BrowserRouter>
 				<Switch>
 					<Route path="/" component={Home} exact />
 					<Fragment>
-						<div className="d-flex">
+						<div className="d-flex page">
+							<Route path="/explore" component={Explore} />
 							<Route path="/u/:id" component={Profile} />
 							<Navbar />
 						</div>
