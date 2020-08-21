@@ -11,7 +11,8 @@ export const FETCH_USER_POSTS = '[POST] FETCH_USER_POSTS',
     RESTART_STATE = '[POST] RESTART_STATE',
     SET_LOADING = '[POST] SET_LOADING',
     LIKE_POST = '[POST] LIKE_POST',
-    UNLIKE_POST = '[POST] UNLIKE_POST'
+    UNLIKE_POST = '[POST] UNLIKE_POST',
+    UPDATE_PROFILE_PICTURE = '[POST] UPDATE_PROFILE_PICTURE'
 
 export const fetchUserPosts = usernamePosts => {
     return (dispatch, getState) => {
@@ -49,25 +50,25 @@ export const discoverPosts = username => {
         const { _id: id } = state.app.logged
 
         if (isThereMore && !loading) {
-			dispatch(setLoading(true))
-			API.get('discover/posts')
-				.then(res => {
-					if (res.data.code == 200)
-						dispatch({
-							type: DISCOVER_POSTS,
-							payload: res.data.response.map(post => ({
-								...post,
-								liked: post.likedBy.includes(id)
-							}))
-						})
+            dispatch(setLoading(true))
+            API.get('discover/posts')
+                .then(res => {
+                    if (res.data.code == 200)
+                        dispatch({
+                            type: DISCOVER_POSTS,
+                            payload: res.data.response.map(post => ({
+                                ...post,
+                                liked: post.likedBy.includes(id)
+                            }))
+                        })
 
-				})
-				.catch(e => console.log(e))
-				.then(() => dispatch(setLoading(false)))
-		} else {
-			cogoToast.info(`You have reached the end 😵`, {
-				position: 'bottom-right'
-			})
+                })
+                .catch(e => console.log(e))
+                .then(() => dispatch(setLoading(false)))
+        } else {
+            cogoToast.info(`You have reached the end 😵`, {
+                position: 'bottom-right'
+            })
         }
     }
 }
@@ -166,6 +167,20 @@ export const setLoading = loading => {
             loading
         }
     })
+}
+
+export const updatePostsPicture = url => {
+    return (dispatch, getState) => {
+        const state = getState()
+        const username = state.app.logged.username
+
+        dispatch({
+            type: UPDATE_PROFILE_PICTURE,
+            payload: {
+                url, username
+            }
+        })
+    }
 }
 
 export const restartState = data => {

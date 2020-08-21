@@ -6,6 +6,7 @@ import Files from 'react-files'
 import Rodal from 'rodal'
 
 import 'cropperjs/dist/cropper.css'
+import { toggleProfilePictureModal } from '../actions/app'
 import { changeImage } from '../actions/settings'
 
 class ProfilePictureModal extends Component {
@@ -23,6 +24,12 @@ class ProfilePictureModal extends Component {
         this.uploadPicture = this.uploadPicture.bind(this)
     }
 
+    componentWillUnmount() {
+        this.setState(() => ({
+            file: null
+        }))
+    }
+
     onFileSelected(File) {
         this.setState(() => ({
             file: File[0]
@@ -31,15 +38,13 @@ class ProfilePictureModal extends Component {
     }
 
     onFileError(error) {
-        cogoToast.info(`Uh oh, there's a problem with the file 😦`, {
+        cogoToast.info(`Uh oh, there's a problem with the image 😦`, {
             position: 'bottom-right'
         })
     }
 
     uploadPicture() {
         const crop = this.cropper.current.cropper.getData()
-        console.log(crop)
-
         this.props.changeImage(this.state.file, crop)
     }
 
@@ -51,15 +56,16 @@ class ProfilePictureModal extends Component {
 
         return (
             <Rodal
-                visible={true}
+                visible={this.props.isVisible}
+                onClose={this.props.toggleProfilePictureModal}
                 animation={'slideUp'}
                 customStyles={modalCustomStyles}>
-                <div style={{ maxWidth: '400px' }}>
+                <div className="mt-4" style={{ maxWidth: '400px' }}>
                     {!this.state.file &&
                         <Files
                             className='dropzone mt-2'
                             dropActiveClassName='dropzone--active'
-                            accepts={['image/png']}
+                            accepts={['image/png', 'image/jpg', 'image/jpeg']}
                             onChange={this.onFileSelected}
                             onError={this.onFileError}
                             maxFileSize={10000000}
@@ -85,8 +91,10 @@ class ProfilePictureModal extends Component {
                             guides={false} />
                     }
                 </div>
-                <div className="float-right">
-                    <button className="btn btn-light text-danger mt-2">Cancel</button>
+                <div className="float-right mt-2">
+                    <button
+                        className="btn btn-light text-danger mt-2"
+                        onClick={this.props.toggleProfilePictureModal}>Cancel</button>
                     <button
                         className="btn btn-success text-white ml-1 mt-2"
                         onClick={this.uploadPicture}
@@ -97,7 +105,13 @@ class ProfilePictureModal extends Component {
     }
 }
 
-const dispatchToProps = dispatch => ({
-    changeImage: (binary, crop) => dispatch(changeImage(binary, crop))
+const mapStateToProps = state => ({
+    isVisible: state.app.profilePicModal.isVisible
 })
-export default connect(undefined, dispatchToProps)(ProfilePictureModal)
+
+const mapDispatchToProps = dispatch => ({
+    changeImage: (binary, crop) => dispatch(changeImage(binary, crop)),
+    toggleProfilePictureModal: () => dispatch(toggleProfilePictureModal())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfilePictureModal)
