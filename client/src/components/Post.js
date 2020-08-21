@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import cogoToast from "cogo-toast"
@@ -24,13 +24,13 @@ class Post extends Component {
 	}
 
 	handleLike() {
-		if(!this.props.logged) {
+		if (!this.props.logged) {
 			return cogoToast.warn(`Sorry, you must be logged in to like this post 😔`, {
 				position: 'bottom-right'
 			})
 		}
 
-		if(this.props.liked) {
+		if (this.props.liked) {
 			this.props.unlikePost(this.props._id)
 		} else {
 			this.props.likePost(this.props._id)
@@ -41,23 +41,23 @@ class Post extends Component {
 		return (
 			<div className="card w-100 my-5 post">
 				<div className="card-body px-4 py-5">
-					<div className="post__avatar">
-						<div className="post__avatar__image">
+					<div className="post__avatar d-flex">
+						<div className="post__avatar__username">
+							<Link to={'/u/' + this.props.author.username}>{this.props.author.username}</Link>
+						</div>
+						<div className="post__avatar__image ml-2">
 							<Link to={'/u/' + this.props.author.username}>
 								<img src={this.props.author.profilePic} className="img-fluid cursor-pointer rounded-circle" alt={this.props.author.username + '_profile-picture'} />
 							</Link>
-						</div>
-						<div className="post__avatar__username border">
-							<Link to={'/u/' + this.props.author.username}>@{this.props.author.username}</Link>
 						</div>
 					</div>
 					<p className="my-0 py-0">{this.props.message}</p>
 					{this.props.extra &&
 						<div className="mt-3">
 							<iframe width="100%" height="315" src={'https://www.youtube.com/embed/' + this.props.extra.value}
-									frameBorder="0"
-									allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-									allowFullScreen>
+								frameBorder="0"
+								allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+								allowFullScreen>
 							</iframe>
 						</div>
 					}
