@@ -4,6 +4,7 @@ import {
 	LOGOUT, 
 	TOGGLE_NAVBAR, 
 	TOGGLE_POST_MODAL,
+	TOGGLE_PROFILE_PICTURE_MODAL,
 	SET_LOGIN_LOADING, 
 	RECONNECT,
 	SET_PROFILE_PICTURE,
@@ -12,6 +13,9 @@ import {
 import { parseImageUrl } from '../utils/util';
 
 const defaultState = {
+	profilePicModal: {
+		isVisible: false
+	},
 	postModal: {
 		isVisible: false
 	},
@@ -43,6 +47,13 @@ export default (state = defaultState, action) => {
 				...state,
 				postModal: {
 					isVisible: !state.postModal.isVisible
+				}
+			}
+		case TOGGLE_PROFILE_PICTURE_MODAL:
+			return {
+				...state,
+				profilePicModal: {
+					isVisible: !state.profilePicModal.isVisible
 				}
 			}
 		case SET_LOGIN_LOADING:
