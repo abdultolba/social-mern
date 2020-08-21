@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import BottomScrollListener from 'react-bottom-scroll-listener'
 
+import ProfilePictureModal from '../components/ProfilePictureModal'
 import NewPostForm from '../components/NewPostForm'
 import Loading from '../components/Loading'
 import Post from '../components/Post'
@@ -15,7 +16,7 @@ import { logout } from '../actions/app'
 import '../styles/pages/Profile.scss'
 
 class Profile extends Component {
-	constructor(props){
+	constructor(props) {
 		super(props)
 		console.log(props)
 	}
@@ -31,7 +32,7 @@ class Profile extends Component {
 		}
 	}
 
-	componentWillUnmount(){
+	componentWillUnmount() {
 		this.props.restartState()
 		this.props.restartStatePosts()
 	}
@@ -47,13 +48,14 @@ class Profile extends Component {
 		this.fetchUserPosts()
 	}
 
-	render(){
+	render() {
 		return (
 			<div className="d-flex flex-column flex-md-row profile w-100">
-				<div className={"d-flex sidenav flex-column " + (!this.props.profile.visibleSidenav ? 'sidenav--inactive' : '')}>
+				<ProfilePictureModal />
+				<div className={"d-none d-md-flex sidenav flex-column " + (!this.props.profile.visibleSidenav ? 'sidenav--inactive' : '')}>
 					<div className="sidenav__description">
 						<img src={this.props.profile.profilePic}
-							 className="img-fluid rounded-circle sidenav__avatar mx-auto d-block mt-5 mb-2"/>
+							className="img-fluid rounded-circle sidenav__avatar mx-auto d-block mt-5 mb-2" />
 						<p className="text-center text-white title mt-3">{this.props.profile.username}</p>
 						<p className="text-left text-white description px-5">
 							{this.props.profile.description || "This user hasn't yet provided a description 😣"}
@@ -71,22 +73,22 @@ class Profile extends Component {
 					</div>
 				</div>
 
-				<BottomScrollListener onBottom={() => {this.fetchUserPosts()}}>
+				<BottomScrollListener onBottom={() => { this.fetchUserPosts() }}>
 					{scrollRef => (
 						<div className="d-flex position-relative profile__body justify-content-center flex-wrap" ref={scrollRef}>
 							<Auth>
 								<div className="profile__body__textarea w-100 mt-5 pt-5">
-								<div className="card border-0">
-									<div className="card-body">
-										<NewPostForm profileId={this.props.match.params.id} />
+									<div className="card border-0">
+										<div className="card-body">
+											<NewPostForm profileId={this.props.match.params.id} />
+										</div>
 									</div>
 								</div>
-							</div>
 							</Auth>
 							<div className="profile__body__posts w-100 mt-5">
 								<div className="d-flex flex-column">
-									{this.props.posts.map((post, i) => <Post {...post} key={post.message + '_' + i}/>)}
-									{this.props.postsLoading && <div className="d-flex justify-content-center"><Loading classes="my-5"/></div>}
+									{this.props.posts.map((post, i) => <Post {...post} key={post.message + '_' + i} />)}
+									{this.props.postsLoading && <div className="d-flex justify-content-center"><Loading classes="my-5" /></div>}
 								</div>
 							</div>
 						</div>
