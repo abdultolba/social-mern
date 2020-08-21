@@ -1,5 +1,8 @@
 .post {
+  border-color: rgba(0, 0, 0, 0);
   transition: 0.5s all;
+  box-shadow: 0px 10px 20px -9px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
 
   &__avatar {
     position: absolute;
@@ -10,33 +13,45 @@
       z-index: 11;
       position: relative;
     }
+
+    &__username {
+      box-shadow: 0px 0px 20px -9px rgba(0, 0, 0, 0.2);
+      position: absolute;
+      top: 25px;
+      left: 90px;
+      background-color: white;
+      padding: 0 30px;
+      border-radius: 50px;
+      left: 60px;
+      z-index: 10;
+    }
   }
 
-  &__username {
+  &__likes {
     position: absolute;
-    top: 25px;
-    left: 90px;
-    background-color: white;
-    padding: 0 30px;
-    border-radius: 50px;
-    left: 60px;
-    z-index: 10;
+    bottom: -15px;
+    right: 30px;
+    transition: 0.5s all;
+    box-shadow: 0px 0px 20px -9px rgba(0, 0, 0, 0.2);
   }
-}
 
-&__likes {
-  position: absolute;
-  bottom: -15px;
-  right: 30px;
-}
+  &__delete {
+    position: absolute;
+    bottom: -15px;
+    right: 110px;
+    transition: 0.5s all;
+    box-shadow: 0px 0px 20px -9px rgba(0, 0, 0, 0.2);
+  }
 
-&__delete {
-  position: absolute;
-  bottom: -15px;
-  right: 110px;
-}
-
-&:hover {
-  box-shadow: 0px 8px 27px -7px rgba(0, 0, 0, 0.2);
-  transform: translateY(-5px);
+  &__likes,
+  &__delete {
+    &:hover {
+      box-shadow: 0px 5px 20px -9px rgba(0, 0, 0, 0.2);
+      transform: translateY(-5px);
+    }
+  }
+  &:hover {
+    box-shadow: 0px 8px 27px -7px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+  }
 }
