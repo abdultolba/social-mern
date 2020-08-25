@@ -6,7 +6,6 @@ import {
 	SET_PROFILE_DESCRIPTION,
 	TOGGLE_EDITING_DESCRIPTION,
 	TOGGLE_SIDENAV } from '../actions/profile'
-import { parseImageUrl } from '../utils/util'
 
 const defaultState = {
 	loading: true,
@@ -33,7 +32,7 @@ export default (state = defaultState, action) => {
 			return {
 				...state,
 				...action.payload,
-				profilePic: parseImageUrl(action.payload.profilePic)
+				profilePic: action.payload.profilePic
 			}
 		case SET_LOADING:
 			return {
@@ -43,7 +42,7 @@ export default (state = defaultState, action) => {
 		case UPDATE_PROFILE_PICTURE:
 			return {
 				...state,
-				profilePic: parseImageUrl(action.payload.url)
+				profilePic: action.payload.url
 			}
 		case SET_PROFILE_DESCRIPTION:
 			return {

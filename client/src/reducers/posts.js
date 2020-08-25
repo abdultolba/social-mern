@@ -10,7 +10,6 @@ import {
 	UPDATE_PROFILE_PICTURE
 } from '../actions/posts'
 import store from '../store'
-import { parseImageUrl } from '../utils/util'
 
 
 const defaultState = {
@@ -32,7 +31,7 @@ export default (state = defaultState, action) => {
 						...post,
 						author: {
 							...post.author,
-							profilePic: parseImageUrl(post.author.profilePic)
+							profilePic: post.author.profilePic
 						}
 					}))
 				]
@@ -46,7 +45,7 @@ export default (state = defaultState, action) => {
 						...post,
 						author: {
 							...post.author,
-							profilePic: parseImageUrl(post.author.profilePic)
+							profilePic: post.author.profilePic
 						}
 					}))
 				]
@@ -60,7 +59,7 @@ export default (state = defaultState, action) => {
 						...action.payload.newPost,
 						author: {
 							...action.payload.newPost.author,
-							profilePic: parseImageUrl(action.payload.newPost.author.profilePic)
+							profilePic: action.payload.newPost.author.profilePic
 						}
 					},
 					...state.items
@@ -114,7 +113,7 @@ export default (state = defaultState, action) => {
 						...post,
 						author: {
 							...post.author,
-							profilePic: parseImageUrl(action.payload.url)
+							profilePic: action.payload.url
 						}
 					}
 				} else {
