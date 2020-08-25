@@ -35,7 +35,7 @@ export const fetchUserPosts = usernamePosts => {
                 })
                 .catch(e => console.log(e))
                 .then(() => dispatch(setLoading(false)))
-        } else {
+        } else if (!loading) {
             cogoToast.info(`You have reached the bottom 😱!`, {
                 position: 'bottom-right'
             })
