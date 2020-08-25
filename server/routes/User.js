@@ -1,4 +1,5 @@
 const express = require('express')
+const shortId = require('shortid')
 const multer = require('multer')
 const path = require('path')
 const Jimp = require('jimp')
@@ -121,7 +122,7 @@ var storage = multer.diskStorage({
 		cb(null, 'public/images/avatars')
 	},
 	filename: (req, file, cb) => {
-		cb(null, `${req.params.username}_${Date.now()}.png`)
+		cb(null, `${req.params.username}.png`)
 	}
 })
 
@@ -153,7 +154,7 @@ router.post('/:username/edit/info/profilePicture', [isAuth, checkOwnsProfile], (
 						code: 200,
 						response: {
 							message: 'Photo updated successfully!',
-							path: updatedUser.profilePic,
+							path: `${updatedUser.profilePic}?hash=${shortId.generate()}`,
 							updatedUser
 						}
 					}
