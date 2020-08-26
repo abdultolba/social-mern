@@ -64,7 +64,7 @@ class Profile extends Component {
 		const description = e.target.description.value
 
 		if (this.props.profile.description == description) {
-			cogoToast.warn(<p>Hold up <strong>The descriptions are the same... 🙊</strong></p>, {
+			cogoToast.warn(<p>Wait! <strong>The descriptions look the same... 🙊</strong></p>, {
 				position: 'bottom-right'
 			})
 		} else if (description.length > 150) {
@@ -112,10 +112,10 @@ class Profile extends Component {
 							</p>
 						}
 						{(this.props.ownsProfile && !this.props.profile.editingDescription) &&
-							<button className="text-left btn-link btn px-5"
+							<a className="text-left btn-link text-brand btn px-5"
 											onClick={this.props.toggleEditingDescription}>
 											Edit description <i className="fas fa-pencil-alt"></i>
-							</button>
+							</a>
 						}
 						<div className="d-flex flex-column justify-content-between h-100">
 							<div className="d-flex justify-content-between px-5">

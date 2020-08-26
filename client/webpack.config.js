@@ -79,6 +79,7 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			filename: 'index.html',
+			title: 'friend.ly',
 			template: 'src/assets/index.html'
 		}),
 		new MiniCssExtractPlugin({

@@ -1,26 +1,59 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
 
 import RegisterForm from '../components/RegisterForm'
 import LoginForm from '../components/LoginForm'
 
-import { toggleNavbar } from '../actions/app'
 import Logo from '../assets/images/logo.png'
 
+import { toggleNavbar } from '../actions/app'
+
 class Home extends Component {
-	constructor(props){
+	constructor(props) {
 		super(props)
+		this.state = {
+			signMode: true,
+			phrases: [
+				{
+					extra: 'Marcus Aurelius - Meditations',
+					quote: 'Waste no more time arguing\nabout what a good man should be.\nBe one.',
+				},
+				{
+					extra: "William Shakespeare - All's Well That Ends Well",
+					quote: 'What is a friend?\nA single soul dwelling in two bodies.',
+				},
+				{
+					extra: 'Marcus Aurelius - Meditations',
+					quote: 'You have power over your mind - \nnot outside events. Realize this, \nand you will find strength.',
+				},
+				{
+					extra: "Aristotle",
+					quote: 'Love all, trust a few, do wrong to none.',
+				},
+				{
+					extra: 'Marcus Aurelius - Meditations',
+					quote: 'The best revenge is to be\nunlike him who performed the injury',
+				}
+			],
+			selectedPhrase: {}
+		}
+
 		this.toggleSignMode = this.toggleSignMode.bind(this)
 	}
 
 	componentDidMount() {
-		if(this.props.isLogged)
+		if (this.props.isLogged)
 			this.props.history.push(`/u/${this.props.user}`)
+
+		const randomNumber = Math.floor(Math.random() * this.state.phrases.length)
+		this.setState(() => ({
+			selectedPhrase: this.state.phrases[randomNumber]
+		}))
 	}
 
 	componentDidUpdate() {
-		if(this.props.isLogged)
+		if (this.props.isLogged)
 			this.props.history.push(`/u/${this.props.user}`)
 	}
 
@@ -30,18 +63,17 @@ class Home extends Component {
 		}))
 	}
 
-	render(){
+	render() {
 		return (
 			<div className="home">
 				<div className="row h-100">
 					<div className="col-8 d-none d-md-flex flex-column justify-content-end pl-5 home__left">
-						<h1 className="display-5 text-light home__left__text">						
-							Deflect your attention
-							<br/>
-							on the current moment.
+						<h1 className="display-7 text-light home__left__text">
+							{this.state.selectedPhrase.quote}
 						</h1>
-						{/* TODO: Name this application, not sure I like friend.ly */}
-						<p className="lead text-light home__left__text">friend.ly - reconnect with your friends.</p>
+						{!!this.state.selectedPhrase.extra &&
+							<p className="text-light lead home__left__tex">{this.state.selectedPhrase.extra}</p>
+						}
 					</div>
 					<div className="col-12 col-md-4 bg-white home__right d-flex flex-column justify-content-center">
 						<div className="row justify-content-center">
@@ -53,21 +85,21 @@ class Home extends Component {
 							<div className="col-12 px-4">
 								<div className="card border-0 rounded-0">
 									<div className="card-body">
-									{this.state.signMode ?
+										{this.state.signMode ?
 											<>
 												<RegisterForm />
 												<a className="mx-auto d-block mt-3 text-center cursor-pointer"
-												   onClick={this.toggleSignMode}
-												   href="#" >
-													I already have an account 😇
+													onClick={this.toggleSignMode}
+													href="#" >
+													Already have an account 🤠
 												</a>
 											</> :
 											<>
 												<LoginForm />
 												<a className="mx-auto d-block mt-3 text-center cursor-pointer"
-												   onClick={this.toggleSignMode}
-												   href="#">
-													I don't have an account yet 🤗
+													onClick={this.toggleSignMode}
+													href="#">
+													I don't have an account yet 🧐
 												</a>
 											</>
 										}
@@ -77,19 +109,19 @@ class Home extends Component {
 							</div>
 						</div>
 					</div>
-				</div>				
+				</div>
 			</div>
 		)
 	}
 }
 
-const mapStateToProps = state => ({
+const stateToProps = state => ({
 	isLogged: state.app.logged.isLogged,
 	user: state.app.logged.username
 })
 
-const mapDispatchToProps = dispatch => ({
+const dispatchToProps = dispatch => ({
 	toggleNavbar: value => dispatch(toggleNavbar(value))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home)
+export default connect(stateToProps, dispatchToProps)(Home)
