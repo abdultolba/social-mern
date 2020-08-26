@@ -17,7 +17,7 @@ class Api {
 		}
 
 		if(state.app.logged.token)
-			config.headers['auth_token'] = state.app.logged.token
+			config.headers['authToken'] = state.app.logged.token
 
 		return new Promise((res,rej) => {
 			axios.get(`${this.baseUrl}/${url}`, config)
@@ -46,7 +46,7 @@ class Api {
 		}
 
 		if(state.app.logged.token)
-			config.headers['auth_token'] = state.app.logged.token
+			config.headers['authToken'] = state.app.logged.token
 
 		return new Promise((res,rej) => {
 			axios.post(`${this.baseUrl}/${url}`, params, config)
