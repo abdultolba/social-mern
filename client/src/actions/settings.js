@@ -16,8 +16,8 @@ export const changeImage = (binary, crop) => {
 		const state = getState()
 		const { username } = state.app.logged
 		const payload = new FormData()
-		payload.append('newImage', binary)
 		payload.append('crop', JSON.stringify(crop))
+		payload.append('newImage', binary)
 
 		API.post(`user/${username}/edit/info/profilePicture`,payload, {
 			  headers: {
