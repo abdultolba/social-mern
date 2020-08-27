@@ -99,7 +99,7 @@ class Profile extends Component {
 																maxLength={150}></textarea>
 										</div>
 										<div className="form-group d-flex justify-content-end">
-											<button className="btn btn-light text-danger mr-2 rounded-pill"
+											<button className="btn btn-brand-secondary text-white mr-2 rounded-pill"
 															type="button"
 															onClick={this.props.toggleEditingDescription}>Cancel</button>
 											<button className="btn btn-brand text-white rounded-pill">Update</button>
@@ -112,9 +112,9 @@ class Profile extends Component {
 							</p>
 						}
 						{(this.props.ownsProfile && !this.props.profile.editingDescription) &&
-							<a className="text-left btn-link text-brand btn px-5"
+							<a className="text-left btn-link text-brand-secondary btn px-5"
 											onClick={this.props.toggleEditingDescription}>
-											Edit description <i className="fas fa-pencil-alt"></i>
+											Edit Description <i className="fas fa-pencil-alt"></i>
 							</a>
 						}
 						<div className="d-flex flex-column justify-content-between h-100">
@@ -134,7 +134,7 @@ class Profile extends Component {
 					{scrollRef => (
 						<div className="d-flex position-relative profile__body justify-content-center flex-wrap" ref={scrollRef}>
 							<Auth>
-								<div className="profile__body__textarea w-100 mt-5 pt-5">
+								<div className="profile__body__textarea w-100 mt-5">
 									<div className="card border-0">
 										<div className="card-body">
 											<NewPostForm profileId={this.props.match.params.id} />
@@ -142,7 +142,7 @@ class Profile extends Component {
 									</div>
 								</div>
 							</Auth>
-							<div className="profile__body__posts w-100 mt-5">
+							<div className="profile__body__posts w-100">
 								<div className="d-flex flex-column">
 									{this.props.posts.map((post, i) => <Post {...post} key={post.message + '_' + i} />)}
 									{this.props.postsLoading && <div className="d-flex justify-content-center"><Loading classes="my-5" /></div>}

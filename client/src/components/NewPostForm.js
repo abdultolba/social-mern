@@ -26,7 +26,7 @@ class NewPostForm extends Component {
 
     componentDidMount() {
         this.getRandomQuote()
-      }
+    }
 
     toggleYoutubeInput() {
         this.setState(prevState => ({
@@ -38,7 +38,7 @@ class NewPostForm extends Component {
         const rand = Math.floor(Math.random() * this.state.randomPhrasesTextarea.length)
         this.setState(({
             selectedPlaceholderPhrase: this.state.randomPhrasesTextarea[rand]
-          }))
+        }))
     }
 
     handleNewPost(e) {
@@ -80,10 +80,10 @@ class NewPostForm extends Component {
                         <div className="form-group">
                             <button type="submit" className="btn btn-brand rounded-pill float-right text-white">
                                 <i className="fas fa-paper-plane"></i> Submit
-            </button>
-                            <button type="button" onClick={this.toggleYoutubeInput} className="btn btn-danger text-white rounded-pill float-right px-3 mx-2">
+            `               </button>
+                            <button type="button" onClick={this.toggleYoutubeInput} className="btn btn-brand-secondary text-white rounded-pill float-right px-3 mx-2">
                                 <i className="fab fa-youtube"></i> Youtube
-            </button>
+                            </button>
                         </div>
                     </form>
                 </div>

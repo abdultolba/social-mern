@@ -25,7 +25,7 @@ class Post extends Component {
 
 	handleLike() {
 		if (!this.props.logged) {
-			return cogoToast.warn(`Sorry, you must be logged in to like this post 😔`, {
+			return cogoToast.warn(`Sorry, you need to be logged in to like this post 😔`, {
 				position: 'bottom-right'
 			})
 		}
@@ -66,7 +66,7 @@ class Post extends Component {
 							</iframe>
 						</div>
 					}
-					<div onClick={this.handleLike} className="d-inline-flex px-3 py-1 text-danger rounded-pill post__likes cursor-pointer">
+					<div onClick={this.handleLike} className="d-inline-flex px-3 py-1 text-brand-secondary rounded-pill post__likes cursor-pointer">
 						<span>
 							{this.props.likes} <i className={`mr-1 ${this.props.liked ? 'fas fa-heart' : 'far fa-heart'}`}></i>
 						</span>
