@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { signIn } from '../actions/app'
 
-class RegisterForm extends Component {
+class AuthForm extends Component {
 	constructor(props) {
 		super(props)
 		this.handleSubmit = this.handleSubmit.bind(this)
@@ -14,7 +13,7 @@ class RegisterForm extends Component {
 			username: e.target.username.value,
 			password: e.target.password.value
 		}
-		this.props.signIn({ ...user })
+		this.props.onSuccess({ ...user })
 	}
 
 	render() {
@@ -26,15 +25,23 @@ class RegisterForm extends Component {
 							<label htmlFor="username" className="mb-1 text-muted">
 								<small>Username</small>
 							</label>
-							<input type="text" name="username" id="username" className="form-control rounded-0" required minlength="5" />
+							<input type="text" name="username" id="username" className="form-control rounded-0" required minLength="5" />
 						</div>
 						<div className="form-group">
 							<label htmlFor="password" className="mb-1 text-muted">
 								<small>Password</small>
 							</label>
-							<input type="password" name="password" id="password" className="form-control rounded-0" required minlength="5" />
+							<input type="password" name="password" id="password" className="form-control rounded-0" required minLength="5" />
 						</div>
-						<button className="btn btn-success float-right border-0 rounded-0">Log In!</button>
+						<button className="btn btn-brand text-light float-right border-0 rounded-pill">{this.props.type == 'signup' ? "Sign Up" : "Login"}</button>
+						{this.props.backMethod &&
+							<button
+								onClick={this.props.backMethod}
+								type="button"
+								className="btn btn-brand-secondary text-white float-right border-0 rounded-pill mx-3">
+								Return
+							</button>
+						}
 					</fieldset>
 				</form>
 			</>
@@ -47,8 +54,4 @@ const stateToProps = state => ({
 	isLoading: state.app.logged.isLoading
 })
 
-const dispatchToProps = dispatch => ({
-	signIn: (value) => dispatch(signIn(value))
-})
-
-export default connect(stateToProps, dispatchToProps)(RegisterForm)
+export default connect(stateToProps)(AuthForm)
