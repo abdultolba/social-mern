@@ -15,10 +15,10 @@ export const discoverUsers = username => {
 
         API.get('discover/users')
             .then(res => {
-                if (res.data.code == 200)
+                if (res.code == 200)
                     dispatch({
                         type: DISCOVER_USERS,
-                        payload: res.data.response
+                        payload: res.response
                     })
 
                 dispatch(setLoading(false))

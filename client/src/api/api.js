@@ -21,7 +21,7 @@ class Api {
 
 		return new Promise((res,rej) => {
 			axios.get(`${this.baseUrl}/${url}`, config)
-				.then(response => res(response))
+				.then(response => res(response.data))
 				.catch(e => {
 					const { status, data } = e.response;
 					switch(status){
@@ -50,7 +50,7 @@ class Api {
 
 		return new Promise((res,rej) => {
 			axios.post(`${this.baseUrl}/${url}`, params, config)
-				.then(response => res(response))
+				.then(response => res(response.data))
 				.catch(e => {
 					const { status, data } = e.response
 

@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { Link, withRouter } from 'react-router-dom'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import dayjs from 'dayjs'
 import { connect } from 'react-redux'
 import cogoToast from "cogo-toast"
-import Moment from 'react-moment'
 
 import { likePost, unlikePost, deletePost } from '../actions/posts'
 
@@ -13,6 +14,8 @@ class Post extends Component {
 		this.deletePost = this.deletePost.bind(this)
 		this.canDeletePost = this.canDeletePost.bind(this)
 		this.handleLike = this.handleLike.bind(this)
+
+		dayjs.extend(relativeTime)
 	}
 
 	deletePost() {
@@ -21,7 +24,7 @@ class Post extends Component {
 
 	canDeletePost() {
 		// If this is my post
-		if(this.props.session._id && this.props.author._id)
+		if (this.props.session._id && this.props.author._id)
 			return this.props.session._id == this.props.author._id
 		// If the post is visible on my profile, even if i'm not the author of it
 		else if (this.props.session.username && this.props.match.params.id)
@@ -47,7 +50,7 @@ class Post extends Component {
 			<div className="card w-100 my-5 post">
 				<div className="card-header bg-white pb-0 border-0 d-flex justify-content-between">
 					<div>
-						<small className="text-muted"><Moment fromNow date={this.props.createdAt} /></small>
+						<small className="text-muted">{dayjs().from(dayjs(this.props.createdAt))} ago</small>
 					</div>
 					<div className="d-flex">
 						<div>
