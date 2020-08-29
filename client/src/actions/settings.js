@@ -9,23 +9,21 @@ import api from '../api/api';
 const API = new api()
 
 export const CHANGE_IMAGE = 'CHANGE_IMAGE',
-			CHANGE_DESCRIPTION = 'CHANGE_DESCRIPTION'
+	CHANGE_DESCRIPTION = 'CHANGE_DESCRIPTION'
 
 export const changeImage = (binary, crop) => {
-	return (dispatch, getState) => {
-		const state = getState()
-		const { username } = state.app.logged
+	return dispatch => {
 		const payload = new FormData()
 		payload.append('crop', JSON.stringify(crop))
 		payload.append('newImage', binary)
 
-		API.post(`user/${username}/edit/info/profilePicture`,payload, {
-			  headers: {
-			    'accept': 'application/json',
-			    'Accept-Language': 'en-US,enq=0.8',
-			    'Content-Type': `multipart/form-data boundary=${payload._boundary}`,
-			  }
-			})
+		API.patch(`user/settings/profilePicture`, payload, {
+			headers: {
+				'accept': 'application/json',
+				'Accept-Language': 'en-US,enq=0.8',
+				'Content-Type': `multipart/form-data boundary=${payload._boundary}`,
+			}
+		})
 			.then(res => {
 				dispatch(toggleProfilePictureModal())
 				dispatch(updatePostsPicture(res.response.path))
@@ -37,13 +35,10 @@ export const changeImage = (binary, crop) => {
 }
 
 export const changeDescription = description => {
-	return (dispatch, getState) => {
-		const state = getState()
-		const username = state.app.logged.username
-
-		API.post(`user/${username}/edit/info/description`, { description })
+	return dispatch => {
+		API.patch(`user/settings/description`, { description })
 			.then(res => {
-				if(res.code == 200)
+				if (res.code == 200)
 					dispatch(setDescription(res.response.newDescription))
 			})
 			.catch(e => console.log(e))
