@@ -1,26 +1,38 @@
 import axios from 'axios'
 import cogoToast from 'cogo-toast'
-import api from '../api/api';
+import api from '../api/api'
 
 const API = new api()
 
-export const TOGGLE_NAVBAR = '[APP] TOGGLE_NAVBAR',
-	TOGGLE_POST_MODAL = '[APP] TOGGLE_POST_MODAL',
-	TOGGLE_PROFILE_PICTURE_MODAL = '[APP] TOGGLE_PROFILE_PICTURE_MODAL',
-	SIGN_UP = '[APP] SIGN_UP',
-	SIGN_IN = '[APP] SIGN_IN',
-	RECONNECT = '[APP] RECONNECT',
+export const ERROR = '[APP] ERROR',
 	LOGOUT = '[APP] LOGOUT',
+	RECONNECT = '[APP] RECONNECT',
+	RESET_LAST_CONNECTION = '[APP] RESET_LAST_CONNECTION',
+	SIGN_IN = '[APP] SIGN_IN',
+	SIGN_UP = '[APP] SIGN_UP',
+	SET_PROFILE_PRIVACY = '[APP] SET_PROFILE_PRIVACY'
+	SET_SETTINGS_LOADING = '[APP] SET_SETTINGS_LOADING',
 	SET_LOGIN_LOADING = '[APP] SET_LOGIN_LOADING',
 	SET_PROFILE_PICTURE = '[APP] SET_PROFILE_PICTURE',
-	RESET_LAST_CONNECTION = '[APP] RESET_LAST_CONNECTION',
 	SET_PROFILE_DESCRIPTION = '[APP] SET_PROFILE_DESCRIPTION',
-	ERROR = '[APP] ERROR'
+	TOGGLE_NAVBAR = '[APP] TOGGLE_NAVBAR',
+	TOGGLE_POST_MODAL = '[APP] TOGGLE_POST_MODAL',
+	TOGGLE_PROFILE_PICTURE_MODAL = '[APP] TOGGLE_PROFILE_PICTURE_MODAL',
+	TOGGLE_SETTINGS_MODAL = '[APP] TOGGLE_SETTINGS_MODAL'
 
 
 export const setLoginLoad = (value) => {
 	return dispatch => dispatch({
 		type: SET_LOGIN_LOADING,
+		payload: {
+			value
+		}
+	})
+}
+
+export const setSettingsLoad = (value) => {
+	return dispatch => dispatch({
+		type: SET_SETTINGS_LOADING,
 		payload: {
 			value
 		}
@@ -39,10 +51,35 @@ export const togglePostModal = () => {
 	})
 }
 
+export const toggleSettingsModal = () => {
+	return dispatch => dispatch({
+		type: TOGGLE_SETTINGS_MODAL
+	})
+}
+
 export const toggleProfilePictureModal = () => {
 	return dispatch => dispatch({
 		type: TOGGLE_PROFILE_PICTURE_MODAL
 	})
+}
+
+export const toggleProfilePrivacy = () => {
+	return dispatch => {
+		dispatch(setSettingsLoad(true))
+
+		API.patch('user/settings/privacy')
+			.then(res => {
+				dispatch({
+					type: SET_PROFILE_PRIVACY,
+					payload: res.response
+				})
+			})
+			.catch(e => console.log(e))
+			.then(() => {
+				dispatch(resetLastConnection())
+				dispatch(setSettingsLoad(false))
+			})
+	}
 }
 
 export const reconnect = (last_session) => {
@@ -78,7 +115,7 @@ export const signUp = ({ username, password }) => {
 				if (res.code == 200) {
 					cogoToast.success(`Welcome, @${res.response.username}!`, {
 						position: 'bottom-right'
-					});
+					})
 					dispatch({
 						type: SIGN_UP,
 						payload: {

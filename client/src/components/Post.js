@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import Linkify from 'react-linkify'
 import { Link, withRouter } from 'react-router-dom'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
-import { connect } from 'react-redux'
 import cogoToast from "cogo-toast"
 
 import { likePost, unlikePost, deletePost } from '../actions/posts'
@@ -14,8 +15,14 @@ class Post extends Component {
 		this.deletePost = this.deletePost.bind(this)
 		this.canDeletePost = this.canDeletePost.bind(this)
 		this.handleLike = this.handleLike.bind(this)
+		this.parseText = this.parseText.bind(this)
 
 		dayjs.extend(relativeTime)
+	}
+
+	parseText() {
+		const regex = /(http:\/\/|https:\/\/)((\w|=|\?|\.|\/|&|-)+)/g;
+		const textFractions = this.props.message.split
 	}
 
 	deletePost() {
@@ -64,7 +71,9 @@ class Post extends Component {
 					</div>
 				</div>
 				<div className="card-body px-4 py-4">
-					<p className="my-0 py-0">{this.props.message}</p>
+					<Linkify properties={{ target: '_blank' }}>
+						<p className="my-0 py-0 ws-pre-line">{this.props.message}</p>
+					</Linkify>
 					{this.props.extra &&
 						<div className="mt-3">
 							<iframe width="100%" height="315" src={'https://www.youtube.com/embed/' + this.props.extra.value}

@@ -1,13 +1,17 @@
-import { 
-	SIGN_UP, 
-	SIGN_IN, 
-	LOGOUT, 
-	TOGGLE_NAVBAR, 
+import {
+	TOGGLE_NAVBAR,
 	TOGGLE_POST_MODAL,
 	TOGGLE_PROFILE_PICTURE_MODAL,
-	SET_LOGIN_LOADING, 
+	SET_LOGIN_LOADING,
+	SIGN_UP,
+	SIGN_IN,
 	RECONNECT,
+	LOGOUT,
 	SET_PROFILE_PICTURE,
+	SET_PROFILE_DESCRIPTION,
+	SET_PROFILE_PRIVACY,
+	TOGGLE_SETTINGS_MODAL,
+	SET_SETTINGS_LOADING,
 	RESET_LAST_CONNECTION
 } from '../actions/app'
 
@@ -18,7 +22,11 @@ const defaultState = {
 	postModal: {
 		isVisible: false
 	},
-	navbar: { 
+	settingsModal: {
+		isVisible: false,
+		loading: false
+	},
+	navbar: {
 		isVisible: true
 	},
 	logged: {
@@ -26,9 +34,9 @@ const defaultState = {
 		isLogged: false,
 		token: null,
 		username: null,
-		email: null,
 		profilePic: null,
 		description: null,
+		openProfile: null,
 		error: null
 	}
 }
@@ -39,7 +47,17 @@ export default (state = defaultState, action) => {
 			const { value: isVisible } = action.payload
 			return {
 				...state,
-				navbar: { isVisible }
+				navbar: {
+					isVisible
+				}
+			}
+		case TOGGLE_SETTINGS_MODAL:
+			return {
+				...state,
+				settingsModal: {
+					...state.settingsModal,
+					isVisible: !state.settingsModal.isVisible
+				}
 			}
 		case TOGGLE_POST_MODAL:
 			return {
@@ -55,6 +73,14 @@ export default (state = defaultState, action) => {
 					isVisible: !state.profilePicModal.isVisible
 				}
 			}
+		case SET_PROFILE_PRIVACY:
+			return {
+				...state,
+				logged: {
+					...state.logged,
+					openProfile: action.payload.openProfile
+				}
+			}
 		case SET_LOGIN_LOADING:
 			const { value: isLoading } = action.payload
 			return {
@@ -62,6 +88,14 @@ export default (state = defaultState, action) => {
 				logged: {
 					...state.logged,
 					isLoading
+				}
+			}
+		case SET_SETTINGS_LOADING:
+			return {
+				...state,
+				settingsModal: {
+					...state.settingsModal,
+					loading: action.payload.value
 				}
 			}
 		case SET_PROFILE_PICTURE:
@@ -82,33 +116,28 @@ export default (state = defaultState, action) => {
 			}
 		case SIGN_UP:
 		case SIGN_IN:
-			const { username, token, profilePic, description, _id } = action.payload;
-			localStorage.setItem('last_session', JSON.stringify({...action.payload}));
+			localStorage.setItem('last_session', JSON.stringify({ ...action.payload }))
 			return {
 				...state,
 				logged: {
 					isLoading: false,
 					isLogged: true,
-					token,
-					username,
-					profilePic: profilePic,
-					description,
-					_id
+					...action.payload
 				}
 			}
 		case RECONNECT:
-			const { last_session } = action.payload;
+			const { last_session } = action.payload
 			return {
 				...state,
 				logged: {
 					...last_session,
 					isLoading: false,
-					isLogged: true,					
+					isLogged: true,
 					profilePic: last_session.profilePic
 				}
 			}
 		case RESET_LAST_CONNECTION:
-			localStorage.setItem('last_session', JSON.stringify({...state.logged}))
+			localStorage.setItem('last_session', JSON.stringify({ ...state.logged }))
 			return state
 		case LOGOUT:
 			return {
