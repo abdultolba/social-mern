@@ -6,6 +6,7 @@ const getRandomProfilePicture = () => `/assets/images/avatar_default_${Math.floo
 const userSchema = new Schema({
 	username: String,
 	password: {type: String, select: false},
+	openProfile: {type: Boolean, default: true},
 	verified: {type: Boolean, default: false},
 	description: {type: String, default: ''},
 	// Simulating diverse social media platform by using variety of random user pics
