@@ -15,8 +15,6 @@ import { toggleNavbar, toggleProfilePictureModal } from '../actions/app';
 import { changeDescription } from '../actions/settings';
 import { logout } from '../actions/app'
 
-import '../styles/pages/Profile.scss'
-
 class Profile extends Component {
 	constructor(props) {
 		super(props)
@@ -54,9 +52,8 @@ class Profile extends Component {
 	}
 
 	openProfilePictureModal() {
-		if (this.props.ownsProfile) {
+		if (this.props.ownsProfile)
 			this.props.toggleProfilePictureModal()
-		}
 	}
 
 	updateDescription(e) {
@@ -84,28 +81,32 @@ class Profile extends Component {
 				{(this.props.profilePicModal && this.props.ownsProfile) && <ProfilePictureModal />}
 				<div className={"d-none d-md-flex sidenav flex-column " + (!this.props.profile.visibleSidenav ? 'sidenav--inactive' : '')}>
 					<div className="sidenav__description">
-						<img src={this.props.profile.profilePic}
+						<div
 							onClick={this.openProfilePictureModal}
-							className={'img-fluid rounded-circle sidenav__avatar mx-auto d-block mt-5 mb-2 ' + (this.props.ownsProfile && 'cursor-pointer')}/>
+							className={"sidenav__avatar mx-auto d-block mt-5 mb-2" + (this.props.ownsProfile && ' sidenav__avatar--owner cursor-pointer')}>
+							<img src={this.props.profile.profilePic}
+								className={'sidenav__avatar__image img-fluid rounded-circle mx-auto d-block w-100 h-100'} />
+							<span className='sidenav__avatar--owner__camera'><i className="fas fa-camera"></i></span>
+						</div>
 						<p className="text-center text-white title mt-3">{this.props.profile.username}</p>
 						{this.props.profile.editingDescription
 							?
-								<div className="px-5 mb-3">
-									<form onSubmit={this.updateDescription}>
-										<div className="form-group">
-											<textarea className="form-control"
-																id="description"
-																defaultValue={this.props.profile.description}
-																maxLength={150}></textarea>
-										</div>
-										<div className="form-group d-flex justify-content-end">
-											<button className="btn btn-brand-secondary text-white mr-2 rounded-pill"
-															type="button"
-															onClick={this.props.toggleEditingDescription}>Cancel</button>
-											<button className="btn btn-brand text-white rounded-pill">Update</button>
-										</div>
-									</form>
-								</div>
+							<div className="px-5 mb-3">
+								<form onSubmit={this.updateDescription}>
+									<div className="form-group">
+										<textarea className="form-control"
+											id="description"
+											defaultValue={this.props.profile.description}
+											maxLength={150}></textarea>
+									</div>
+									<div className="form-group d-flex justify-content-end">
+										<button className="btn btn-brand-secondary text-white mr-2 rounded-pill"
+											type="button"
+											onClick={this.props.toggleEditingDescription}>Cancel</button>
+										<button className="btn btn-brand text-white rounded-pill">Update</button>
+									</div>
+								</form>
+							</div>
 							:
 							<p className="text-left text-white text-wrap description px-5 mb-0">
 								{this.props.profile.description || "This user hasn't yet provided a description 🥴"}
@@ -113,8 +114,8 @@ class Profile extends Component {
 						}
 						{(this.props.ownsProfile && !this.props.profile.editingDescription) &&
 							<a className="text-left btn-link text-brand-secondary btn px-5"
-											onClick={this.props.toggleEditingDescription}>
-											Edit Description <i className="fas fa-pencil-alt"></i>
+								onClick={this.props.toggleEditingDescription}>
+								Edit Description <i className="fas fa-pencil-alt"></i>
 							</a>
 						}
 						<div className="d-flex flex-column justify-content-between h-100">
@@ -130,7 +131,7 @@ class Profile extends Component {
 					</div>
 				</div>
 
-				<BottomScrollListener onBottom={() => { this.setState(() => ({...this.state})); this.fetchUserPosts() }}>
+				<BottomScrollListener onBottom={() => { this.setState(() => ({ ...this.state })); this.fetchUserPosts() }}>
 					{scrollRef => (
 						<div className="d-flex position-relative profile__body justify-content-center flex-wrap" ref={scrollRef}>
 							<Auth>

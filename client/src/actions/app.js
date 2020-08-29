@@ -87,12 +87,8 @@ export const signUp = ({ username, password }) => {
 					})
 				}
 			})
-			.catch(e => {
-				cogoToast.error(e.response.data.response, {
-					position: 'bottom-right'
-				})
-				dispatch(setLoginLoad(false))
-			})
+			.catch(e => console.log(e))
+			.then(() => dispatch(setLoginLoad(false)))
 	}
 }
 
