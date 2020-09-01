@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import YouTube from 'react-youtube'
 import Linkify from 'react-linkify'
 import { Link, withRouter } from 'react-router-dom'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -76,11 +77,12 @@ class Post extends Component {
 					</Linkify>
 					{this.props.extra &&
 						<div className="mt-3">
-							<iframe width="100%" height="315" src={'https://www.youtube.com/embed/' + this.props.extra.value}
-								frameBorder="0"
-								allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-								allowFullScreen>
-							</iframe>
+							<YouTube
+								videoId={this.props.extra.value}
+								opts={{
+									width: '100%', 
+									height: '400'
+								}}/>
 						</div>
 					}
 					<div onClick={this.handleLike} className="d-inline-flex px-3 py-1 text-brand-secondary rounded-pill post__likes cursor-pointer">
