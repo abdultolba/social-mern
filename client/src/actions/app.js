@@ -124,7 +124,7 @@ export const signUp = ({ username, password }) => {
 					})
 				}
 			})
-			.catch(e => console.log(e))
+			.catch(e => console.log('ERROR ERROR ERROR', e))
 			.then(() => dispatch(setLoginLoad(false)))
 	}
 }
