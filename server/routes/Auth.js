@@ -34,7 +34,7 @@ router.post('/sign-up', (req, res) => {
 						}
 					})
 				})
-				.catch(e => res.send(500).json({ error: 'Error.' }))
+				.catch(e => res.sendStatus(500).json({ error: 'Error.' }))
 		})
 		.catch(e => res.status(500).send('Error.'))
 });
@@ -70,9 +70,9 @@ router.post('/sign-in', (req, res) => {
 						}
 					});
 				})
-				.catch(e => res.send(500).json({ error: 'There were an error.' }));
+				.catch(e => res.sendStatus(500).json({ error: 'There were an error.' }));
 		})
-		.catch(e => res.send(500).json({ error: 'There were an error.' }));
+		.catch(e => res.sendStatus(500).json({ error: 'There were an error.' }));
 })
 
 module.exports = router;

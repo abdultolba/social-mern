@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
+
 import AuthForm from '../components/AuthForm'
-import Logo from '../assets/images/logo.png'
 import { toggleNavbar, signIn, signUp } from '../actions/app'
 
 class Home extends Component {
@@ -94,7 +94,8 @@ class Home extends Component {
 					<div className="col-12 col-md-4 bg-white home__right d-flex flex-column justify-content-center">
 						<div className="row justify-content-center">
 							<div className="col-6">
-								<img src={Logo} className="mx-auto d-block img-fluid" />
+								{/* TODO: Add logo */}
+								{/* <img src={Logo} className="mx-auto d-block img-fluid" /> */}
 							</div>
 						</div>
 						<div className="row pr-md-3">
