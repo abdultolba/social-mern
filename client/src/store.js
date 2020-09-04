@@ -6,8 +6,6 @@ import profileReducer from './reducers/profile'
 import postsReducer from './reducers/posts'
 import usersReducer from './reducers/users'
 
-const composeEnhancers = (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
-
 const reducers = combineReducers({
 	app: appReducer,
 	profile: profileReducer,
@@ -15,6 +13,6 @@ const reducers = combineReducers({
 	users: usersReducer
 })
 
-const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)))
+const store = createStore(reducers, compose(applyMiddleware(thunk)))
 
 export default store
