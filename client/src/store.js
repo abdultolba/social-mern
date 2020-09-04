@@ -1,11 +1,12 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux'
-import { composeWithDevTools } from 'redux-devtools-extension'
 import thunk from 'redux-thunk'
 
 import appReducer from './reducers/app'
 import profileReducer from './reducers/profile'
 import postsReducer from './reducers/posts'
 import usersReducer from './reducers/users'
+
+const composeEnhancers = (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
 const reducers = combineReducers({
 	app: appReducer,
@@ -14,6 +15,6 @@ const reducers = combineReducers({
 	users: usersReducer
 })
 
-const store = createStore(reducers, composeWithDevTools(applyMiddleware(thunk)))
+const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)))
 
 export default store
