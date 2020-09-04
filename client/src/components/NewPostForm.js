@@ -80,7 +80,7 @@ class NewPostForm extends Component {
                         <div className="form-group">
                             <button type="submit" className="btn btn-brand rounded-pill float-right text-white">
                                 <i className="fas fa-paper-plane"></i> Submit
-            `               </button>
+                            </button>
                             <button type="button" onClick={this.toggleYoutubeInput} className="btn btn-brand-secondary text-white rounded-pill float-right px-3 mx-2">
                                 <i className="fab fa-youtube"></i> Youtube
                             </button>
