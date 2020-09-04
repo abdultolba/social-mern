@@ -15,6 +15,9 @@ module.exports = {
 ```
 5. Run the command ```npm start``` and the server will 
 
+## Demo
+![friend.ly demo](https://github.com/abdultolba/social-mern/blob/master/demo.gif)
+
 ## Built with
 - [Node.js](https://nodejs.org/)
 - [MongoDB](https://mongodb.com/)
