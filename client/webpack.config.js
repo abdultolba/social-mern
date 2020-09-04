@@ -83,9 +83,9 @@ module.exports = {
 			template: 'src/assets/index.html'
 		}),
 		new MiniCssExtractPlugin({
-				filename: '[name].[hash].css',
-	      chunkFilename: '[name].[hash].css',
-	      ignoreOrder: false,
+			filename: '[name].[hash].css',
+	      	chunkFilename: '[name].[hash].css',
+	      	ignoreOrder: false,
 	    }),
 		new CopyPlugin([
 			{ from: 'src/assets/images', to: 'assets/images'}
