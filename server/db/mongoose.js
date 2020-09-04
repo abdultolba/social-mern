@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { MONGO_URI } = process.env['MONGO_URI'] || require('../config')
+const { MONGO_URI } = process.env.MONGO_URI || require('../config')
 
 const config = {
 	useNewUrlParser: true, 
