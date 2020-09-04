@@ -1,6 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
+// const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WebpackBundlerAnalyzer = require('webpack-bundle-analyzer')
@@ -8,17 +8,18 @@ const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = {
 	entry: './src/app.js',
+	mode: 'production',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
 		filename: '[name].bundle.js'
 	},
 	optimization: {
 		runtimeChunk: "single",
-			minimizer: [
-		  new UglifyJsPlugin({
-			sourceMap: true,
-		  })
-		],
+		// minimizer: [
+		// 	new UglifyJsPlugin({
+		// 		sourceMap: true,
+		// 	})
+		// ],
 		splitChunks: {
 		  cacheGroups: {
 			vendor: {
