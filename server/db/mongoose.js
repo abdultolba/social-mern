@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
-const { MONGO_URI } = process.env.MONGO_URI || require('../config')
+const dotenv = require('dotenv').config();
+const { MONGO_URI } = process.env
 
 const config = {
 	useNewUrlParser: true, 
