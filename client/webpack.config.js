@@ -3,7 +3,7 @@ const webpack = require('webpack')
 // const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const CopyPlugin = require('copy-webpack-plugin')
+// const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = {
 	entry: './src/app.js',
@@ -87,9 +87,9 @@ module.exports = {
 	      	chunkFilename: '[name].[hash].css',
 	      	ignoreOrder: false,
 	    }),
-		new CopyPlugin([
-			{ from: 'src/assets/images', to: 'assets/images'}
-		])
+		// new CopyPlugin([
+		// 	{ from: 'src/assets/images', to: 'assets/images'}
+		// ])
 	],
 	devServer: {
 		contentBase: path.join(__dirname, 'dist'),
