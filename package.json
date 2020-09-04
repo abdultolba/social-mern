@@ -7,8 +7,7 @@
     "postinstall": "cd client && npm install && cd ../server && npm install",
     "start-client": "npm run serve --prefix client",
     "start-server": "npm start --prefix server",
-    "start": "npm run postinstall && concurrently \"npm run start-client\" \"npm run start-server\"",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install npm && run build"
+    "start": "npm run postinstall && concurrently \"npm run start-client\" \"npm run start-server\""
   },
   "repository": {
     "type": "git",
