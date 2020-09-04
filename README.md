@@ -3,17 +3,15 @@ A small social media platform that aims to connect people virtually, built using
 
 
 ## Installation
-1. Install the dependencies in the ```/client``` **and** ```/server``` directories by running ```npm install``` in your terminal.
-2. Navigate to the ```/client``` directory and run the command ```npm run build``` to have webpack serve static files. 
-3. Install the dependencies in the **main** directory (```/```) by running ```npm install```.
-4. Create a config.js file in the ```/server``` directory with the following content:
+1. Install the dependencies in the main directory by running ```npm install``` in the terminal.
+2. Create a config.js file in the ```/server``` directory with the following content:
 ```js
 module.exports = {
     'MONGO_URI': // YOUR MONGO_URI GOES HERE,
     'SECRET_KEY': // YOUR PRIVATE KEY GOES HERE
 }
 ```
-5. Run the command ```npm start``` and the server will 
+3. Run the command ```npm start``` and the server will automatically install subdirectory dependencies & start the servers.
 
 ## Demo
 ![friend.ly demo](https://github.com/abdultolba/social-mern/blob/master/demo.gif)
