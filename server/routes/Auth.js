@@ -1,9 +1,11 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { SECRET_KEY } = process.env.SECRET_KEY || require('../config');
+const dotenv = require('dotenv').config();
 const User = require('../models/User');
 const router = express.Router();
+
+const { SECRET_KEY } = process.env
 
 router.post('/sign-up', (req, res) => {
 	const { username, password } = req.body;
