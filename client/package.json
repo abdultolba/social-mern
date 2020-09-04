@@ -55,7 +55,6 @@
     "webpack-dev-server": "^3.8.2"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^6.1.0",
     "redux-devtools-extension": "^2.13.8"
   }
 }
