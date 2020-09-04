@@ -1,6 +1,9 @@
 {
   "name": "social-mern",
   "version": "1.0.0",
+  "engines": {
+    "node": "12.x"
+  },
   "description": "A social media platform that uses 'cards' to connect people virtually, built with the MERN stack.",
   "main": "index.js",
   "scripts": {
