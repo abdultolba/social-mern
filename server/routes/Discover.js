@@ -11,7 +11,7 @@ router.get('/users', (req, res) => {
             const random = Math.floor(Math.random() * (count - 10))
             User.find({})
                 .limit(10)
-                .skip(random)
+                // .skip(random)
                 .exec((err, result) => {
                     if(err) 
                         return res.status(500).json({
@@ -36,7 +36,7 @@ router.get('/posts', (req,res) => {
 			const random = Math.floor(Math.random() * (count - 10))
 			Post.find({})
 				.limit(10)
-				.skip(random)
+				// .skip(random)
 				.populate('author')
 				.exec((err, result) => {
 					if(err)
