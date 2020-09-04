@@ -6,7 +6,7 @@ import { logout } from '../actions/app'
 
 class Api {
 	constructor() {
-		this.baseUrl = 'http://localhost:3000/api'
+		this.baseUrl = 'https://friendly-social.herokuapp.com/api'
 	}
 
 	get(url) {

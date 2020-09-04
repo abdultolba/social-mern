@@ -1,5 +1,4 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux'
-import { composeWithDevTools } from 'redux-devtools-extension'
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 
 import appReducer from './reducers/app'
@@ -14,6 +13,6 @@ const reducers = combineReducers({
 	users: usersReducer
 })
 
-const store = createStore(reducers, composeWithDevTools(applyMiddleware(thunk)))
+const store = createStore(reducers, compose(applyMiddleware(thunk)))
 
 export default store
