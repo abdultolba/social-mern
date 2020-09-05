@@ -5,8 +5,8 @@ const dotenv = require('dotenv').config();
 const User = require('../models/User');
 const router = express.Router();
 
-// const { SECRET_KEY } = require('../config')
-const { SECRET_KEY } = process.env
+const { SECRET_KEY: secret } = require('../config')
+const SECRET_KEY = process.env.SECRET_KEY || secret
 
 router.post('/sign-up', (req, res) => {
 	const { username, password } = req.body;
