@@ -88,7 +88,7 @@ class Profile extends Component {
 								className={'sidenav__avatar__image img-fluid rounded-circle mx-auto d-block w-100 h-100'} />
 							<span className='sidenav__avatar--owner__camera'><i className="fas fa-camera"></i></span>
 						</div>
-						<p className="text-center text-white title mt-3">{this.props.profile.username}</p>
+						<p className="text-center text-dark title mt-3">{this.props.profile.username}</p>
 						{this.props.profile.editingDescription
 							?
 							<div className="px-5 mb-3">
@@ -113,12 +113,12 @@ class Profile extends Component {
 								</form>
 							</div>
 							:
-							<p className="text-left text-white text-wrap description px-5 mb-0">
+							<p className="text-left text-dark text-wrap description px-5 mb-0">
 								{this.props.profile.description || "This user hasn't yet provided a description 🥴"}
 							</p>
 						}
 						{(this.props.ownsProfile && !this.props.profile.editingDescription) &&
-							<a className="text-left btn-link text-brand-secondary btn px-5"
+							<a className="text-left btn-link text-black-50 btn px-5"
 								onClick={this.props.toggleEditingDescription}>
 								Edit Description <i className="fas fa-pencil-alt"></i>
 							</a>
