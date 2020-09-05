@@ -9,9 +9,13 @@ class Api {
 		this.baseUrl = 'https://friendly-social.herokuapp.com/api'
 	}
 
+	/**
+	 * Takes a path string as input and attempts a 
+	 * GET request. Returns a 401 error on rejection
+	 * @param {string} url the URL path for a specific GET request.
+	 */
 	get(url) {
 		const state = store.getState()
-
 		const config = {
 			headers: {}
 		}
@@ -29,7 +33,6 @@ class Api {
 							store.dispatch(logout())
 							break
 					}
-
 					cogoToast.error(`${status}: ${data.message}`, {
 						position: 'bottom-right'
 					})
@@ -38,9 +41,14 @@ class Api {
 		})
 	}
 
+	/**
+	 * Takes a path string and optional data as input and 
+	 * attempts a POST request. Returns a 401 error on rejection
+	 * @param {string} url 		the URL path for a specific POST request.
+	 * @param {object} [params] an object that contains the data that will be sent
+	 */
 	post(url, params) {
 		const state = store.getState()
-
 		const config = {
 			headers: {}
 		}
@@ -53,13 +61,11 @@ class Api {
 				.then(response => res(response.data))
 				.catch(e => {
 					const { status, data } = e.response
-
 					switch (status) {
 						case 401:
 							store.dispatch(logout())
 							break
 					}
-
 					cogoToast.error(`${status}: ${data.message}`, {
 						position: 'bottom-right'
 					})
@@ -68,9 +74,14 @@ class Api {
 		})
 	}
 
+	/**
+	 * Takes a path string and optional data as input and 
+	 * attempts a PATCH request. Returns a 401 error on rejection
+	 * @param {string} url 		the URL path for a specific PATCH request.
+	 * @param {object} [params] an object that contains the data that will be sent, headers
+	 */
 	patch(url, params) {
 		const state = store.getState()
-
 		if (!state.app.logged.token) return
 
 		const config = {
@@ -84,13 +95,11 @@ class Api {
 				.then(response => res(response.data))
 				.catch(e => {
 					const { status, data } = e.response
-
 					switch (status) {
 						case 401:
 							store.dispatch(logout())
 							break
 					}
-
 					cogoToast.error(`${status}: ${data.message}`, {
 						position: 'bottom-right'
 					})
@@ -99,9 +108,14 @@ class Api {
 		})
 	}
 
+	/**
+	 * Takes a path string and optional data as input and 
+	 * attempts a PATCH request. Returns a 401 error on rejection
+	 * @param {string} url 		the URL path for a specific DELETE request.
+	 * @param {object} [params] an object that contains additional data & headers
+	 */
 	delete(url, params) {
 		const state = store.getState()
-
 		if (!state.app.logged.token) return
 
 		const config = {
@@ -116,13 +130,11 @@ class Api {
 				.then(response => res(response.data))
 				.catch(e => {
 					const { status, data } = e.response
-
 					switch (status) {
 						case 401:
 							store.dispatch(logout())
 							break
 					}
-
 					cogoToast.error(`${status}: ${data.message}`, {
 						position: 'bottom-right'
 					})
@@ -131,7 +143,6 @@ class Api {
 		})
 	}
 }
-
 
 
 export default Api
