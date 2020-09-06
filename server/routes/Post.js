@@ -14,6 +14,30 @@ router.get('/:id', (req, res) => {
 		.catch(e => res.send(500).json({ error: 'Unknown error.' }))
 })
 
+/**
+ * PATCH: /api/:id
+ * Updates the post in the MongoDB cluster given the post ID
+ */
+router.patch('/:id', isAuth, (req, res) => {
+	const { id } = req.params
+	const { message } = req.body
+
+	Post.findByIdAndUpdate(id, { message: message }, { new: true, useFindAndModify: false })
+	.then(updatedPost => {
+		updatedPost = updatedPost.toObject()
+
+		res.status(200).json({
+			code: 200,
+			message: 'Post successfully updated!',
+			response: {
+				editedPost: updatedPost.message,
+				updatedPost
+			}
+		})
+	})
+	.catch(err => res.status(500).send('Your post couldn\'t be updated. Error:', err))
+})
+
 router.delete('/:id', isAuth, (req, res) => {
 	const { id } = req.params
 

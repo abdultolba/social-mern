@@ -1,27 +1,44 @@
 import {
-	DISCOVER_POSTS,
 	DELETE_POST,
+	DISCOVER_POSTS,
+	EDIT_POST,
+	FETCH_USER_POSTS,
+	LIKE_POST,
 	NEW_POST,
 	RESTART_STATE,
 	SET_LOADING,
-	FETCH_USER_POSTS,
-	LIKE_POST,
-	UNLIKE_POST,
-	UPDATE_PROFILE_PICTURE
+	TOGGLE_EDITING_POST,
+	UPDATE_PROFILE_PICTURE,
+	UNLIKE_POST
 } from '../actions/posts'
-import store from '../store'
 
 
 const defaultState = {
 	loading: false,
 	isThereMore: true,
 	offset: 0,
-	quantity: 5,
-	items: []
+	quantity: 10,
+	items: [],
+	editedPostId: ''
 }
 
 export default (state = defaultState, action) => {
 	switch (action.type) {
+		case TOGGLE_EDITING_POST:
+			return {
+				...state,
+				editedPostId: action.payload
+			}
+		case EDIT_POST:
+			return {
+				...state,
+				items: state.items.map(item => {
+					if(item._id == action.payload.postId){
+						return {...item, message: action.payload.message}
+					}
+					return item
+				})
+			}
 		case FETCH_USER_POSTS:
 			return {
 				...state,

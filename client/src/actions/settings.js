@@ -8,8 +8,8 @@ import api from '../api/api';
 
 const API = new api()
 
-export const CHANGE_IMAGE = 'CHANGE_IMAGE',
-	CHANGE_DESCRIPTION = 'CHANGE_DESCRIPTION'
+export const 	CHANGE_IMAGE = 'CHANGE_IMAGE',
+				CHANGE_DESCRIPTION = 'CHANGE_DESCRIPTION'
 
 export const changeImage = (binary, crop) => {
 	return dispatch => {
