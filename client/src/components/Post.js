@@ -7,14 +7,14 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import cogoToast from "cogo-toast"
 
-import { likePost, unlikePost, deletePost } from '../actions/posts'
+import { likePost, unlikePost, deletePost, editPost, toggleEditingPost } from '../actions/posts'
 
 class Post extends Component {
 	constructor(props) {
 		super(props)
 
 		this.deletePost = this.deletePost.bind(this)
-		this.canDeletePost = this.canDeletePost.bind(this)
+		this.canEditOrDeletePost = this.canEditOrDeletePost.bind(this)
 		this.handleLike = this.handleLike.bind(this)
 		this.parseText = this.parseText.bind(this)
 
@@ -30,7 +30,21 @@ class Post extends Component {
 		this.props.deletePost({ postId: this.props._id })
 	}
 
-	canDeletePost() {
+	editPost = e => {
+		e.preventDefault()
+		const message = e.target.message.value
+
+		if (this.props.message == message) {
+			cogoToast.warn(<p>Wait! <strong>The post looks the same... 🙊</strong></p>, {
+				position: 'bottom-right'
+			})
+		} else {
+			Promise.resolve(this.props.editPost({ message, postId: this.props._id }))
+				.then(() => this.props.toggleEditingPost(''))
+		}
+	}
+
+	canEditOrDeletePost() {
 		// If this is my post
 		if (this.props.session._id && this.props.author._id)
 			return this.props.session._id == this.props.author._id
@@ -73,7 +87,32 @@ class Post extends Component {
 				</div>
 				<div className="card-body px-4 py-4">
 					<Linkify properties={{ target: '_blank' }}>
-						<p className="my-0 py-0 ws-pre-line">{this.props.message}</p>
+						{this.props.editedPostId && (this.props._id == this.props.editedPostId)
+						?
+							<div className="px-5 mb-3">
+								<form onSubmit={this.editPost}>
+									<div className="form-group">
+										<textarea 
+											className="form-control border-top-0 border-left-0 border-right-0 border-brand rounded-0 profile__body__textarea__input" 
+											id="message" 
+											defaultValue={this.props.message}>
+										</textarea>
+									</div>
+									<div className="form-group d-flex justify-content-end">
+										<button
+											className="btn btn-brand-secondary text-white mr-2 rounded-pill"
+											type="button"
+											onClick={() => this.props.toggleEditingPost('')}>
+											Cancel
+											</button>
+										<button className="btn btn-brand text-white rounded-pill">Update</button>
+									</div>
+								</form>
+							</div>
+						:
+							<p className="my-0 py-0 ws-pre-line">{this.props.message}</p>
+						}
+						
 					</Linkify>
 					{this.props.extra &&
 						<div className="mt-3">
@@ -90,12 +129,19 @@ class Post extends Component {
 							{this.props.likes} <i className={`mr-1 ${this.props.liked ? 'fas fa-heart' : 'far fa-heart'}`}></i>
 						</span>
 					</div>
-					{this.canDeletePost() &&
+					{this.canEditOrDeletePost() && !this.props.editedPostId &&
+					<>
+						<div onClick={() => this.props.toggleEditingPost(this.props._id)} className="d-inline-flex px-3 py-1 rounded-pill post__edit cursor-pointer">
+							<span className="text-secondary">
+								<i className="fas fa-pencil-alt"></i>
+							</span>
+						</div>
 						<div onClick={this.deletePost} className="d-inline-flex px-3 py-1 rounded-pill post__delete cursor-pointer">
 							<span className="text-secondary">
 								<i className="fas fa-times"></i>
 							</span>
 						</div>
+					</>
 					}
 				</div>
 			</div>
@@ -105,13 +151,16 @@ class Post extends Component {
 
 const mapStateToProps = state => ({
 	logged: state.app.logged.isLogged,
-	session: state.app.logged
+	session: state.app.logged,
+	editedPostId: state.posts.editedPostId
 })
 
 const mapDispatchToProps = dispatch => ({
+	editPost: data => dispatch(editPost(data)),
 	deletePost: data => dispatch(deletePost(data)),
 	likePost: postId => dispatch(likePost(postId)),
-	unlikePost: postId => dispatch(unlikePost(postId))
+	unlikePost: postId => dispatch(unlikePost(postId)),
+	toggleEditingPost: postId => dispatch(toggleEditingPost(postId))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Post))

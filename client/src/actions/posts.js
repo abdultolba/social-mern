@@ -4,15 +4,51 @@ import api from '../api/api'
 
 const API = new api()
 
-export const FETCH_USER_POSTS = '[POST] FETCH_USER_POSTS',
-    NEW_POST = '[POST] NEW_POST',
-    DISCOVER_POSTS = '[POST] DISCOVER_POSTS',
-    DELETE_POST = '[POST] DELETE_POST',
-    RESTART_STATE = '[POST] RESTART_STATE',
-    SET_LOADING = '[POST] SET_LOADING',
-    LIKE_POST = '[POST] LIKE_POST',
-    UNLIKE_POST = '[POST] UNLIKE_POST',
-    UPDATE_PROFILE_PICTURE = '[POST] UPDATE_PROFILE_PICTURE'
+export const    DELETE_POST = '[POST] DELETE_POST',
+                DISCOVER_POSTS = '[POST] DISCOVER_POSTS',
+                EDIT_POST = 'EDIT_POST',
+                FETCH_USER_POSTS = '[POST] FETCH_USER_POSTS',
+                LIKE_POST = '[POST] LIKE_POST',
+                NEW_POST = '[POST] NEW_POST',
+                RESTART_STATE = '[POST] RESTART_STATE',
+                SET_LOADING = '[POST] SET_LOADING',
+                TOGGLE_EDITING_POST = '[POST] TOGGLE_EDITING_POST',
+                UPDATE_PROFILE_PICTURE = '[POST] UPDATE_PROFILE_PICTURE',
+                UNLIKE_POST = '[POST] UNLIKE_POST'
+
+export const toggleEditingPost = postId => {
+    return dispatch => {
+        dispatch({
+            type: TOGGLE_EDITING_POST,
+            payload: postId
+        })
+    }
+}
+
+export const editPost = data => {
+    return dispatch => {
+        const { postId, message } = data
+        API.patch(`post/${postId}`, { message })
+            .then(res => {
+                if(res.code == 200){
+                    cogoToast.success(`Post updated! 🙌`, {
+                        position: 'bottom-right'
+                    })
+
+                    dispatch({
+                        type: EDIT_POST,
+                        payload: { message, postId }
+                    })
+                }
+            })
+            .catch(e => {
+                console.log(e)
+                cogoToast.error(`There were an error editing your post 😢`, {
+                    position: 'bottom-right'
+                })
+            })
+    }
+}
 
 export const fetchUserPosts = usernamePosts => {
     return (dispatch, getState) => {

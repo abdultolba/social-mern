@@ -44,6 +44,7 @@ export const toggleEditingDescription = () => {
 		})
 	}
 }
+
 export const updateProfilePicture = url => {
 	return dispatch => {
 		dispatch({

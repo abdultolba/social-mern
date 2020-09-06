@@ -17,7 +17,7 @@
     box-shadow: 0px 0px 20px -9px rgba(0, 0, 0, 0.2);
   }
 
-  &__delete {
+  &__edit {
     position: absolute;
     bottom: -15px;
     right: 90px;
@@ -25,8 +25,17 @@
     box-shadow: 0px 0px 20px -9px rgba(0, 0, 0, 0.2);
   }
 
-  &__likes,
   &__delete {
+    position: absolute;
+    bottom: -15px;
+    right: 150px;
+    transition: 0.5s all;
+    box-shadow: 0px 0px 20px -9px rgba(0, 0, 0, 0.2);
+  }
+
+  &__likes,
+  &__delete,
+  &__edit {
     background-color: #ffffff;
   }
   &:hover {
