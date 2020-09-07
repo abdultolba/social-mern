@@ -1,4 +1,3 @@
-import axios from 'axios'
 import cogoToast from 'cogo-toast'
 import api from '../api/api'
 

@@ -1,4 +1,3 @@
-import axios from 'axios'
 import FormData from 'form-data'
 
 import { setProfilePic, setDescription, toggleProfilePictureModal } from '../actions/app'
@@ -16,6 +15,7 @@ export const changeImage = (binary, crop) => {
 		const payload = new FormData()
 		payload.append('crop', JSON.stringify(crop))
 		payload.append('newImage', binary)
+		console.log(binary)
 
 		API.patch(`user/settings/profilePicture`, payload, {
 			headers: {

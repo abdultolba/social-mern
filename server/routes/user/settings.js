@@ -13,6 +13,7 @@ const storage = multer.diskStorage({
 	},
 	filename: (req, file, cb) => {
 	  cb(null, `${req.user.username}.png`)
+	//   cb(null, `${req.user.username}-${Date.now()}.png`)
 	}
   })
 
@@ -64,13 +65,12 @@ router.patch('/description', isAuth, (req,res) => {
 
 router.patch('/profilePicture', [isAuth, upload.single('newImage')] , (req,res) => {
 	const { _id } = req.user
+	const file = req.file
 
-	if(!req.file)
-		res.status(500).json({code: 500, response: "There was an error"})
+	if(!file) res.status(500).json({code: 500, response: "There was an error"})
 
 	const { x, y, width, height } = JSON.parse(req.body.crop)
-
-	Jimp.read(path.resolve(req.file.destination,req.file.filename), (err, imageToCrop) => {
+	Jimp.read(path.resolve(file.destination, file.filename), (err, imageToCrop) => {
 		if (err) throw err
 		imageToCrop
 			.crop( x, y, width, height )
