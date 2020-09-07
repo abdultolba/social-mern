@@ -13,13 +13,14 @@ const chalk = require('chalk')
 const storage = new CloudinaryStorage({
 	cloudinary: cloudinary,
 	params: {
-	  folder: 'avatars',
-	  format: async (req, file) => 'png',
-	  public_id: (req, file) => {
-		  const user = req.user
-		  console.log(user, user.username)
-		  return `${user.username}`
+		folder: 'avatars',
+		allowed_formats: ['png', 'jpg', 'jpeg'],
+		public_id: (req, file) => {
+			const user = req.user
+			console.log(user, user.username)
+			return `${user.username}`
 		},
+		transformation: [{ width: 150, height: 150, crop: 'limit' }]
 	},
 })
 
@@ -84,30 +85,39 @@ router.patch('/profilePicture', [isAuth, upload.single('newImage')] , (req,res) 
 	const { _id } = req.user
 	const file = req.file
 
-	if(!file) res.status(500).json({code: 500, response: "There was an error"})
-	console.log(chalk.white.bgBlue('req.body.crop:', req.body.crop ))
+	if(!file){
+		res.status(500).json({code: 500, response: "There was an error"})
+	}
 
-	const { x, y, width, height } = JSON.parse(req.body.crop)
-	Jimp.read(path.resolve(file.destination, file.filename))
-	.then(img => {
-		return img
-			.crop( x, y, width, height )
-			.resize(150,150)
-			.quality(100)
-			.write(path.resolve(req.file.destination, req.file.filename))
-	})
-	.catch(err => {
-		console.log(chalk.white.bgRed.bold('Error at line 77 in server/routes/user/settings.js'))
-		res.status(500).send(err)
-	})
+	const image = {
+		url: file.url,
+		id: file.public_id
+	}
 
-	User.findByIdAndUpdate(_id, { profilePic: `images/avatars/${req.file.filename}` }, { new: true, useFindAndModify: false })
+	// console.log(chalk.white.bgBlue('req.body.crop:', req.body.crop ))
+
+	// const { x, y, width, height } = JSON.parse(req.body.crop)
+	// Jimp.read(path.resolve(file.destination, file.filename))
+	// .then(img => {
+	// 	return img
+	// 		.crop( x, y, width, height )
+	// 		.resize(150,150)
+	// 		.quality(100)
+	// 		.write(path.resolve(req.file.destination, req.file.filename))
+	// })
+	// .catch(err => {
+	// 	console.log(chalk.white.bgRed.bold('Error at line 77 in server/routes/user/settings.js'))
+	// 	res.status(500).send(err)
+	// })
+
+	User.findByIdAndUpdate(_id, { profilePic: image.url }, { new: true, useFindAndModify: false })
 		.then(updatedUser => {
 			res.status(200).json({
 				code: 200,
 				response: {
-					message: 'Photo updated successfully',
-					path: `${updatedUser.profilePic}?hash=${shortId.generate()}`,
+					message: 'Photo updated successfully!',
+					path: updatedUser.profilePic,
+					// path: `${updatedUser.profilePic}?hash=${shortId.generate()}`,
 					updatedUser
 				}
 			})
