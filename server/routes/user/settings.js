@@ -3,21 +3,36 @@ const router = express.Router()
 const User = require('../../models/User')
 const {isAuth} = require('../../middlewares/auth')
 const Jimp = require('jimp')
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer')
 const path = require('path')
 const shortId = require('shortid')
 const chalk = require('chalk')
 
-const storage = multer.diskStorage({
-	destination: (req, file, cb) => {
-	  	cb(null, path.resolve(__dirname, '../..' , 'public/images/avatars'))
+const storage = new CloudinaryStorage({
+	cloudinary: cloudinary,
+	params: {
+	  folder: 'avatars',
+	  format: async (req, file) => 'png',
+	  public_id: (req, file) => {
+		  const user = req.user
+		  console.log(user, user.username)
+		  return `${user.username}`
+		},
 	},
-	filename: (req, file, cb) => {
-		const user = req.user
-		console.log(user, user.username)
-	  	cb(null, `${user.username}.png`)
-	}
 })
+
+// const storage = multer.diskStorage({
+// 	destination: (req, file, cb) => {
+// 	  	cb(null, path.resolve(__dirname, '../..' , 'public/images/avatars'))
+// 	},
+// 	filename: (req, file, cb) => {
+// 		const user = req.user
+// 		console.log(user, user.username)
+// 	  	cb(null, `${user.username}.png`)
+// 	}
+// })
 
 const upload = multer({storage: storage})
 
