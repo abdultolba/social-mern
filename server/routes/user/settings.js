@@ -88,6 +88,8 @@ router.patch('/profilePicture', [isAuth, upload.single('newImage')] , (req,res) 
 		res.status(500).json({code: 500, response: "There was an error"})
 	}
 
+	console.log(file)
+
 	const image = {
 		url: file.url,
 		id: file.public_id
