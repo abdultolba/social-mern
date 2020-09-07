@@ -6,17 +6,14 @@ const Jimp = require('jimp')
 const multer = require('multer')
 const path = require('path')
 const shortId = require('shortid')
+const chalk = require('chalk')
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		console.log('req', req)
-		console.log(file)
-	  	cb(null, path.resolve(__dirname, '..' , 'public/images/avatars'))
+	  	cb(null, path.resolve(__dirname, '../..' , 'public/images/avatars'))
 	},
 	filename: (req, file, cb) => {
-		console.log(req)
 	  	cb(null, `${req.user.username}.png`)
-		// cb(null, `${req.user.username}-${Date.now()}.png`)
 	}
 })
 
@@ -72,14 +69,20 @@ router.patch('/profilePicture', [isAuth, upload.single('newImage')] , (req,res) 
 
 	if(!file) res.status(500).json({code: 500, response: "There was an error"})
 
+	console.log(chalk.white.bgBlue('req.body.crop:', req.body.crop ))
+	
 	const { x, y, width, height } = JSON.parse(req.body.crop)
 	Jimp.read(path.resolve(file.destination, file.filename), (err, imageToCrop) => {
-		if (err) throw err
+		if (err) {
+			console.log(chalk.white.bgRed.bold('Error at line 74 in server/routes/user/settings.js'))
+			throw err
+		}
+
 		imageToCrop
 			.crop( x, y, width, height )
 			.resize(150,150)
 			.quality(100)
-			.write(path.resolve(req.file.destination,req.file.filename))
+			.write(path.resolve(req.file.destination, req.file.filename))
 	})
 
 	User.findByIdAndUpdate(_id, { profilePic: `images/avatars/${req.file.filename}` }, { new: true, useFindAndModify: false })
