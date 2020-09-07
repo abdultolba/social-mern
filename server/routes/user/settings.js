@@ -13,7 +13,9 @@ const storage = multer.diskStorage({
 	  	cb(null, path.resolve(__dirname, '../..' , 'public/images/avatars'))
 	},
 	filename: (req, file, cb) => {
-	  	cb(null, `${req.user.username}.png`)
+		const user = req.user
+		console.log(user, user.username)
+	  	cb(null, `${user.username}.png`)
 	}
 })
 
@@ -70,11 +72,11 @@ router.patch('/profilePicture', [isAuth, upload.single('newImage')] , (req,res) 
 	if(!file) res.status(500).json({code: 500, response: "There was an error"})
 
 	console.log(chalk.white.bgBlue('req.body.crop:', req.body.crop ))
-	
+
 	const { x, y, width, height } = JSON.parse(req.body.crop)
 	Jimp.read(path.resolve(file.destination, file.filename), (err, imageToCrop) => {
 		if (err) {
-			console.log(chalk.white.bgRed.bold('Error at line 74 in server/routes/user/settings.js'))
+			console.log(chalk.white.bgRed.bold('Error at line 77 in server/routes/user/settings.js'))
 			throw err
 		}
 
