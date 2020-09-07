@@ -16,14 +16,14 @@ const storage = new CloudinaryStorage({
 		folder: 'avatars',
 		allowed_formats: ['png', 'jpg', 'jpeg'],
 		public_id: (req, file) => {
-			const user = req.user
-			console.log(user, user.username)
-			return `${user.username}`
+			console.log(req)
+			return `${req.user.username}`
 		},
 		transformation: [{ width: 150, height: 150, crop: 'limit' }]
-	},
+	}
 })
 
+const upload = multer({storage: storage})
 // const storage = multer.diskStorage({
 // 	destination: (req, file, cb) => {
 // 	  	cb(null, path.resolve(__dirname, '../..' , 'public/images/avatars'))
@@ -35,7 +35,6 @@ const storage = new CloudinaryStorage({
 // 	}
 // })
 
-const upload = multer({storage: storage})
 
 router.patch('/privacy', isAuth, (req,res) => {
 	const { _id } = req.user
