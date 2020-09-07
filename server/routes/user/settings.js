@@ -70,21 +70,20 @@ router.patch('/profilePicture', [isAuth, upload.single('newImage')] , (req,res) 
 	const file = req.file
 
 	if(!file) res.status(500).json({code: 500, response: "There was an error"})
-
 	console.log(chalk.white.bgBlue('req.body.crop:', req.body.crop ))
 
 	const { x, y, width, height } = JSON.parse(req.body.crop)
-	Jimp.read(path.resolve(file.destination, file.filename), (err, imageToCrop) => {
-		if (err) {
-			console.log(chalk.white.bgRed.bold('Error at line 77 in server/routes/user/settings.js'))
-			throw err
-		}
-
-		imageToCrop
+	Jimp.read(path.resolve(file.destination, file.filename))
+	.then(img => {
+		return img
 			.crop( x, y, width, height )
 			.resize(150,150)
 			.quality(100)
 			.write(path.resolve(req.file.destination, req.file.filename))
+	})
+	.catch(err => {
+		console.log(chalk.white.bgRed.bold('Error at line 77 in server/routes/user/settings.js'))
+		res.status(500).send(err)
 	})
 
 	User.findByIdAndUpdate(_id, { profilePic: `images/avatars/${req.file.filename}` }, { new: true, useFindAndModify: false })
