@@ -9,14 +9,14 @@ const shortId = require('shortid')
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-	  cb(null, path.resolve(__dirname, '..' , 'public/images/avatars'))
+		// cb(null, path.resolve(__dirname, '..' , 'public/images/avatars'))
+		cb(null, path.resolve(__dirname, '../..' , 'public/images/avatars'))
 	},
 	filename: (req, file, cb) => {
-		console.log(req.user)
-	  cb(null, `${req.user.username}.png`)
-	//   cb(null, `${req.user.username}-${Date.now()}.png`)
+		const { user } = req.user
+		cb(null, `${user.username}-${Date.now()}.png`)
 	}
-  })
+})
 
 const upload = multer({storage: storage})
 
