@@ -1,3 +1,4 @@
+const dotenv = require('dotenv').config()
 const express = require('express')
 const router = express.Router()
 const User = require('../../models/User')
@@ -6,9 +7,15 @@ const Jimp = require('jimp')
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer')
-const path = require('path')
-const shortId = require('shortid')
-const chalk = require('chalk')
+
+const { CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET } = process.env
+// const { CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET } = require('../../config');
+
+cloudinary.config({
+    cloud_name: CLOUD_NAME,
+    api_key: CLOUD_API_KEY,
+    api_secret: CLOUD_API_SECRET
+});
 
 const storage = new CloudinaryStorage({
 	cloudinary: cloudinary,
@@ -16,25 +23,13 @@ const storage = new CloudinaryStorage({
 		folder: 'avatars',
 		allowed_formats: ['png', 'jpg', 'jpeg'],
 		public_id: (req, file) => {
-			console.log(req)
 			return `${req.user.username}`
 		},
-		transformation: [{ width: 150, height: 150, crop: 'limit' }]
+		transformation: [{ width: 200, height: 200, crop: 'limit' }]
 	}
 })
 
 const upload = multer({storage: storage})
-// const storage = multer.diskStorage({
-// 	destination: (req, file, cb) => {
-// 	  	cb(null, path.resolve(__dirname, '../..' , 'public/images/avatars'))
-// 	},
-// 	filename: (req, file, cb) => {
-// 		const user = req.user
-// 		console.log(user, user.username)
-// 	  	cb(null, `${user.username}.png`)
-// 	}
-// })
-
 
 router.patch('/privacy', isAuth, (req,res) => {
 	const { _id } = req.user
@@ -84,45 +79,17 @@ router.patch('/profilePicture', [isAuth, upload.single('newImage')] , (req,res) 
 	const { _id } = req.user
 	const file = req.file
 
-	console.log('process.env.CLOUDINARY_URL:', process.env.CLOUDINARY_URL)
-
 	if(!file){
 		res.status(500).json({code: 500, response: "There was an error"})
 	}
 
-	console.log(file)
-
-	const image = {
-		url: file.url,
-		id: file.public_id
-	}
-
-	console.log('image', image)
-
-	// console.log(chalk.white.bgBlue('req.body.crop:', req.body.crop ))
-
-	// const { x, y, width, height } = JSON.parse(req.body.crop)
-	// Jimp.read(path.resolve(file.destination, file.filename))
-	// .then(img => {
-	// 	return img
-	// 		.crop( x, y, width, height )
-	// 		.resize(150,150)
-	// 		.quality(100)
-	// 		.write(path.resolve(req.file.destination, req.file.filename))
-	// })
-	// .catch(err => {
-	// 	console.log(chalk.white.bgRed.bold('Error at line 77 in server/routes/user/settings.js'))
-	// 	res.status(500).send(err)
-	// })
-
-	User.findByIdAndUpdate(_id, { profilePic: image.url }, { new: true, useFindAndModify: false })
+	User.findByIdAndUpdate(_id, { profilePic: file.path }, { new: true, useFindAndModify: false })
 		.then(updatedUser => {
 			res.status(200).json({
 				code: 200,
 				response: {
 					message: 'Photo updated successfully!',
 					path: updatedUser.profilePic,
-					// path: `${updatedUser.profilePic}?hash=${shortId.generate()}`,
 					updatedUser
 				}
 			})
