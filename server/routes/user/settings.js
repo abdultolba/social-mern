@@ -84,7 +84,7 @@ router.patch('/profilePicture', [isAuth, upload.single('newImage')] , (req,res) 
 	const { _id } = req.user
 	const file = req.file
 
-	console.log('process.env.CLOUDINARY_URL:'. process.env.CLOUDINARY_URL)
+	console.log('process.env.CLOUDINARY_URL:', process.env.CLOUDINARY_URL)
 
 	if(!file){
 		res.status(500).json({code: 500, response: "There was an error"})
