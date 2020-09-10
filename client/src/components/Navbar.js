@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, lazy } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { connect } from 'react-redux'
 

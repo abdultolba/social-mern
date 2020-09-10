@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, lazy } from 'react'
 import { connect } from 'react-redux'
 import BottomScrollListener from 'react-bottom-scroll-listener'
 import cogoToast from 'cogo-toast'

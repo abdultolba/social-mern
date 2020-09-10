@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, lazy } from 'react'
 import { connect } from 'react-redux'
 import { Link, withRouter } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
