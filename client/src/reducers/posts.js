@@ -17,7 +17,7 @@ const defaultState = {
 	loading: false,
 	isThereMore: true,
 	offset: 0,
-	quantity: 10,
+	quantity: 50,
 	items: [],
 	editedPostId: ''
 }
