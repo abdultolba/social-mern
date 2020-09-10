@@ -34,7 +34,7 @@ router.get('/:username', (req, res) => {
 
 router.get('/:username/posts', (req, res) => {
     const { username: profile } = req.params
-    const { offset = 0, quantity = 20 } = req.query
+    const { offset = 0, quantity = 50 } = req.query
 
     Post.find({ profile })
         .skip(parseInt(offset))

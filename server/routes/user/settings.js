@@ -1,20 +1,33 @@
+const dotenv = require('dotenv').config()
 const express = require('express')
 const router = express.Router()
 const User = require('../../models/User')
 const {isAuth} = require('../../middlewares/auth')
 const Jimp = require('jimp')
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer')
-const path = require('path')
-const shortId = require('shortid')
 
-const storage = multer.diskStorage({
-	destination: (req, file, cb) => {
-	  cb(null, path.resolve(__dirname, '..' , 'public/images/avatars'))
-	},
-	filename: (req, file, cb) => {
-	  cb(null, `${req.user.username}.png`)
+const { CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET } = process.env
+// const { CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET } = require('../../config');
+
+cloudinary.config({
+    cloud_name: CLOUD_NAME,
+    api_key: CLOUD_API_KEY,
+    api_secret: CLOUD_API_SECRET
+});
+
+const storage = new CloudinaryStorage({
+	cloudinary: cloudinary,
+	params: {
+		folder: 'avatars',
+		allowed_formats: ['png', 'jpg', 'jpeg'],
+		public_id: (req, file) => {
+			return `${req.user.username}`
+		},
+		transformation: [{ width: 200, height: 200, crop: 'limit' }]
 	}
-  })
+})
 
 const upload = multer({storage: storage})
 
@@ -64,28 +77,19 @@ router.patch('/description', isAuth, (req,res) => {
 
 router.patch('/profilePicture', [isAuth, upload.single('newImage')] , (req,res) => {
 	const { _id } = req.user
+	const file = req.file
 
-	if(!req.file)
+	if(!file){
 		res.status(500).json({code: 500, response: "There was an error"})
+	}
 
-	const { x, y, width, height } = JSON.parse(req.body.crop)
-
-	Jimp.read(path.resolve(req.file.destination,req.file.filename), (err, imageToCrop) => {
-		if (err) throw err
-		imageToCrop
-			.crop( x, y, width, height )
-			.resize(150,150)
-			.quality(100)
-			.write(path.resolve(req.file.destination,req.file.filename))
-	})
-
-	User.findByIdAndUpdate(_id, { profilePic: `images/avatars/${req.file.filename}` }, { new: true, useFindAndModify: false })
+	User.findByIdAndUpdate(_id, { profilePic: file.path }, { new: true, useFindAndModify: false })
 		.then(updatedUser => {
 			res.status(200).json({
 				code: 200,
 				response: {
-					message: 'Photo updated successfully',
-					path: `${updatedUser.profilePic}?hash=${shortId.generate()}`,
+					message: 'Photo updated successfully!',
+					path: updatedUser.profilePic,
 					updatedUser
 				}
 			})
