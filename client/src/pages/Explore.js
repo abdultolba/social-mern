@@ -1,13 +1,13 @@
 import BottomScrollListener from 'react-bottom-scroll-listener'
-import React, { Component } from 'react'
+import React, { Component, lazy } from 'react'
 import { connect } from 'react-redux'
 
-import { discoverPosts, restartState as restartStatePosts } from '../actions/posts';
-import { discoverUsers, restartState as restartStateUsers } from '../actions/users';
+import { discoverPosts, restartState as restartStatePosts } from '../actions/posts'
+import { discoverUsers, restartState as restartStateUsers } from '../actions/users'
 
-import UserCard from '../components/UserCard'
-import Post from '../components/Post'
-import Loading from '../components/Loading'
+const UserCard = lazy(() => import('../components/UserCard'))
+const Post = lazy(() => import('../components/Post'))
+const Loading = lazy(() => import('../components/Loading'))
 
 class Explore extends Component {
     constructor(props){

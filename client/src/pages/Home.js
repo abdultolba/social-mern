@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
+import React, { Component, lazy } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-
-import AuthForm from '../components/AuthForm'
 import { toggleNavbar, signIn, signUp } from '../actions/app'
+
+const AuthForm = lazy(() => import('../components/AuthForm'))
 
 class Home extends Component {
 	constructor(props) {

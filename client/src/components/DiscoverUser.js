@@ -4,7 +4,8 @@ import { Link, withRouter } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
 import { discoverUsers, restartState } from '../actions/discover'
-import Loading from './Loading'
+
+const Loading = lazy(() => import('./Loading'))
 
 class DiscoverUser extends Component {
 	constructor(props){

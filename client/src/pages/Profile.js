@@ -3,17 +3,17 @@ import { connect } from 'react-redux'
 import BottomScrollListener from 'react-bottom-scroll-listener'
 import cogoToast from 'cogo-toast'
 
-import ProfilePictureModal from '../components/ProfilePictureModal'
-import NewPostForm from '../components/NewPostForm'
-import Loading from '../components/Loading'
-import Post from '../components/Post'
-import Auth from '../components/Auth'
-
 import { fetchUserPosts, newPost, restartState as restartStatePosts } from '../actions/posts'
 import { fetchProfile, restartState, toggleSidenav, toggleEditingDescription } from '../actions/profile'
 import { toggleNavbar, toggleProfilePictureModal } from '../actions/app';
 import { changeDescription } from '../actions/settings';
 import { logout } from '../actions/app'
+
+const ProfilePictureModal = lazy(() => import('../components/ProfilePictureModal'))
+const NewPostForm = lazy(() => import('../components/NewPostForm'))
+const Loading = lazy(() => import('../components/Loading'))
+const Post = lazy(() => import('../components/Post'))
+const Auth = lazy(() => import('../components/Auth'))
 
 class Profile extends Component {
 	constructor(props) {

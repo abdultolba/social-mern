@@ -4,8 +4,8 @@ import { connect } from 'react-redux'
 
 import { logout, togglePostModal, toggleSettingsModal } from '../actions/app'
 
-import NewPostModal from './NewPostModal'
-import Auth from "./Auth"
+const NewPostModal = lazy(() => import('./NewPostModal'))
+const Auth = lazy(() => import('./Auth'))
 
 class Navbar extends Component {
     constructor(props) {
