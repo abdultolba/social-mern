@@ -25,7 +25,7 @@ module.exports = {
 3. Run the command ```npm start``` and the server will automatically install subdirectory dependencies & start the servers.
 
 ## Demo
-![friend.ly demo](https://github.com/abdultolba/social-mern/blob/master/demo.gif)
+![friend.ly demo](https://res.cloudinary.com/friendly-social/image/upload/v1599828700/github/demo_pekg8c.gif)
 
 ## Built with
 - [Node.js](https://nodejs.org/)
