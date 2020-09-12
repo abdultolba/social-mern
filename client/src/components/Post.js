@@ -80,7 +80,7 @@ class Post extends Component {
 						</div>
 						<div className="post__avatar ml-2">
 							<Link to={'/u/' + this.props.author.username}>
-								<img src={this.props.author.profilePic} className="img-fluid cursor-pointer rounded-circle" />
+								<img src={this.props.author.profilePic} alt={this.props.author.username} className="img-fluid cursor-pointer rounded-circle" />
 							</Link>
 						</div>
 					</div>

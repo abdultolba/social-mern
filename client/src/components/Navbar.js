@@ -25,7 +25,7 @@ class Navbar extends Component {
                                     data-balloon-pos="left"
                                     aria-label="Profile"
                                     data-balloon-blunt>
-                                    <img src={this.props.profile.profilePic} style={{ 'width': '35px', 'height': '35px' }} className='img-fluid d-block mx-auto rounded-circle' />
+                                    <img src={this.props.profile.profilePic} alt={this.props.profile.username} style={{ 'width': '35px', 'height': '35px' }} className='img-fluid d-block mx-auto rounded-circle' />
                                 </NavLink>
                                 <div
                                     className="navbar-cs__button" onClick={this.props.toggleSettingsModal}
@@ -55,6 +55,7 @@ class Navbar extends Component {
                                 href='https://www.github.com/abdultolba/social-mern'
                                 className="navbar-cs__button"
                                 target="_blank"
+                                rel="noopener"
                                 data-balloon-pos="left"
                                 aria-label="Source Code"
                                 data-balloon-blunt>
@@ -83,7 +84,7 @@ class Navbar extends Component {
                             </Auth>
                         </div>
                         <div className="d-none d-md-block">
-                            <img src="assets/images/small-logo.png" className="d-block mx-auto img-fluid" />
+                            <img src="assets/images/small-logo.png" alt="friend.ly logo" className="d-block mx-auto img-fluid" />
                         </div>
                     </div>
                 }
