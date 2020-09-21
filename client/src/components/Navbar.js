@@ -16,7 +16,7 @@ class Navbar extends Component {
         return (
             <>
                 {this.props.isVisible &&
-                    <div className="navbar-cs bg-light d-flex flex-column justify-content-between">
+                    <nav className="navbar-cs bg-light d-flex flex-column justify-content-between">
                         <div className="d-flex flex-row flex-md-column">
                             <Auth>
                                 <NavLink
@@ -86,7 +86,7 @@ class Navbar extends Component {
                         <div className="d-none d-md-block">
                             <img src="assets/images/small-logo.png" alt="friend.ly logo" className="d-block mx-auto img-fluid" />
                         </div>
-                    </div>
+                    </nav>
                 }
             </>
         )

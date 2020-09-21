@@ -69,7 +69,7 @@ class Post extends Component {
 
 	render() {
 		return (
-			<div className="card w-100 my-5 post">
+			<article className="card w-100 my-5 post">
 				<div className="card-header bg-white pb-0 border-0 d-flex justify-content-between">
 					<div>
 						<small className="text-muted">{dayjs().from(dayjs(this.props.createdAt))} ago</small>
@@ -144,7 +144,7 @@ class Post extends Component {
 					</>
 					}
 				</div>
-			</div>
+			</article>
 		)
 	}
 }
