@@ -69,7 +69,7 @@ class Post extends Component {
 
 	render() {
 		return (
-			<div className="card w-100 my-5 post">
+			<article className="card w-100 my-5 post">
 				<div className="card-header bg-white pb-0 border-0 d-flex justify-content-between">
 					<div>
 						<small className="text-muted">{dayjs().from(dayjs(this.props.createdAt))} ago</small>
@@ -80,7 +80,7 @@ class Post extends Component {
 						</div>
 						<div className="post__avatar ml-2">
 							<Link to={'/u/' + this.props.author.username}>
-								<img src={this.props.author.profilePic} className="img-fluid cursor-pointer rounded-circle" />
+								<img src={this.props.author.profilePic} alt={this.props.author.username} className="img-fluid cursor-pointer rounded-circle" />
 							</Link>
 						</div>
 					</div>
@@ -144,7 +144,7 @@ class Post extends Component {
 					</>
 					}
 				</div>
-			</div>
+			</article>
 		)
 	}
 }

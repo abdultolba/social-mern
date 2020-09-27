@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
+import React, { Component, lazy } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import { logout, togglePostModal, toggleSettingsModal } from '../actions/app'
 
-import NewPostModal from './NewPostModal'
-import Auth from "./Auth"
+const NewPostModal = lazy(() => import('./NewPostModal'))
+const Auth = lazy(() => import('./Auth'))
 
 class Navbar extends Component {
     constructor(props) {
@@ -16,7 +16,7 @@ class Navbar extends Component {
         return (
             <>
                 {this.props.isVisible &&
-                    <div className="navbar-cs bg-light d-flex flex-column justify-content-between">
+                    <nav className="navbar-cs bg-light d-flex flex-column justify-content-between">
                         <div className="d-flex flex-row flex-md-column">
                             <Auth>
                                 <NavLink
@@ -25,7 +25,7 @@ class Navbar extends Component {
                                     data-balloon-pos="left"
                                     aria-label="Profile"
                                     data-balloon-blunt>
-                                    <img src={this.props.profile.profilePic} style={{ 'width': '35px', 'height': '35px' }} className='img-fluid d-block mx-auto rounded-circle' />
+                                    <img src={this.props.profile.profilePic} alt={this.props.profile.username} style={{ 'width': '35px', 'height': '35px' }} className='img-fluid d-block mx-auto rounded-circle' />
                                 </NavLink>
                                 <div
                                     className="navbar-cs__button" onClick={this.props.toggleSettingsModal}
@@ -55,6 +55,7 @@ class Navbar extends Component {
                                 href='https://www.github.com/abdultolba/social-mern'
                                 className="navbar-cs__button"
                                 target="_blank"
+                                rel="noopener"
                                 data-balloon-pos="left"
                                 aria-label="Source Code"
                                 data-balloon-blunt>
@@ -83,9 +84,9 @@ class Navbar extends Component {
                             </Auth>
                         </div>
                         <div className="d-none d-md-block">
-                            <img src="assets/images/small-logo.png" className="d-block mx-auto img-fluid" />
+                            <img src="assets/images/small-logo.png" alt="friend.ly logo" className="d-block mx-auto img-fluid" />
                         </div>
-                    </div>
+                    </nav>
                 }
             </>
         )

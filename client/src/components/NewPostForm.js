@@ -61,7 +61,7 @@ class NewPostForm extends Component {
         return (
             <div className="d-flex">
                 <div className="mr-4 d-none d-md-block">
-                    <img src={this.props.logged.profilePic} className="d-block mx-auto rounded-circle border" style={{ width: '75px' }} />
+                    <img src={this.props.logged.profilePic} alt={this.props.profileId} className="d-block mx-auto rounded-circle border" style={{ width: '75px' }} />
                 </div>
                 <div className="mt-2 w-100">
                     <form onSubmit={this.handleNewPost}>
