@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { User, Post } = require("../models");
+const { User, Post, Comment } = require("../models");
 
 router.get("/users", async (req, res) => {
   try {
@@ -73,6 +73,23 @@ router.get("/posts", async (req, res) => {
           model: User,
           as: "likedByUsers",
           attributes: ["id", "username"],
+        },
+        {
+          model: Comment,
+          as: "comments",
+          include: [
+            {
+              model: User,
+              as: "author",
+              attributes: ["id", "username", "profilePic"],
+            },
+            {
+              model: User,
+              as: "likedByUsers",
+              attributes: ["id", "username"],
+            },
+          ],
+          order: [["createdAt", "ASC"]],
         },
       ],
       order: [["createdAt", "DESC"]],

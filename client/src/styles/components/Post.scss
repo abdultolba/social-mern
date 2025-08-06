@@ -5,16 +5,25 @@
   border-radius: 10px;
   background-color: var(--card-bg);
   color: var(--text-primary);
-  
+
+  // Clickable post styling
+  &.cursor-pointer {
+    &:hover {
+      cursor: pointer;
+      box-shadow: 0px 8px 27px -7px var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+  }
+
   .card-header {
     background-color: var(--card-bg);
     border-bottom: 1px solid var(--border-color);
-    
+
     a {
       color: var(--text-primary);
       text-decoration: none;
       font-weight: 500;
-      
+
       &:hover {
         color: #a02a19;
         text-decoration: none;
@@ -26,57 +35,53 @@
     max-width: 25px;
   }
 
-  &__likes {
-    color: red;
-    position: absolute;
-    bottom: -15px;
-    right: 10px;
-    transition: 0.5s all;
-    box-shadow: 0px 0px 20px -9px var(--shadow);
+  // Post actions container
+  .post-actions {
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 12px;
   }
 
-  &__edit {
-    position: absolute;
-    bottom: -15px;
-    right: 90px;
-    transition: 0.5s all;
-    box-shadow: 0px 0px 20px -9px var(--shadow);
-  }
-
-  &__delete {
-    position: absolute;
-    bottom: -15px;
-    right: 150px;
-    transition: 0.5s all;
-    box-shadow: 0px 0px 20px -9px var(--shadow);
-  }
-
-  &__likes,
-  &__delete,
-  &__edit {
+  // Common styling for all action buttons
+  &__action {
     background-color: var(--bg-primary);
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
-    
+    box-shadow: 0px 2px 8px -4px var(--shadow);
+
     &:hover {
       background-color: var(--bg-tertiary);
-      transform: scale(1.05);
+      transform: translateY(-1px);
+      box-shadow: 0px 4px 12px -2px var(--shadow);
     }
-    
+
     .text-secondary {
       color: var(--text-secondary) !important;
     }
-  }
-  
-  &__likes {
-    color: #dc3545 !important;
-    
-    &:hover {
-      background-color: rgba(220, 53, 69, 0.1);
+
+    // Like button specific styling
+    &.text-brand-secondary {
+      color: #dc3545 !important;
+      border-color: rgba(220, 53, 69, 0.2);
+
+      &:hover {
+        background-color: rgba(220, 53, 69, 0.1);
+        border-color: rgba(220, 53, 69, 0.3);
+      }
+    }
+
+    // Comment button specific styling
+    &.text-secondary {
+      color: var(--text-secondary) !important;
+
+      &:hover {
+        color: #6c757d !important;
+      }
     }
   }
-  
-  &:hover {
+
+  // Only apply hover effects to non-clickable posts
+  &:not(.cursor-pointer):hover {
     box-shadow: 0px 8px 27px -7px var(--shadow-hover);
     transform: translateY(-5px);
   }

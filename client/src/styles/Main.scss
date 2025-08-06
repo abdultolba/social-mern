@@ -23,6 +23,8 @@ $theme-colors: (
   --modal-bg: #ffffff;
   --input-bg: #ffffff;
   --card-bg: #ffffff;
+  --comment-bg: #f8f9fa;
+  --comment-border: #dee2e6;
 }
 
 // Dark theme variables
@@ -40,6 +42,8 @@ body.dark-theme {
   --modal-bg: #1a1a1a;
   --input-bg: #2d2d2d;
   --card-bg: #2d2d2d;
+  --comment-bg: #404040;
+  --comment-border: #555555;
 }
 
 @import "~bootstrap/scss/bootstrap";
@@ -50,6 +54,7 @@ body.dark-theme {
 @import "./components/Navbar.scss";
 @import "./components/DiscoverUser.scss";
 @import "./components/ProfilePictureModal.scss";
+@import "./components/Comments.scss";
 @import "./embeds.scss";
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
@@ -143,7 +148,7 @@ body {
   background-color: var(--border-color);
   border-radius: 12px;
   transition: background-color 0.3s ease;
-  
+
   &.active {
     background-color: #a02a19;
   }
@@ -161,12 +166,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   i {
     font-size: 10px;
     color: var(--text-primary);
   }
-  
+
   .toggle-switch.active & {
     transform: translateX(26px);
   }
@@ -178,11 +183,13 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.card, .modal-content {
+.card,
+.modal-content {
   background-color: var(--card-bg);
   color: var(--text-primary);
   border-color: var(--border-color);
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .form-control {
@@ -190,11 +197,11 @@ body {
   color: var(--text-primary);
   border-color: var(--border-color);
   transition: all 0.3s ease;
-  
+
   &::placeholder {
     color: var(--text-muted);
   }
-  
+
   &:focus {
     background-color: var(--input-bg);
     color: var(--text-primary);
@@ -210,7 +217,7 @@ body {
 .btn-outline-secondary {
   color: var(--text-secondary);
   border-color: var(--border-color);
-  
+
   &:hover {
     background-color: var(--bg-tertiary);
     border-color: var(--border-color);
@@ -230,7 +237,8 @@ body {
   border-color: var(--border-color) !important;
 }
 
-.shadow, .sh-1 {
+.shadow,
+.sh-1 {
   box-shadow: 0px 20px 26px -25px var(--shadow) !important;
 }
 
@@ -238,10 +246,10 @@ body {
 .navbar-cs {
   background-color: var(--navbar-bg) !important;
   transition: background-color 0.3s ease;
-  
+
   .navbar-cs__button {
     transition: all 0.3s ease;
-    
+
     &:hover {
       background-color: var(--bg-tertiary) !important;
     }
@@ -254,19 +262,19 @@ body {
     background-color: var(--modal-bg);
     color: var(--text-primary);
   }
-  
+
   .modal-header {
     border-bottom-color: var(--border-color);
   }
-  
+
   .modal-footer {
     border-top-color: var(--border-color);
   }
-  
+
   .close {
     color: var(--text-primary);
     opacity: 0.7;
-    
+
     &:hover {
       opacity: 1;
     }
@@ -277,12 +285,12 @@ body {
 body.dark-theme {
   ::-webkit-scrollbar-thumb {
     background: #555;
-    
+
     &:hover {
       background: #777;
     }
   }
-  
+
   ::-webkit-scrollbar-track {
     background: var(--bg-secondary);
   }
@@ -292,10 +300,10 @@ body.dark-theme {
 .dropdown-menu {
   background-color: var(--card-bg);
   border-color: var(--border-color);
-  
+
   .dropdown-item {
     color: var(--text-primary);
-    
+
     &:hover {
       background-color: var(--bg-tertiary);
     }
@@ -323,10 +331,10 @@ body.dark-theme {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1) !important;
   overflow: hidden !important;
   position: relative !important;
-  
+
   // Animated gradient border
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: -1px;
     background: linear-gradient(45deg, #a02a19, #f0885d, #a02a19);
@@ -336,23 +344,34 @@ body.dark-theme {
     animation: borderGlow 3s ease-in-out infinite;
     opacity: 0.3;
   }
-  
+
   @keyframes borderGlow {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
   }
-  
+
   // Dark mode modal
   body.dark-theme & {
     background: rgba(26, 26, 26, 0.9) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
   }
-  
-  h1, h2, h3, h4, h5, h6, p {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
     color: var(--text-primary) !important;
   }
-  
+
   // Enhanced buttons in modal
   .btn {
     position: relative;
@@ -360,9 +379,9 @@ body.dark-theme {
     border-radius: 15px !important;
     font-weight: 600;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
+
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       top: 50%;
       left: 50%;
@@ -373,30 +392,30 @@ body.dark-theme {
       transform: translate(-50%, -50%);
       transition: all 0.5s ease;
     }
-    
+
     &:hover::after {
       width: 300px;
       height: 300px;
     }
-    
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
-    
+
     &.btn-brand {
       background: linear-gradient(135deg, #a02a19 0%, #c73328 100%);
       border: none;
-      
+
       &:hover {
         background: linear-gradient(135deg, #8a1e15 0%, #a02a19 100%);
       }
     }
-    
+
     &.btn-brand-secondary {
       background: linear-gradient(135deg, #f0885d 0%, #ff9a6b 100%);
       border: none;
-      
+
       &:hover {
         background: linear-gradient(135deg, #e6774a 0%, #f0885d 100%);
       }
@@ -405,13 +424,21 @@ body.dark-theme {
 }
 
 .rodal-mask {
-  background: radial-gradient(circle, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.7) 100%) !important;
+  background: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0.7) 100%
+  ) !important;
   backdrop-filter: blur(5px) !important;
   -webkit-backdrop-filter: blur(5px) !important;
 }
 
 body.dark-theme {
   .rodal-mask {
-    background: radial-gradient(circle, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.9) 100%) !important;
+    background: radial-gradient(
+      circle,
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0.9) 100%
+    ) !important;
   }
 }

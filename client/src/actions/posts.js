@@ -8,6 +8,7 @@ export const DELETE_POST = "[POST] DELETE_POST",
   EDIT_POST = "EDIT_POST",
   FETCH_USER_POSTS = "[POST] FETCH_USER_POSTS",
   LIKE_POST = "[POST] LIKE_POST",
+  LOAD_SINGLE_POST = "[POST] LOAD_SINGLE_POST",
   NEW_POST = "[POST] NEW_POST",
   RESTART_STATE = "[POST] RESTART_STATE",
   SET_LOADING = "[POST] SET_LOADING",
@@ -111,7 +112,7 @@ export const newPost = (data) => {
       })
       .catch((e) => {
         toast.error("There were an error submitting your post 😬");
-        console.error('Post creation error:', e);
+        console.error("Post creation error:", e);
       });
   };
 };
@@ -191,6 +192,21 @@ export const updatePostsPicture = (url) => {
         username,
       },
     });
+  };
+};
+
+export const loadSinglePost = (post) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const existingPost = state.posts.items.find((p) => p.id === post.id);
+
+    // Only add if post doesn't already exist in store
+    if (!existingPost) {
+      dispatch({
+        type: LOAD_SINGLE_POST,
+        payload: post,
+      });
+    }
   };
 };
 

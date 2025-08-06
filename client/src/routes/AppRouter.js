@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const Home = lazy(() => import("../pages/Home"));
 const Profile = lazy(() => import("../pages/Profile"));
+const PostPage = lazy(() => import("../pages/PostPage"));
 const Error = lazy(() => import("../pages/Error"));
 const Explore = lazy(() => import("../pages/Explore"));
 
@@ -38,6 +39,14 @@ const AppRouter = () => {
             element={
               <AppLayout>
                 <Profile />
+              </AppLayout>
+            }
+          />
+          <Route
+            path="/post/:postId"
+            element={
+              <AppLayout>
+                <PostPage />
               </AppLayout>
             }
           />

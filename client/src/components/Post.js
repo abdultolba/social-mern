@@ -1,11 +1,12 @@
 import React, { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Linkify from "react-linkify";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import EmbedPreview from "./EmbedPreview";
+import CommentsSection from "./CommentsSection";
 
 import {
   likePost,
@@ -21,13 +22,22 @@ dayjs.extend(relativeTime);
 const Post = (props) => {
   const dispatch = useDispatch();
   const params = useParams();
+  const navigate = useNavigate();
   const logged = useSelector((state) => state.app.logged.isLogged);
   const session = useSelector((state) => state.app.logged);
   const editedPostId = useSelector((state) => state.posts.editedPostId);
 
-  const deletePostHandler = useCallback(() => {
-    dispatch(deletePost({ postId: props.id }));
-  }, [dispatch, props.id]);
+  // Check if this is the expanded view (individual post page)
+  const isExpandedView = props.isExpandedView || false;
+  const commentCount = props.comments ? props.comments.length : 0;
+
+  const deletePostHandler = useCallback(
+    (e) => {
+      e.stopPropagation(); // Prevent post click
+      dispatch(deletePost({ postId: props.id }));
+    },
+    [dispatch, props.id]
+  );
 
   const editPostHandler = useCallback(
     (e) => {
@@ -53,22 +63,70 @@ const Post = (props) => {
       return session.username === params.id;
   }, [session.id, session.username, props.author.id, params.id]);
 
-  const handleLike = useCallback(() => {
-    if (!logged) {
-      return toast("Sorry, you need to be logged in to like this post 😔", {
-        icon: "⚠️",
-      });
-    }
+  const handleLike = useCallback(
+    (e) => {
+      e.stopPropagation(); // Prevent post click
 
-    if (props.liked) {
-      dispatch(unlikePost(props.id));
-    } else {
-      dispatch(likePost(props.id));
-    }
-  }, [dispatch, logged, props.liked, props.id]);
+      if (!logged) {
+        return toast("Sorry, you need to be logged in to like this post 😔", {
+          icon: "⚠️",
+        });
+      }
+
+      if (props.liked) {
+        dispatch(unlikePost(props.id));
+      } else {
+        dispatch(likePost(props.id));
+      }
+    },
+    [dispatch, logged, props.liked, props.id]
+  );
+
+  const handlePostClick = useCallback(
+    (e) => {
+      // Don't navigate if clicking on interactive elements
+      if (
+        e.target.closest("button") ||
+        e.target.closest("a") ||
+        e.target.closest("textarea") ||
+        e.target.closest("form")
+      ) {
+        return;
+      }
+
+      // Don't navigate if already on the expanded view
+      if (isExpandedView) {
+        return;
+      }
+
+      navigate(`/post/${props.id}`);
+    },
+    [navigate, props.id, isExpandedView]
+  );
+
+  const handleCommentClick = useCallback(
+    (e) => {
+      e.stopPropagation(); // Prevent post click
+
+      if (!logged) {
+        return toast("Sorry, you need to be logged in to comment 😔", {
+          icon: "⚠️",
+        });
+      }
+
+      // Navigate to expanded post view
+      navigate(`/post/${props.id}`);
+    },
+    [logged, navigate, props.id]
+  );
 
   return (
-    <div className="card w-100 my-5 post">
+    <div
+      className={`card w-100 my-5 post ${
+        !isExpandedView ? "cursor-pointer" : ""
+      }`}
+      onClick={!isExpandedView ? handlePostClick : undefined}
+    >
       <div className="card-header pb-0 border-0 d-flex justify-content-between">
         <div>
           <small className="text-muted">
@@ -123,40 +181,77 @@ const Post = (props) => {
           )}
         </Linkify>
         <EmbedPreview post={props} />
-        <div
-          onClick={handleLike}
-          className="d-inline-flex px-3 py-1 text-brand-secondary rounded-pill post__likes cursor-pointer"
-        >
-          <span>
-            {props.likes}{" "}
-            <i
-              className={`mr-1 ${
-                props.liked ? "fas fa-heart" : "far fa-heart"
-              }`}
-            ></i>
-          </span>
+        {/* Post Actions - Use flexbox layout instead of absolute positioning */}
+        <div className="post-actions d-flex align-items-center justify-content-between mt-3">
+          <div className="d-flex align-items-center">
+            {/* Like button */}
+            <div
+              onClick={handleLike}
+              className="d-inline-flex px-3 py-1 text-brand-secondary rounded-pill post__action cursor-pointer me-3"
+            >
+              <span>
+                {props.likes}{" "}
+                <i
+                  className={`mr-1 ${
+                    props.liked ? "fas fa-heart" : "far fa-heart"
+                  }`}
+                ></i>
+              </span>
+            </div>
+
+            {/* Comment count/button */}
+            {!isExpandedView && (
+              <div
+                onClick={handleCommentClick}
+                className="d-inline-flex px-3 py-1 text-secondary rounded-pill post__action cursor-pointer"
+              >
+                <span>
+                  {commentCount} <i className="far fa-comment mr-1"></i>
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Edit/Delete buttons */}
+          {canEditOrDeletePost() && !editedPostId && (
+            <div className="d-flex align-items-center">
+              <div
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent post click
+                  dispatch(toggleEditingPost(props.id));
+                }}
+                className="d-inline-flex px-3 py-1 rounded-pill post__action cursor-pointer me-2"
+              >
+                <span className="text-secondary">
+                  <i className="fas fa-pencil-alt"></i>
+                </span>
+              </div>
+              <div
+                onClick={deletePostHandler}
+                className="d-inline-flex px-3 py-1 rounded-pill post__action cursor-pointer"
+              >
+                <span className="text-secondary">
+                  <i className="fas fa-times"></i>
+                </span>
+              </div>
+            </div>
+          )}
         </div>
-        {canEditOrDeletePost() && !editedPostId && (
-          <>
-            <div
-              onClick={() => dispatch(toggleEditingPost(props.id))}
-              className="d-inline-flex px-3 py-1 rounded-pill post__edit cursor-pointer"
-            >
-              <span className="text-secondary">
-                <i className="fas fa-pencil-alt"></i>
-              </span>
-            </div>
-            <div
-              onClick={deletePostHandler}
-              className="d-inline-flex px-3 py-1 rounded-pill post__delete cursor-pointer"
-            >
-              <span className="text-secondary">
-                <i className="fas fa-times"></i>
-              </span>
-            </div>
-          </>
-        )}
       </div>
+
+      {/* Comments Section - Only show in expanded view */}
+      {isExpandedView && (
+        <div
+          className="card-footer border-0"
+          style={{ backgroundColor: "var(--card-bg)" }}
+        >
+          <CommentsSection
+            postId={props.id}
+            comments={props.comments || []}
+            isExpandedView={true}
+          />
+        </div>
+      )}
     </div>
   );
 };
