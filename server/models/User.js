@@ -12,7 +12,15 @@ User.init({
   username: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true
+    unique: true,
+    validate: {
+      notEmpty: true,
+      len: [3, 30]
+    },
+    set(value) {
+      // Always store username in lowercase
+      this.setDataValue('username', value.toLowerCase())
+    }
   },
   password: {
     type: DataTypes.STRING,

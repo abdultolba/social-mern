@@ -8,8 +8,9 @@ const { isAuth } = require('../../middlewares/auth')
 router.get('/:username', async (req, res) => {
     try {
         const { username } = req.params
+        const normalizedUsername = username.toLowerCase()
 
-        const user = await User.findOne({ where: { username } })
+        const user = await User.findOne({ where: { username: normalizedUsername } })
         if (!user) {
             return res.status(404).json({ code: 404, response: 'User not found' })
         }
@@ -66,7 +67,8 @@ router.get('/:username/posts', async (req, res) => {
         }
 
         // Find the user first
-        const user = await User.findOne({ where: { username: profile } })
+        const normalizedProfile = profile.toLowerCase()
+        const user = await User.findOne({ where: { username: normalizedProfile } })
         if (!user) {
             return res.status(404).json({ code: 404, response: 'User not found' })
         }
@@ -109,9 +111,10 @@ router.get('/:username/posts', async (req, res) => {
 router.get('/:username/likes', async (req, res) => {
     try {
         const { username } = req.params
+        const normalizedUsername = username.toLowerCase()
 
         // Find the user first
-        const user = await User.findOne({ where: { username } })
+        const user = await User.findOne({ where: { username: normalizedUsername } })
         if (!user) {
             return res.status(404).json({ code: 404, response: 'User not found' })
         }
@@ -144,7 +147,8 @@ router.post('/:username/new/post', isAuth, async (req, res) => {
         const { id: authorId } = req.user
 
         // Find the profile user
-        const profileUser = await User.findOne({ where: { username: profile } })
+        const normalizedProfile = profile.toLowerCase()
+        const profileUser = await User.findOne({ where: { username: normalizedProfile } })
         if (!profileUser) {
             return res.status(404).json({ code: 404, response: 'Profile user not found' })
         }

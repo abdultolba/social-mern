@@ -9,11 +9,14 @@ const { SECRET_KEY } = process.env;
 
 // POST /api/auth/sign-up
 router.post('/sign-up', async (req, res) => {
-	const { username, password } = req.body;
+	let { username, password } = req.body;
 
 	if (!username || !password) {
 		return res.status(400).json({ code: 400, message: 'Please provide all required information.' });
 	}
+
+	// Normalize username to lowercase for case-insensitive comparison
+	username = username.toLowerCase();
 
 	try {
 		const existingUser = await User.findOne({ where: { username } });
@@ -53,11 +56,14 @@ router.post('/sign-up', async (req, res) => {
 
 // POST /api/auth/sign-in
 router.post('/sign-in', async (req, res) => {
-	const { username, password } = req.body;
+	let { username, password } = req.body;
 
 	if (!username || !password) {
 		return res.status(400).json({ code: 400, message: 'You must provide a username and password.' });
 	}
+
+	// Normalize username to lowercase for case-insensitive comparison
+	username = username.toLowerCase();
 
 	try {
 		const user = await User.findOne({ where: { username } });
