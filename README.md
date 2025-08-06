@@ -16,21 +16,22 @@ A small social media platform that uses 'cards' to connect people virtually, bui
 
 ### Backend
 
-- **Node.js** with Express.js
+- **Node.js** with Express.js 5 (latest with modern async/await patterns)
 - **PostgreSQL 17** with Sequelize ORM
 - **JWT** for authentication
 - **bcrypt** for password hashing
-- **Cloudinary** for image storage
+- **Cloudinary** for image storage (with local fallback)
+- **Multer** with manual upload handling for Express 5 compatibility
 - **Sharp** for image processing
 
 ### Frontend
 
-- **React 18** with modern hooks
+- **React 19** with concurrent features and automatic memoization
 - **Redux Toolkit** for state management
-- **React Router 6** for navigation
+- **React Router 7** for enhanced navigation
 - **Bootstrap 5** for styling
-- **Webpack 5** for bundling
-- **Babel** for transpilation
+- **Vite 7** for lightning-fast development and bundling
+- **esbuild** for ultra-fast transpilation
 
 ## 📋 Prerequisites
 

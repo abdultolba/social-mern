@@ -5,57 +5,74 @@ const { User } = require("../../models");
 const { isAuth } = require("../../middlewares/auth");
 const Jimp = require("jimp");
 const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("@fluidjs/multer-cloudinary");
 const multer = require("multer");
+const { v4: uuidv4 } = require('uuid');
+const fs = require('fs').promises;
+const path = require('path');
 
 const { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } =
   process.env;
 
-// Configure upload strategy based on environment
-let upload;
-
+// Configure Cloudinary if credentials are available
 if (CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && CLOUDINARY_API_SECRET) {
-  // Configure Cloudinary
   cloudinary.config({
     cloud_name: CLOUDINARY_CLOUD_NAME,
     api_key: CLOUDINARY_API_KEY,
     api_secret: CLOUDINARY_API_SECRET,
   });
-
-  upload = multer({
-    storage: new CloudinaryStorage({
-      cloudinary: cloudinary,
-      params: (req, file) => {
-        return {
-          folder: "avatars",
-          allowed_formats: ["png", "jpg", "jpeg"],
-          public_id: `avatar_${req.user.username}_${Date.now()}`,
-          transformation: [{ width: 200, height: 200, crop: "limit" }],
-        };
-      },
-    }),
-  });
-} else {
-  // Fallback to local storage if Cloudinary is not configured
-  upload = multer({
-    storage: multer.diskStorage({
-      destination: (req, file, cb) => {
-        cb(null, "public/images/avatars/");
-      },
-      filename: (req, file, cb) => {
-        const ext = file.originalname.split(".").pop();
-        cb(null, `${req.user.username}.${ext}`);
-      },
-    }),
-    fileFilter: (req, file, cb) => {
-      if (file.mimetype.startsWith("image/")) {
-        cb(null, true);
-      } else {
-        cb(new Error("Only image files are allowed!"), false);
-      }
-    },
-  });
 }
+
+// Express 5 compatible upload configuration
+// Use memory storage to handle files in memory, then upload manually
+const upload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
+
+// Helper function to upload to Cloudinary
+const uploadToCloudinary = (buffer, options = {}) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload_stream(
+      {
+        folder: 'avatars',
+        transformation: [{ width: 200, height: 200, crop: 'limit', quality: 'auto' }],
+        ...options
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    ).end(buffer);
+  });
+};
+
+// Helper function to save file locally
+const saveFileLocally = async (buffer, filename) => {
+  const avatarsDir = path.join(__dirname, '../../public/images/avatars/');
+  
+  // Ensure directory exists
+  try {
+    await fs.mkdir(avatarsDir, { recursive: true });
+  } catch (err) {
+    // Directory might already exist, that's okay
+  }
+  
+  const filepath = path.join(avatarsDir, filename);
+  await fs.writeFile(filepath, buffer);
+  return `/images/avatars/${filename}`;
+};
 
 router.patch("/privacy", isAuth, async (req, res) => {
   const { id } = req.user;
@@ -117,28 +134,61 @@ router.patch(
     const file = req.file;
 
     if (!file) {
-      return res.status(400).json({ code: 400, message: "No file uploaded" });
+      return res.status(400).json({ 
+        code: 400, 
+        message: "No file uploaded" 
+      });
+    }
+
+    // Validate file type (extra safety)
+    if (!file.mimetype.startsWith('image/')) {
+      return res.status(400).json({ 
+        code: 400, 
+        message: "Only image files are allowed" 
+      });
     }
 
     try {
       const user = await User.findByPk(id);
       if (!user) {
-        return res.status(404).json({ code: 404, message: "User not found" });
+        return res.status(404).json({ 
+          code: 404, 
+          message: "User not found" 
+        });
       }
 
-      // Handle different storage configurations
       let profilePicUrl;
-      if (file.path) {
-        // Cloudinary returns the full URL in file.path
-        profilePicUrl = file.path;
-      } else if (file.filename) {
-        // Local storage - construct URL
-        profilePicUrl = `/images/avatars/${file.filename}`;
+      
+      // Try Cloudinary first if configured
+      if (CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && CLOUDINARY_API_SECRET) {
+        try {
+          console.log('🌤️ Uploading to Cloudinary...');
+          const result = await uploadToCloudinary(file.buffer, {
+            public_id: `avatar_${user.username}_${uuidv4()}`,
+            overwrite: true
+          });
+          
+          profilePicUrl = result.secure_url;
+          console.log('✅ Cloudinary upload successful:', profilePicUrl);
+        } catch (cloudinaryError) {
+          console.warn('⚠️ Cloudinary upload failed, falling back to local storage:', cloudinaryError.message);
+          
+          // Fallback to local storage
+          const fileExtension = file.originalname.split('.').pop() || 'jpg';
+          const filename = `${user.username}_${uuidv4()}.${fileExtension}`;
+          profilePicUrl = await saveFileLocally(file.buffer, filename);
+          console.log('✅ Local storage fallback successful:', profilePicUrl);
+        }
       } else {
-        // Fallback
-        profilePicUrl = "/images/avatars/default/avatar_default_0.png";
+        // Use local storage if Cloudinary not configured
+        console.log('💾 Using local storage (Cloudinary not configured)...');
+        const fileExtension = file.originalname.split('.').pop() || 'jpg';
+        const filename = `${user.username}_${uuidv4()}.${fileExtension}`;
+        profilePicUrl = await saveFileLocally(file.buffer, filename);
+        console.log('✅ Local storage upload successful:', profilePicUrl);
       }
 
+      // Update user profile picture
       user.profilePic = profilePicUrl;
       await user.save();
 
@@ -155,14 +205,12 @@ router.patch(
         },
       });
     } catch (err) {
-      console.error("Error updating profile picture:", err);
-      res
-        .status(500)
-        .json({
-          code: 500,
-          message: "Internal server error",
-          error: err.message,
-        });
+      console.error('❌ Error updating profile picture:', err);
+      res.status(500).json({
+        code: 500,
+        message: "Internal server error",
+        error: err.message,
+      });
     }
   }
 );
