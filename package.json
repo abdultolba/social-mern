@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "cd client && npm install && cd ../server && npm install",
-    "build-client": "npm run build --prefix client && npm run bundle --prefix client",
+    "build-client": "npm run build --prefix client",
     "start-server": "npm start --prefix server",
     "dev-server": "npm run dev --prefix server",
     "start": "npm run postinstall && concurrently \"npm run build-client\" \"npm run start-server\"",
-    "dev": "concurrently \"npm run serve --prefix client\" \"npm run dev-server\""
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev-server\""
   },
   "repository": {
     "type": "git",
