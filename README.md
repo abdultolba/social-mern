@@ -1,6 +1,6 @@
 # Social MERN - Modern Social Media Platform
 
-A social media platform that uses 'cards' to connect people virtually, built with the **PERN** stack (PostgreSQL, Express.js, React, Node.js).
+A small social media platform that uses 'cards' to connect people virtually, built with the **PERN** stack (PostgreSQL, Express.js, React, Node.js).
 
 ## 🚀 Features
 
@@ -10,10 +10,12 @@ A social media platform that uses 'cards' to connect people virtually, built wit
 - User profiles with customizable descriptions
 - Real-time social interactions
 - Modern UI with React 18 and Bootstrap 5
+- Dark Mode theme
 
 ## 🛠️ Tech Stack
 
 ### Backend
+
 - **Node.js** with Express.js
 - **PostgreSQL 17** with Sequelize ORM
 - **JWT** for authentication
@@ -22,6 +24,7 @@ A social media platform that uses 'cards' to connect people virtually, built wit
 - **Sharp** for image processing
 
 ### Frontend
+
 - **React 18** with modern hooks
 - **Redux Toolkit** for state management
 - **React Router 6** for navigation
@@ -38,6 +41,7 @@ A social media platform that uses 'cards' to connect people virtually, built wit
 ## 🔧 Installation
 
 ### 1. Clone the repository
+
 ```bash
 git clone <repository-url>
 cd social-mern
@@ -46,12 +50,14 @@ cd social-mern
 ### 2. Install PostgreSQL
 
 #### macOS (using Homebrew)
+
 ```bash
 brew install postgresql@17
 brew services start postgresql@17
 ```
 
 #### Ubuntu/Debian
+
 ```bash
 sudo apt update
 sudo apt install postgresql postgresql-contrib
@@ -60,9 +66,11 @@ sudo systemctl enable postgresql
 ```
 
 #### Windows
+
 Download and install from [PostgreSQL official website](https://www.postgresql.org/download/windows/)
 
 ### 3. Set up the database
+
 ```bash
 # Create the database
 createdb social_mern_db
@@ -80,6 +88,7 @@ cp server/.env.example server/.env
 ```
 
 Edit `server/.env` with your configuration:
+
 ```env
 # Database Configuration
 DB_HOST=localhost
@@ -102,6 +111,7 @@ PORT=3000
 ```
 
 ### 5. Install dependencies
+
 ```bash
 npm run postinstall
 ```
@@ -109,6 +119,7 @@ npm run postinstall
 ## 🚦 Running the Application
 
 ### Development Mode
+
 ```bash
 # Run both client and server in development mode
 npm run dev
@@ -122,12 +133,14 @@ npm run dev --prefix server
 ```
 
 ### Production Mode
+
 ```bash
 # Build and start the application
 npm start
 ```
 
 The application will be available at:
+
 - **Frontend**: http://localhost:8080 (development) or http://localhost:3000 (production)
 - **Backend API**: http://localhost:3000/api
 
@@ -138,21 +151,23 @@ social-mern/
 ├── client/                 # React frontend
 │   ├── src/
 │   │   ├── components/     # Reusable React components
-│   │   ├── pages/         # Page components
-│   │   ├── actions/       # Redux actions
-│   │   ├── reducers/      # Redux reducers
-│   │   ├── styles/        # SCSS stylesheets
-│   │   └── assets/        # Static assets
+│   │   ├── pages/          # Page components
+│   │   ├── actions/        # Redux actions
+│   │   ├── reducers/       # Redux reducers
+│   │   ├── styles/         # SCSS stylesheets
+│   │   └── assets/         # Static assets
 │   ├── webpack.config.js   # Webpack configuration
 │   └── package.json
 ├── server/                 # Node.js backend
-│   ├── routes/            # API routes
-│   ├── models/            # Sequelize models
-│   ├── middlewares/       # Express middlewares
-│   ├── db/               # Database configuration
-│   ├── public/           # Static files
+│   ├── routes/             # API routes
+│   ├── models/             # Sequelize models
+│   ├── middlewares/        # Express middlewares
+│   ├── db/                 # Database configuration
+│   ├── scripts/            # Serverside scripts
+│   ├── seeders/            # Database population
+│   ├── public/             # Static files
 │   └── package.json
-└── package.json           # Root package.json
+└── package.json            # Root package.json
 ```
 
 ## 🔄 Database Scripts
@@ -166,6 +181,12 @@ npm run db:drop --prefix server
 
 # Reset database (drop and recreate)
 npm run db:reset --prefix server
+
+# Sync database schema
+npm run db:sync --prefix server
+
+# Populate the database with user data (all passwords use 'password123')
+npm run db:seed --prefix server
 ```
 
 ## 🛡️ Security Features
@@ -181,12 +202,14 @@ npm run db:reset --prefix server
 ### PostgreSQL Connection Issues
 
 1. **Make sure PostgreSQL is running:**
+
    ```bash
    brew services start postgresql@17  # macOS
    sudo systemctl start postgresql    # Linux
    ```
 
 2. **Check if database exists:**
+
    ```bash
    psql -l
    ```
@@ -199,6 +222,7 @@ npm run db:reset --prefix server
 ### Build Issues
 
 1. **Clear node_modules:**
+
    ```bash
    rm -rf node_modules client/node_modules server/node_modules
    npm run postinstall
@@ -223,10 +247,12 @@ This project is licensed under the ISC License.
 
 ## 🙏 Acknowledgments
 
-- Original MERN implementation by Abdulrahman Tolba
+- Originally implemented with the MERN stack
 - Modernized with PostgreSQL, React 18, and latest dependencies
 - Security vulnerabilities fixed and dependencies updated
 
 ## Demo
+
 ![friend.ly demo](https://res.cloudinary.com/friendly-social/image/upload/v1599828700/github/demo_pekg8c.gif)
 
+Made with ❤️.

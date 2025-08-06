@@ -2,7 +2,7 @@ const { sequelize } = require("../models");
 
 async function syncDatabase() {
   try {
-    console.log("yncing database schema...");
+    console.log("Syncing database schema...");
 
     // Force sync will drop existing tables and recreate them with new schema
     await sequelize.sync({ force: true });
