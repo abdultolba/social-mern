@@ -195,35 +195,14 @@ const validateUserExists = async (req, res, next) => {
 };
 
 // Privacy validation for viewing posts
+// Note: openProfile only controls posting permissions, not viewing permissions
+// All users (logged-in and guests) can view profiles and posts
+// Later, a separate "private" field can be added for truly private profiles
 const validateViewPermission = (req, res, next) => {
-  const targetUser = req.targetUser;
-  const currentUser = req.user; // May be null for guests
-
-  // If profile is open, anyone can view
-  if (targetUser.openProfile) {
-    return next();
-  }
-
-  // If profile is closed and user is not authenticated
-  if (!currentUser) {
-    return res.status(403).json({
-      code: 403,
-      message: "This profile is private. Please log in to view.",
-      requiresAuth: true,
-    });
-  }
-
-  // If user is viewing their own profile
-  if (currentUser.id === targetUser.id) {
-    return next();
-  }
-
-  // Profile is closed and user is not the owner
-  return res.status(403).json({
-    code: 403,
-    message: "This profile is private.",
-    profileClosed: true,
-  });
+  // Allow all users (logged-in and guests) to view profiles and posts
+  // openProfile field only affects posting permissions, not viewing
+  // Future enhancement: Add a separate "private" field for private profiles
+  return next();
 };
 
 module.exports = {

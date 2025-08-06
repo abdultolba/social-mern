@@ -1,8 +1,26 @@
 .post {
   border-color: rgba(0, 0, 0, 0);
   transition: 0.5s all;
-  box-shadow: 0px 10px 20px -9px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 10px 20px -9px var(--shadow);
   border-radius: 10px;
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  
+  .card-header {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    
+    a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 500;
+      
+      &:hover {
+        color: #a02a19;
+        text-decoration: none;
+      }
+    }
+  }
 
   &__avatar {
     max-width: 25px;
@@ -14,7 +32,7 @@
     bottom: -15px;
     right: 10px;
     transition: 0.5s all;
-    box-shadow: 0px 0px 20px -9px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 20px -9px var(--shadow);
   }
 
   &__edit {
@@ -22,7 +40,7 @@
     bottom: -15px;
     right: 90px;
     transition: 0.5s all;
-    box-shadow: 0px 0px 20px -9px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 20px -9px var(--shadow);
   }
 
   &__delete {
@@ -30,16 +48,36 @@
     bottom: -15px;
     right: 150px;
     transition: 0.5s all;
-    box-shadow: 0px 0px 20px -9px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 20px -9px var(--shadow);
   }
 
   &__likes,
   &__delete,
   &__edit {
-    background-color: #ffffff;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: var(--bg-tertiary);
+      transform: scale(1.05);
+    }
+    
+    .text-secondary {
+      color: var(--text-secondary) !important;
+    }
   }
+  
+  &__likes {
+    color: #dc3545 !important;
+    
+    &:hover {
+      background-color: rgba(220, 53, 69, 0.1);
+    }
+  }
+  
   &:hover {
-    box-shadow: 0px 8px 27px -7px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 8px 27px -7px var(--shadow-hover);
     transform: translateY(-5px);
   }
 }

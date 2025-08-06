@@ -12,7 +12,9 @@ import {
 	SET_PROFILE_PRIVACY,
 	TOGGLE_SETTINGS_MODAL,
 	SET_SETTINGS_LOADING,
-	RESET_LAST_CONNECTION
+	RESET_LAST_CONNECTION,
+	TOGGLE_DARK_MODE,
+	SET_DARK_MODE
 } from '../actions/app'
 
 const defaultState = {
@@ -28,6 +30,9 @@ const defaultState = {
 	},
 	navbar: {
 		isVisible: true
+	},
+	theme: {
+		isDark: false
 	},
 	logged: {
 		isLoading: false,
@@ -143,6 +148,20 @@ export default (state = defaultState, action) => {
 			return {
 				...state,
 				logged: defaultState.logged
+			}
+		case TOGGLE_DARK_MODE:
+			return {
+				...state,
+				theme: {
+					isDark: !state.theme.isDark
+				}
+			}
+		case SET_DARK_MODE:
+			return {
+				...state,
+				theme: {
+					isDark: action.payload.isDark
+				}
 			}
 		default:
 			return state

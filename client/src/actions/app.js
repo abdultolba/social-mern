@@ -17,7 +17,9 @@ export const ERROR = "[APP] ERROR",
   TOGGLE_NAVBAR = "[APP] TOGGLE_NAVBAR",
   TOGGLE_POST_MODAL = "[APP] TOGGLE_POST_MODAL",
   TOGGLE_PROFILE_PICTURE_MODAL = "[APP] TOGGLE_PROFILE_PICTURE_MODAL",
-  TOGGLE_SETTINGS_MODAL = "[APP] TOGGLE_SETTINGS_MODAL";
+  TOGGLE_SETTINGS_MODAL = "[APP] TOGGLE_SETTINGS_MODAL",
+  TOGGLE_DARK_MODE = "[APP] TOGGLE_DARK_MODE",
+  SET_DARK_MODE = "[APP] SET_DARK_MODE";
 
 export const setLoginLoad = (value) => {
   return (dispatch) =>
@@ -181,7 +183,34 @@ export const setDescription = (description) => {
     dispatch({
       type: SET_PROFILE_DESCRIPTION,
       payload: { description },
-    })``;
+    });
     dispatch(resetLastConnection());
+  };
+};
+
+export const toggleDarkMode = () => {
+  return (dispatch) => {
+    const currentTheme = localStorage.getItem("theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    
+    localStorage.setItem("theme", newTheme);
+    document.body.classList.toggle("dark-theme", newTheme === "dark");
+    
+    dispatch({
+      type: TOGGLE_DARK_MODE,
+    });
+  };
+};
+
+export const setDarkMode = (isDark) => {
+  return (dispatch) => {
+    const theme = isDark ? "dark" : "light";
+    localStorage.setItem("theme", theme);
+    document.body.classList.toggle("dark-theme", isDark);
+    
+    dispatch({
+      type: SET_DARK_MODE,
+      payload: { isDark },
+    });
   };
 };

@@ -7,6 +7,41 @@ $theme-colors: (
   border-radius: 50% !important;
 }
 
+// CSS Variables for theme
+:root {
+  // Light theme variables
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #999999;
+  --border-color: #dee2e6;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
+  --navbar-bg: #ffffff;
+  --modal-bg: #ffffff;
+  --input-bg: #ffffff;
+  --card-bg: #ffffff;
+}
+
+// Dark theme variables
+body.dark-theme {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --text-muted: #888888;
+  --border-color: #404040;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow-hover: rgba(0, 0, 0, 0.4);
+  --navbar-bg: #2d2d2d;
+  --modal-bg: #1a1a1a;
+  --input-bg: #2d2d2d;
+  --card-bg: #2d2d2d;
+}
+
 @import "~bootstrap/scss/bootstrap";
 @import "./pages/Home.scss";
 @import "./pages/Profile.scss";
@@ -23,8 +58,10 @@ $theme-colors: (
 body {
   margin: 0 !important;
   padding: 0 !important;
-  background-color: #ffffff;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .montserrat {
@@ -87,5 +124,294 @@ body {
 @include media-breakpoint-up(md) {
   .page {
     padding: 0 75px 0 0;
+  }
+}
+
+// Dark Mode Toggle Styles
+.dark-mode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  background-color: var(--border-color);
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+  
+  &.active {
+    background-color: #a02a19;
+  }
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: var(--bg-primary);
+  border-radius: 50%;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  i {
+    font-size: 10px;
+    color: var(--text-primary);
+  }
+  
+  .toggle-switch.active & {
+    transform: translateX(26px);
+  }
+}
+
+// Theme-aware component styles
+.bg-light {
+  background-color: var(--navbar-bg) !important;
+  transition: background-color 0.3s ease;
+}
+
+.card, .modal-content {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.form-control {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+  transition: all 0.3s ease;
+  
+  &::placeholder {
+    color: var(--text-muted);
+  }
+  
+  &:focus {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: #a02a19;
+    box-shadow: 0 0 0 0.2rem rgba(160, 42, 25, 0.25);
+  }
+}
+
+.btn {
+  transition: all 0.3s ease;
+}
+
+.btn-outline-secondary {
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+  
+  &:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+.text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.border {
+  border-color: var(--border-color) !important;
+}
+
+.shadow, .sh-1 {
+  box-shadow: 0px 20px 26px -25px var(--shadow) !important;
+}
+
+// Navbar specific dark theme styles
+.navbar-cs {
+  background-color: var(--navbar-bg) !important;
+  transition: background-color 0.3s ease;
+  
+  .navbar-cs__button {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: var(--bg-tertiary) !important;
+    }
+  }
+}
+
+// Modal dark theme styles
+.modal {
+  .modal-content {
+    background-color: var(--modal-bg);
+    color: var(--text-primary);
+  }
+  
+  .modal-header {
+    border-bottom-color: var(--border-color);
+  }
+  
+  .modal-footer {
+    border-top-color: var(--border-color);
+  }
+  
+  .close {
+    color: var(--text-primary);
+    opacity: 0.7;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+// Scrollbar dark theme
+body.dark-theme {
+  ::-webkit-scrollbar-thumb {
+    background: #555;
+    
+    &:hover {
+      background: #777;
+    }
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+  }
+}
+
+// Bootstrap overrides for dark theme
+.dropdown-menu {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  
+  .dropdown-item {
+    color: var(--text-primary);
+    
+    &:hover {
+      background-color: var(--bg-tertiary);
+    }
+  }
+}
+
+.list-group-item {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.alert {
+  border-color: var(--border-color);
+}
+
+// Enhanced Rodal modal with glassmorphism (used by ProfilePictureModal)
+.rodal-dialog {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
+  position: relative !important;
+  
+  // Animated gradient border
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(45deg, #a02a19, #f0885d, #a02a19);
+    background-size: 200% 200%;
+    border-radius: inherit;
+    z-index: -1;
+    animation: borderGlow 3s ease-in-out infinite;
+    opacity: 0.3;
+  }
+  
+  @keyframes borderGlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  
+  // Dark mode modal
+  body.dark-theme & {
+    background: rgba(26, 26, 26, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
+  }
+  
+  h1, h2, h3, h4, h5, h6, p {
+    color: var(--text-primary) !important;
+  }
+  
+  // Enhanced buttons in modal
+  .btn {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px !important;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.5s ease;
+    }
+    
+    &:hover::after {
+      width: 300px;
+      height: 300px;
+    }
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    &.btn-brand {
+      background: linear-gradient(135deg, #a02a19 0%, #c73328 100%);
+      border: none;
+      
+      &:hover {
+        background: linear-gradient(135deg, #8a1e15 0%, #a02a19 100%);
+      }
+    }
+    
+    &.btn-brand-secondary {
+      background: linear-gradient(135deg, #f0885d 0%, #ff9a6b 100%);
+      border: none;
+      
+      &:hover {
+        background: linear-gradient(135deg, #e6774a 0%, #f0885d 100%);
+      }
+    }
+  }
+}
+
+.rodal-mask {
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.7) 100%) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+}
+
+body.dark-theme {
+  .rodal-mask {
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.9) 100%) !important;
   }
 }

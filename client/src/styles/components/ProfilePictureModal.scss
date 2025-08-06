@@ -1,8 +1,111 @@
 .dropzone {
   width: 300px;
   height: 300px;
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  border: 2px dashed var(--border-color);
+  border-radius: 20px;
+  color: var(--text-primary);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  
+  // Animated background pattern
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(160, 42, 25, 0.05) 10px,
+      rgba(160, 42, 25, 0.05) 20px
+    );
+    animation: float 20s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover::before {
+    opacity: 1;
+  }
+  
+  // Floating animation
+  @keyframes float {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+  
+  &:hover {
+    border-color: #a02a19;
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+    transform: scale(1.02);
+    box-shadow: 0 10px 30px rgba(160, 42, 25, 0.2);
+    
+    .fa-file-image {
+      transform: scale(1.1) rotate(5deg);
+      color: #a02a19;
+    }
+  }
 
   &--active {
-    background-color: #ededed;
+    background: linear-gradient(135deg, rgba(160, 42, 25, 0.1) 0%, rgba(240, 136, 93, 0.1) 100%);
+    border-color: #a02a19;
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(160, 42, 25, 0.3);
+    
+    &::before {
+      opacity: 1;
+    }
+  }
+  
+  .d-flex {
+    position: relative;
+    z-index: 2;
+    
+    h2 {
+      margin-bottom: 1rem;
+      
+      .fa-file-image {
+        transition: all 0.3s ease;
+        color: var(--text-secondary);
+      }
+    }
+    
+    p {
+      transition: all 0.3s ease;
+    }
+  }
+  
+  .btn-link {
+    color: #a02a19 !important;
+    font-weight: 600;
+    text-decoration: none !important;
+    position: relative;
+    transition: all 0.3s ease;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #a02a19, #f0885d);
+      transition: width 0.3s ease;
+    }
+    
+    &:hover {
+      color: #8a2318 !important;
+      transform: translateY(-1px);
+      
+      &::after {
+        width: 100%;
+      }
+    }
   }
 }

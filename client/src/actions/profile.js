@@ -61,7 +61,9 @@ export const fetchProfile = (username) => {
 
     API.get(`user/${username}`)
       .then((res) => {
-        if (res.code == 200)
+        if (res.code == 200) {
+          console.log('API response for profile:', res.response);
+          console.log('Profile pic from API:', res.response.profilePic);
           dispatch({
             type: FETCH_PROFILE,
             payload: {
@@ -69,6 +71,7 @@ export const fetchProfile = (username) => {
               ownProfile: state.app.logged.username == res.response.username,
             },
           });
+        }
       })
       .catch((e) => {
         switch (e.response.status) {

@@ -6,6 +6,7 @@ import { logout, togglePostModal, toggleSettingsModal } from "../actions/app";
 
 import NewPostModal from "./NewPostModal";
 import Auth from "./Auth";
+import DarkModeToggle from "./DarkModeToggle";
 
 const Navbar = () => {
   const isVisible = useSelector((state) => state.app.navbar.isVisible);
@@ -80,6 +81,7 @@ const Navbar = () => {
                 <i className="fab fa-github fa-2x"></i>
               </p>
             </a>
+            <DarkModeToggle />
             <Auth>
               <div
                 className="navbar-cs__button"

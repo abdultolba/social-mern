@@ -61,8 +61,8 @@ router.get("/:username/posts", validateUsername, validateUserExists, validateVie
   try {
     // User data is already validated and available from middleware
     const user = req.targetUser;
-
-    // Get current user from auth header (optional)
+    
+    // Get current user from auth header (optional for guests)
     let currentUser = null;
     const authHeader = req.header("Authorization");
     if (authHeader && authHeader.startsWith("Bearer ")) {

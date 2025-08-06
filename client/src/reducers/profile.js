@@ -31,8 +31,7 @@ export default (state = defaultState, action) => {
 		case FETCH_PROFILE:
 			return {
 				...state,
-				...action.payload,
-				profilePic: action.payload.profilePic
+				...action.payload
 			}
 		case SET_LOADING:
 			return {

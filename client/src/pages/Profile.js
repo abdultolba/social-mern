@@ -36,6 +36,33 @@ const Profile = () => {
   const profile = useSelector((state) => state.profile);
   const posts = useSelector((state) => state.posts.items);
   const postsLoading = useSelector((state) => state.posts.loading);
+  
+  // Fallback profile picture logic:
+  // 1. Use profile.profilePic if available
+  // 2. If it's own profile, use logged user's profilePic
+  // 3. For other users, try to get profilePic from their own posts (not posts by others on their profile)
+  const getProfilePicFromPosts = () => {
+    if (posts && posts.length > 0 && profile.username) {
+      // Find a post authored by the profile owner (not posts by others on their profile)
+      const postByOwner = posts.find(post => 
+        post.author && 
+        post.author.username === profile.username && 
+        post.author.profilePic
+      );
+      return postByOwner ? postByOwner.author.profilePic : null;
+    }
+    return null;
+  };
+  
+  const profilePicUrl = profile.profilePic || 
+                        (ownsProfile ? logged.profilePic : null) || 
+                        getProfilePicFromPosts();
+  
+  // Debug logging
+  console.log('Profile data:', profile);
+  console.log('Profile picture URL:', profile.profilePic);
+  console.log('Logged user profilePic:', logged.profilePic);
+  console.log('Final profilePic URL used:', profilePicUrl);
 
   const initializeProfile = useCallback(() => {
     dispatch(fetchProfile(params.id));
@@ -94,17 +121,28 @@ const Profile = () => {
             }`}
           >
             <img
-              src={profile.profilePic}
+              src={profilePicUrl}
               className={
                 "sidenav__avatar__image img-fluid rounded-circle mx-auto d-block w-100 h-100"
               }
               alt="Profile"
+              onError={(e) => {
+                console.error('Profile image failed to load:', profilePicUrl);
+                console.error('Full profile state:', profile);
+              }}
+              onLoad={() => {
+                console.log('Profile image loaded successfully:', profilePicUrl);
+              }}
+              style={{
+                minHeight: '200px',
+                minWidth: '200px'
+              }}
             />
             <span className="sidenav__avatar--owner__camera">
               <i className="fas fa-camera"></i>
             </span>
           </div>
-          <p className="text-center text-dark title mt-3">{profile.username}</p>
+          <p className="text-center title mt-3">{profile.username}</p>
           {profile.editingDescription ? (
             <div className="px-5 mb-3">
               <form onSubmit={updateDescription}>
@@ -131,14 +169,14 @@ const Profile = () => {
               </form>
             </div>
           ) : (
-            <p className="text-left text-dark text-wrap description px-5 mb-0">
+            <p className="text-left text-wrap description px-5 mb-0">
               {profile.description ||
                 "This user hasn't yet provided a description 🥴"}
             </p>
           )}
           {ownsProfile && !profile.editingDescription && (
             <a
-              className="text-left btn-link text-black-50 btn px-5"
+              className="text-left btn-link text-muted btn px-5"
               onClick={() => dispatch(toggleEditingDescription())}
             >
               Edit Description <i className="fas fa-pencil-alt"></i>

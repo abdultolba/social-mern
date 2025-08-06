@@ -69,7 +69,7 @@ const Post = (props) => {
 
   return (
     <div className="card w-100 my-5 post">
-      <div className="card-header bg-white pb-0 border-0 d-flex justify-content-between">
+      <div className="card-header pb-0 border-0 d-flex justify-content-between">
         <div>
           <small className="text-muted">
             {dayjs().from(dayjs(props.createdAt))} ago
