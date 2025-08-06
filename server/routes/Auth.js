@@ -2,80 +2,96 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv').config();
-const User = require('../models/User');
+const { User } = require('../models'); // Use Sequelize User model
 const router = express.Router();
 
-// const { SECRET_KEY } = require('../config')
-const { SECRET_KEY } = process.env
+const { SECRET_KEY } = process.env;
 
-router.post('/sign-up', (req, res) => {
+// POST /api/auth/sign-up
+router.post('/sign-up', async (req, res) => {
 	const { username, password } = req.body;
 
-	if (!username || !password)
-		res.status(400).send('Please provide all the information.');
+	if (!username || !password) {
+		return res.status(400).json({ code: 400, message: 'Please provide all required information.' });
+	}
 
-	User.findOne({ username })
-		.then(user => {
-			if (user) return res.status(403).json({ code: 403, response: 'User already registered' });
-			bcrypt.genSalt(5)
-				.then(salt => bcrypt.hash(password, salt))
-				.then(hashPassword => new User({ username, password: hashPassword }).save())
-				.then(newUser => {
-					newUser = newUser.toObject();
-					delete newUser['password'];
+	try {
+		const existingUser = await User.findOne({ where: { username } });
+		if (existingUser) {
+			return res.status(403).json({ code: 403, message: 'User already registered.' });
+		}
 
-					const token = jwt.sign({
-						data: newUser,
-						exp: Math.floor(Date.now() / 1000) + (60 * 60)
-					}, SECRET_KEY)
+		const salt = await bcrypt.genSalt(10);
+		const hashedPassword = await bcrypt.hash(password, salt);
 
-					res.status(200).json({
-						code: 200,
-						response: {
-							token,
-							...newUser
-						}
-					})
-				})
-				.catch(e => res.sendStatus(500).json({ error: 'Error.' }))
-		})
-		.catch(e => res.status(500).send('Error.'))
+		const newUser = await User.create({ 
+			username, 
+			password: hashedPassword 
+		});
+
+		const userResponse = newUser.get({ plain: true });
+		delete userResponse.password;
+
+		const token = jwt.sign(
+			{ data: userResponse },
+			SECRET_KEY,
+			{ expiresIn: '1h' } // Modern JWT expiration
+		);
+
+		res.status(201).json({
+			code: 201,
+			response: {
+				token,
+				...userResponse
+			}
+		});
+	} catch (error) {
+		console.error('Sign-up error:', error);
+		res.status(500).json({ code: 500, message: 'An unexpected error occurred.' });
+	}
 });
 
-router.post('/sign-in', (req, res) => {
+// POST /api/auth/sign-in
+router.post('/sign-in', async (req, res) => {
 	const { username, password } = req.body;
 
-	if (!username || !password)
-		res.status(400).json({ code: 400, message: 'You must provide all the information' })
+	if (!username || !password) {
+		return res.status(400).json({ code: 400, message: 'You must provide a username and password.' });
+	}
 
-	User.findOne({ username })
-		.select('+password')
-		.then(user => {
-			if (!user)
-				res.status(404).json({ code: 404, message: 'User not found' })
+	try {
+		const user = await User.findOne({ where: { username } });
 
-			bcrypt.compare(password, user.password)
-				.then(successLogged => !successLogged ? res.status(403).json({ code: 403, message: 'Invalid password' }) : user)
-				.then(user =>
-					jwt.sign({
-						data: user,
-						exp: Math.floor(Date.now() / 1000) + (60 * 60)
-					}, SECRET_KEY))
-				.then(token => {
-					user = user.toObject();
-					delete user['password'];
+		if (!user) {
+			return res.status(404).json({ code: 404, message: 'User not found.' });
+		}
 
-					res.status(200).json({
-						code: 200,
-						response: {
-							token,
-							...user
-						}
-					});
-				})
-				.catch(e => res.sendStatus(500).json({ error: 'There were an error.' }));
-		})
-		.catch(e => res.sendStatus(500).json({ error: 'There were an error.' }));
-})
+		const isMatch = await bcrypt.compare(password, user.password);
+
+		if (!isMatch) {
+			return res.status(403).json({ code: 403, message: 'Invalid credentials.' });
+		}
+
+		const userResponse = user.get({ plain: true });
+		delete userResponse.password;
+
+		const token = jwt.sign(
+			{ data: userResponse },
+			SECRET_KEY,
+			{ expiresIn: '1h' } // Modern JWT expiration
+		);
+
+		res.status(200).json({
+			code: 200,
+			response: {
+				token,
+				...userResponse
+			}
+		});
+	} catch (error) {
+		console.error('Sign-in error:', error);
+		res.status(500).json({ code: 500, message: 'An unexpected error occurred.' });
+	}
+});
 
 module.exports = router;

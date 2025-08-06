@@ -1,147 +1,134 @@
-import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
-import { connect } from 'react-redux'
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
-import AuthForm from '../components/AuthForm'
-import { toggleNavbar, signIn, signUp } from '../actions/app'
+import AuthForm from "../components/AuthForm";
+import { toggleNavbar, signIn, signUp } from "../actions/app";
 
-class Home extends Component {
-	constructor(props) {
-		super(props)
-		this.state = {
-			signMode: 'menu',
-			phrases: [
-				{
-					extra: 'Marcus Aurelius - Meditations',
-					quote: 'Waste no more time arguing\nabout what a good man should be.\nBe one.',
-				},
-				{
-					extra: "William Shakespeare - All's Well That Ends Well",
-					quote: 'What is a friend?\nA single soul dwelling in two bodies.',
-				},
-				{
-					extra: 'Marcus Aurelius - Meditations',
-					quote: 'You have power over your mind - \nnot outside events. Realize this, \nand you will find strength.',
-				},
-				{
-					extra: "Aristotle",
-					quote: 'Love all, trust a few, do wrong to none.',
-				},
-				{
-					extra: 'Marcus Aurelius - Meditations',
-					quote: 'The best revenge is to be\nunlike him who performed the injury',
-				}
-			],
-			selectedPhrase: {}
-		}
+const phrases = [
+  {
+    extra: "Marcus Aurelius - Meditations",
+    quote:
+      "Waste no more time arguing\nabout what a good man should be.\nBe one.",
+  },
+  {
+    extra: "William Shakespeare - All's Well That Ends Well",
+    quote: "What is a friend?\nA single soul dwelling in two bodies.",
+  },
+  {
+    extra: "Marcus Aurelius - Meditations",
+    quote:
+      "You have power over your mind - \nnot outside events. Realize this, \nand you will find strength.",
+  },
+  {
+    extra: "Aristotle",
+    quote: "Love all, trust a few, do wrong to none.",
+  },
+  {
+    extra: "Marcus Aurelius - Meditations",
+    quote: "The best revenge is to be\nunlike him who performed the injury",
+  },
+];
 
-		this.getAuthComponent = this.getAuthComponent.bind(this)
-		this.setMenuMode = this.setMenuMode.bind(this)
-		this.setLoginMode = this.setLoginMode.bind(this)
-		this.setSignupMode = this.setSignupMode.bind(this)
-	}
+const Home = () => {
+  const [signMode, setSignMode] = useState("menu");
+  const [selectedPhrase, setSelectedPhrase] = useState({});
+  const isLogged = useSelector((state) => state.app.logged.isLogged);
+  const user = useSelector((state) => state.app.logged.username);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-	componentDidMount() {
-		if (this.props.isLogged)
-			this.props.history.push(`/u/${this.props.user}`)
+  useEffect(() => {
+    if (isLogged) {
+      navigate(`/u/${user}`);
+    }
 
-		const randomNumber = Math.floor(Math.random() * this.state.phrases.length)
-		this.setState(() => ({
-			selectedPhrase: this.state.phrases[randomNumber]
-		}))
-	}
+    const randomNumber = Math.floor(Math.random() * phrases.length);
+    setSelectedPhrase(phrases[randomNumber]);
 
-	componentDidUpdate() {
-		if (this.props.isLogged)
-			this.props.history.push(`/u/${this.props.user}`)
-	}
+    dispatch(toggleNavbar(false));
 
-	setLoginMode() {
-		this.setState(() => ({ signMode: 'login' }))
-	}
+    return () => {
+      dispatch(toggleNavbar(true));
+    };
+  }, [isLogged, user, navigate, dispatch]);
 
-	setMenuMode() {
-		this.setState(() => ({ signMode: 'menu' }))
-	}
+  const getAuthComponent = () => {
+    switch (signMode) {
+      case "signup":
+        return (
+          <AuthForm
+            type="signup"
+            backMethod={() => setSignMode("menu")}
+            onSuccess={(data) => dispatch(signUp(data))}
+          />
+        );
+      case "login":
+        return (
+          <AuthForm
+            type="login"
+            backMethod={() => setSignMode("menu")}
+            onSuccess={(data) => dispatch(signIn(data))}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
-	setSignupMode() {
-		this.setState(() => ({ signMode: 'signup' }))
-	}
+  return (
+    <div className="home">
+      <div className="row h-100">
+        <div className="col-8 d-none d-md-flex flex-column justify-content-end pl-5 home__left">
+          <h1 className="display-7 text-light home__left__text">
+            {selectedPhrase.quote}
+          </h1>
+          {!!selectedPhrase.extra && (
+            <p className="text-light lead home__left__tex">
+              {selectedPhrase.extra}
+            </p>
+          )}
+        </div>
+        <div className="col-12 col-md-4 bg-white home__right d-flex flex-column justify-content-center">
+          <div className="row justify-content-center">
+            <div className="col-6">{/* TODO: Add logo */}</div>
+          </div>
+          <div className="row pr-md-3">
+            <div className="col-12 px-4">
+              <div className="card border-0 rounded-0">
+                <div className="card-body">
+                  {signMode === "menu" && (
+                    <div>
+                      <button
+                        className="btn btn-outline-brand btn-block rounded-pill"
+                        onClick={() => setSignMode("signup")}
+                      >
+                        Sign Up
+                      </button>
+                      <button
+                        className="btn btn-brand btn-block text-light rounded-pill"
+                        onClick={() => setSignMode("login")}
+                      >
+                        Log In
+                      </button>
+                      <hr />
+                      <Link
+                        to="/explore"
+                        className="btn btn-brand-secondary btn-block text-white rounded-pill"
+                      >
+                        Let me explore first 💡
+                      </Link>
+                    </div>
+                  )}
+                  {signMode !== "menu" && <>{getAuthComponent()}</>}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-	getAuthComponent() {
-		const signMode = this.state.signMode;
-
-		switch (signMode) {
-			case 'signup':
-				return <AuthForm type="signup" backMethod={this.setMenuMode} onSuccess={this.props.signUp} />
-			case 'login':
-				return <AuthForm type="login" backMethod={this.setMenuMode} onSuccess={this.props.signIn} />
-		}
-	}
-
-	render() {
-		return (
-			<div className="home">
-				<div className="row h-100">
-					<div className="col-8 d-none d-md-flex flex-column justify-content-end pl-5 home__left">
-						<h1 className="display-7 text-light home__left__text">
-							{this.state.selectedPhrase.quote}
-						</h1>
-						{!!this.state.selectedPhrase.extra &&
-							<p className="text-light lead home__left__tex">{this.state.selectedPhrase.extra}</p>
-						}
-					</div>
-					<div className="col-12 col-md-4 bg-white home__right d-flex flex-column justify-content-center">
-						<div className="row justify-content-center">
-							<div className="col-6">
-								{/* TODO: Add logo */}
-								{/* <img src={Logo} className="mx-auto d-block img-fluid" /> */}
-							</div>
-						</div>
-						<div className="row pr-md-3">
-							<div className="col-12 px-4">
-								<div className="card border-0 rounded-0">
-									<div className="card-body">
-										{this.state.signMode == 'menu' &&
-											<div>
-												<button
-													className="btn btn-outline-brand btn-block rounded-pill"
-													onClick={this.setSignupMode}>Sign Up</button>
-												<button
-													className="btn btn-brand btn-block text-light rounded-pill"
-													onClick={this.setLoginMode}>Log In</button>
-												<hr />
-												<Link to="/explore"
-													className="btn btn-brand-secondary btn-block text-white rounded-pill">
-													Let me explore first 💡
-												</Link>
-											</div>
-										}
-										{this.state.signMode != 'menu' &&
-											<>
-												{this.getAuthComponent()}
-											</>
-										}
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		)
-	}
-}
-
-const stateToProps = state => ({
-	isLogged: state.app.logged.isLogged,
-	user: state.app.logged.username
-})
-
-const dispatchToProps = dispatch => ({
-	toggleNavbar: value => dispatch(toggleNavbar(value)),
-	signIn: value => dispatch(signIn(value)),
-	signUp: value => dispatch(signUp(value))
-})
-
-export default connect(stateToProps, dispatchToProps)(Home)
+export default Home;

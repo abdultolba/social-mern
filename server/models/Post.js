@@ -1,25 +1,33 @@
-const mongoose = require('mongoose')
-const shortId = require('shortid')
+const { DataTypes, Model } = require('sequelize')
+const sequelize = require('../db/sequelize')
+const { nanoid } = require('nanoid')
 
-const User = require('./User')
-const { Schema } = mongoose
+class Post extends Model {}
 
-const postSchema = new Schema({
-	_id: { type: 'String', default: shortId.generate },
-	author: {type: mongoose.Schema.Types.ObjectId, ref: User},
-	createdAt: {type: Date, default: Date.now},
-	profile: String,
-	message: String,
-	extra: {
-		type: {
-			value: String,
-			extraType: String
-		}
-	},
-	likes: {type: Number, default: 0},
-	likedBy: [{type: String, ref: User}],
+Post.init({
+  id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+    defaultValue: () => nanoid()
+  },
+  message: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  extraType: {
+    type: DataTypes.STRING
+  },
+  extraValue: {
+    type: DataTypes.STRING
+  },
+  likes: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  }
+}, {
+  sequelize,
+  modelName: 'Post',
+  timestamps: true
 })
 
-const post = mongoose.model('post', postSchema)
-
-module.exports = post
+module.exports = Post

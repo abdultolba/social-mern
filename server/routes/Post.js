@@ -1,117 +1,157 @@
 const express = require('express')
 const router = express.Router()
-const Post = require('../models/Post')
+const { Post, User } = require('../models')
 const { isAuth } = require('../middlewares/auth')
 
-router.get('/:id', (req, res) => {
+// GET /api/post/:id
+router.get('/:id', async (req, res) => {
 	const { id } = req.params
 
-	Post.findById(id)
-		.then(post =>
-			post
-				? res.status(200).json({ code: 200, response: post })
-				: res.status(404).json({ code: 404, message: 'Error: Post not found' }))
-		.catch(e => res.send(500).json({ error: 'Unknown error.' }))
+	try {
+		const post = await Post.findByPk(id, {
+      include: {
+        model: User,
+        as: 'author',
+        attributes: ['username', 'profilePic']
+      }
+    })
+
+		if (!post) {
+			return res.status(404).json({ code: 404, message: 'Post not found' })
+		}
+
+		res.status(200).json({ code: 200, response: post })
+	} catch (err) {
+		res.status(500).json({ error: 'An unknown error occurred.' })
+	}
 })
 
-/**
- * PATCH: /api/:id
- * Updates the post in the MongoDB cluster given the post ID
- */
-router.patch('/:id', isAuth, (req, res) => {
+// PATCH /api/post/:id
+router.patch('/:id', isAuth, async (req, res) => {
 	const { id } = req.params
 	const { message } = req.body
 
-	Post.findByIdAndUpdate(id, { message: message }, { new: true, useFindAndModify: false })
-	.then(updatedPost => {
-		updatedPost = updatedPost.toObject()
+	try {
+		const post = await Post.findOne({ where: { id, authorId: req.user.id } })
+
+		if (!post) {
+			return res.status(404).json({ code: 404, message: 'Post not found or you are not the author.' })
+		}
+
+		post.message = message
+		await post.save()
 
 		res.status(200).json({
 			code: 200,
 			message: 'Post successfully updated!',
-			response: {
-				editedPost: updatedPost.message,
-				updatedPost
-			}
+			response: post
 		})
-	})
-	.catch(err => res.status(500).send('Your post couldn\'t be updated. Error:', err))
+	} catch (err) {
+		res.status(500).send('Your post couldn\'t be updated.')
+	}
 })
 
-router.delete('/:id', isAuth, (req, res) => {
+// DELETE /api/post/:id
+router.delete('/:id', isAuth, async (req, res) => {
 	const { id } = req.params
 
-	Post.findOneAndDelete({
-		_id: id,
-		$or: [{ author: req.user._id }, { profile: req.user.username }]
-	})
-		.exec((err, post) => {
-			if (err)
-				return res.status(500).json({ code: 500, message: 'There was an error deleting the post', error: err })
-			res.status(200).json({ code: 200, message: 'Post deleted', deletedPost: post })
-		})
+	try {
+		const post = await Post.findOne({ where: { id, authorId: req.user.id } })
+
+		if (!post) {
+			return res.status(404).json({ code: 404, message: 'Post not found or you are not the author.' })
+		}
+
+		await post.destroy()
+
+		res.status(200).json({ code: 200, message: 'Post deleted', deletedPost: post })
+	} catch (err) {
+		res.status(500).json({ code: 500, message: 'There was an error deleting the post' })
+	}
 })
 
-router.post('/:id/like', isAuth, (req, res) => {
+// POST /api/post/:id/like
+router.post('/:id/like', isAuth, async (req, res) => {
 	const { id } = req.params
 
-	if (!req.user)
-		res.status(403).json({ code: 403, response: "Unauthorized request" })
+	try {
+		const post = await Post.findByPk(id)
 
-	const query = {
-		_id: id,
-		likedBy: {
-			"$nin": req.user.username
+		if (!post) {
+			return res.status(404).json({ code: 404, message: 'Post not found' })
 		}
-	}
 
-	const newValues = {
-		$push: {
-			likedBy: req.user.username
-		},
-		$inc: {
-			likes: 1
-		}
-	}
+    const user = await User.findByPk(req.user.id)
 
-	Post.findOneAndUpdate(query, newValues, { new: true })
-		.then(likedPost => {
-			if (!likedPost)
-				return res.status(403).json({ code: 403, response: "You already liked this post" })
-			res.status(200).json({ code: 200, response: likedPost })
+    // Check if the user has already liked the post
+    const hasLiked = await post.hasLikedByUser(user)
+    if (hasLiked) {
+      return res.status(403).json({ code: 403, response: "You already liked this post" })
+    }
+
+		await post.addLikedByUser(user)
+		post.likes = await post.countLikedByUsers()
+		await post.save()
+
+		// Fetch the updated post with all associations
+		const updatedPost = await Post.findByPk(id, {
+			include: [{
+				model: User,
+				as: 'author',
+				attributes: ['id', 'username', 'profilePic']
+			}, {
+				model: User,
+				as: 'likedByUsers',
+				attributes: ['id', 'username']
+			}]
 		})
-		.catch(e => res.status(500).send("There were an error"))
+
+		res.status(200).json({ code: 200, response: updatedPost })
+	} catch (err) {
+		res.status(500).send("There was an error")
+	}
 })
 
-router.post('/:id/unlike', isAuth, (req, res) => {
+// POST /api/post/:id/unlike
+router.post('/:id/unlike', isAuth, async (req, res) => {
 	const { id } = req.params
 
-	if (!req.user)
-		res.status(403).json({ code: 403, response: "Unauthorized request" })
+	try {
+		const post = await Post.findByPk(id)
 
-	const query = {
-		_id: id,
-		likedBy: {
-			"$in": req.user.username
+		if (!post) {
+			return res.status(404).json({ code: 404, message: 'Post not found' })
 		}
-	}
 
-	const newValues = {
-		$pull: {
-			likedBy: req.user.username
-		},
-		$inc: {
-			likes: -1
-		}
-	}
+    const user = await User.findByPk(req.user.id)
 
-	Post.findOneAndUpdate(query, newValues, { new: true })
-		.then(unlikedPost => {
-			if (!unlikedPost)
-				return res.status(403).json({ code: 403, response: "You haven't liked this post yet" })
-			res.status(200).json({ code: 200, response: unlikedPost })
+    // Check if the user has liked the post
+    const hasLiked = await post.hasLikedByUser(user)
+    if (!hasLiked) {
+      return res.status(403).json({ code: 403, response: "You haven't liked this post yet" })
+    }
+
+		await post.removeLikedByUser(user)
+		post.likes = await post.countLikedByUsers()
+		await post.save()
+
+		// Fetch the updated post with all associations
+		const updatedPost = await Post.findByPk(id, {
+			include: [{
+				model: User,
+				as: 'author',
+				attributes: ['id', 'username', 'profilePic']
+			}, {
+				model: User,
+				as: 'likedByUsers',
+				attributes: ['id', 'username']
+			}]
 		})
-		.catch(e => res.status(500).send("There were an error"))
+
+		res.status(200).json({ code: 200, response: updatedPost })
+	} catch (err) {
+		res.status(500).send("There was an error")
+	}
 })
 
 module.exports = router

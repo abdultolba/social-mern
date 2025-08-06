@@ -1,16 +1,15 @@
 {
   "name": "social-mern",
   "version": "1.0.0",
-  "engines": {
-    "node": "12.x"
-  },
   "description": "A social media platform that uses 'cards' to connect people virtually, built with the MERN stack.",
   "main": "index.js",
   "scripts": {
     "postinstall": "cd client && npm install && cd ../server && npm install",
-    "start-client": "npm run build --prefix client && npm run bundle --prefix client",
+    "build-client": "npm run build --prefix client && npm run bundle --prefix client",
     "start-server": "npm start --prefix server",
-    "start": "npm run postinstall && concurrently \"npm run start-client\" \"npm run start-server\""
+    "dev-server": "npm run dev --prefix server",
+    "start": "npm run postinstall && concurrently \"npm run build-client\" \"npm run start-server\"",
+    "dev": "concurrently \"npm run serve --prefix client\" \"npm run dev-server\""
   },
   "repository": {
     "type": "git",

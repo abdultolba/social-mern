@@ -1,22 +1,43 @@
-const mongoose = require('mongoose')
-const { Schema } = mongoose
+const { DataTypes, Model } = require('sequelize')
+const sequelize = require('../db/sequelize')
 
-const getRandomProfilePicture = () => `/images/avatars/default/avatar_default_${Math.floor((Math.random() * 5) + 0)}.png`
+class User extends Model {}
 
-const userSchema = new Schema({
-	username: String,
-	password: {type: String, select: false},
-	openProfile: {type: Boolean, default: true},
-	verified: {type: Boolean, default: false},
-	description: {type: String, default: ''},
-	// Simulating diverse social media platform by using variety of random user pics
-	profilePic: {type: String, default: getRandomProfilePicture}
+User.init({
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  openProfile: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+  },
+  verified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  description: {
+    type: DataTypes.TEXT,
+    defaultValue: ''
+  },
+  profilePic: {
+    type: DataTypes.STRING,
+    defaultValue: () => `/images/avatars/default/avatar_default_${Math.floor((Math.random() * 5))}.png`
+  }
+}, {
+  sequelize,
+  modelName: 'User',
+  timestamps: true
 })
 
-userSchema.methods.findByUsername = (username, callback) => {
-	return this.model('User').find({ username }, callback)
-}
-
-const user = mongoose.model('user', userSchema)
-
-module.exports = user
+module.exports = User
