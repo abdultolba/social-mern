@@ -72,7 +72,7 @@ const Post = (props) => {
       <div className="card-header pb-0 border-0 d-flex justify-content-between">
         <div>
           <small className="text-muted">
-            {dayjs().from(dayjs(props.createdAt))} ago
+            {dayjs(props.createdAt).fromNow()}
           </small>
         </div>
         <div className="d-flex">
