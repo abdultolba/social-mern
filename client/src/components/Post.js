@@ -1,11 +1,11 @@
 import React, { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import YouTube from "react-youtube";
 import Linkify from "react-linkify";
 import { Link, useParams } from "react-router-dom";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import EmbedPreview from "./EmbedPreview";
 
 import {
   likePost,
@@ -122,17 +122,7 @@ const Post = (props) => {
             <p className="my-0 py-0 ws-pre-line">{props.message}</p>
           )}
         </Linkify>
-        {props.extra && (
-          <div className="mt-3">
-            <YouTube
-              videoId={props.extra.value}
-              opts={{
-                width: "100%",
-                height: "400",
-              }}
-            />
-          </div>
-        )}
+        <EmbedPreview post={props} />
         <div
           onClick={handleLike}
           className="d-inline-flex px-3 py-1 text-brand-secondary rounded-pill post__likes cursor-pointer"

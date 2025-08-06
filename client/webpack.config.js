@@ -79,7 +79,13 @@ module.exports = (env, argv) => {
       static: {
         directory: path.join(__dirname, "dist"),
       },
-      historyApiFallback: true,
+      historyApiFallback: {
+        rewrites: [
+          { from: /^\/u\/.*$/, to: "/index.html" },
+          { from: /^\/explore$/, to: "/index.html" },
+          { from: /^\/$/, to: "/index.html" },
+        ],
+      },
       port: 8080,
       open: true,
       client: {

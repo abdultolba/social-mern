@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useLocation } from "react-router-dom";
-import { BottomScrollListener } from "react-bottom-scroll-listener";
 import toast from "react-hot-toast";
 
 import ProfilePictureModal from "../components/ProfilePictureModal";
@@ -78,9 +77,6 @@ const Profile = () => {
     [dispatch, profile.description]
   );
 
-  const fetchMorePosts = useCallback(() => {
-    dispatch(fetchUserPosts(params.id));
-  }, [dispatch, params.id]);
 
   return (
     <div className="d-flex flex-column flex-md-row profile w-100">
@@ -161,12 +157,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <BottomScrollListener onBottom={fetchMorePosts}>
-        {(scrollRef) => (
-          <div
-            className="d-flex position-relative profile__body justify-content-center flex-wrap"
-            ref={scrollRef}
-          >
+      <div className="d-flex position-relative profile__body justify-content-center flex-wrap">
             <Auth>
               {profile.openProfile || ownsProfile ? (
                 <div className="profile__body__textarea w-100 mt-5">
@@ -195,9 +186,7 @@ const Profile = () => {
                 )}
               </div>
             </div>
-          </div>
-        )}
-      </BottomScrollListener>
+      </div>
     </div>
   );
 };

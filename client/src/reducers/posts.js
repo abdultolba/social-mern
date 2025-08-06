@@ -14,9 +14,6 @@ import {
 
 const defaultState = {
   loading: false,
-  isThereMore: true,
-  offset: 0,
-  quantity: 50,
   items: [],
   editedPostId: "",
 };
@@ -39,32 +36,36 @@ export default (state = defaultState, action) => {
         }),
       };
     case FETCH_USER_POSTS:
+      const fetchedPosts = action.payload.map((post) => ({
+        ...post,
+        author: {
+          ...post.author,
+          profilePic: post.author.profilePic,
+        },
+      }));
+      
+      // Replace all posts with fetched posts (no more pagination)
+      const sortedPosts = fetchedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
       return {
         ...state,
-        items: [
-          ...state.items,
-          ...action.payload.map((post) => ({
-            ...post,
-            author: {
-              ...post.author,
-              profilePic: post.author.profilePic,
-            },
-          })),
-        ],
+        items: sortedPosts,
       };
     case DISCOVER_POSTS:
+      const discoveredPosts = action.payload.map((post) => ({
+        ...post,
+        author: {
+          ...post.author,
+          profilePic: post.author.profilePic,
+        },
+      }));
+      
+      // Replace all posts with discovered posts (no more pagination)
+      const sortedDiscoverPosts = discoveredPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
       return {
         ...state,
-        items: [
-          ...state.items,
-          ...action.payload.map((post) => ({
-            ...post,
-            author: {
-              ...post.author,
-              profilePic: post.author.profilePic,
-            },
-          })),
-        ],
+        items: sortedDiscoverPosts,
       };
 
     case NEW_POST:

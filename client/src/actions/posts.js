@@ -48,14 +48,11 @@ export const editPost = (data) => {
 export const fetchUserPosts = (usernamePosts) => {
   return (dispatch, getState) => {
     const state = getState();
-    const { offset, quantity, isThereMore, loading } = state.posts;
-    const { username } = state.app.logged;
-    if (isThereMore && !loading) {
+    const { loading } = state.posts;
+    if (!loading) {
       dispatch(setLoading(true));
 
-      API.get(
-        `user/${usernamePosts}/posts?offset=${offset}&quantity=${quantity}`
-      )
+      API.get(`user/${usernamePosts}/posts`)
         .then((res) => {
           if (res.code == 200)
             dispatch({
@@ -65,8 +62,6 @@ export const fetchUserPosts = (usernamePosts) => {
         })
         .catch((e) => console.log(e))
         .then(() => dispatch(setLoading(false)));
-    } else if (!loading) {
-      toast("You have reached the bottom 😱!");
     }
   };
 };
@@ -74,10 +69,9 @@ export const fetchUserPosts = (usernamePosts) => {
 export const discoverPosts = (username) => {
   return (dispatch, getState) => {
     const state = getState();
-    const { isThereMore, loading } = state.posts;
-    const { id } = state.app.logged;
+    const { loading } = state.posts;
 
-    if (isThereMore && !loading) {
+    if (!loading) {
       dispatch(setLoading(true));
       API.get("discover/posts")
         .then((res) => {
@@ -89,8 +83,6 @@ export const discoverPosts = (username) => {
         })
         .catch((e) => console.log(e))
         .then(() => dispatch(setLoading(false)));
-    } else {
-      toast("You have reached the end 😵");
     }
   };
 };
@@ -98,15 +90,16 @@ export const discoverPosts = (username) => {
 export const newPost = (data) => {
   return (dispatch, getState) => {
     const state = getState();
-    const { username: profile } = state.profile;
+    const { username: currentProfileViewing } = state.profile;
     const { username, message } = data;
 
     API.post(`user/${username}/new/post`, { ...data })
       .then((res) => {
-        if (res.code == 200) {
+        if (res.code == 200 || res.code == 201) {
           toast.success("Post submitted");
 
-          if (username == profile) {
+          // Always add the post to the current view if we're viewing the profile we posted to
+          if (username === currentProfileViewing) {
             dispatch({
               type: NEW_POST,
               payload: {
@@ -118,6 +111,7 @@ export const newPost = (data) => {
       })
       .catch((e) => {
         toast.error("There were an error submitting your post 😬");
+        console.error('Post creation error:', e);
       });
   };
 };

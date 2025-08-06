@@ -13,6 +13,17 @@ Post.belongsTo(User, {
   as: 'author'
 })
 
+// Relationship for whose profile/wall the post appears on
+User.hasMany(Post, {
+  foreignKey: 'profileId',
+  as: 'wallPosts'
+})
+
+Post.belongsTo(User, {
+  foreignKey: 'profileId',
+  as: 'profileOwner'
+})
+
 // Many-to-many relationship for likes
 User.belongsToMany(Post, {
   through: 'PostLikes',

@@ -1,4 +1,3 @@
-import { BottomScrollListener } from "react-bottom-scroll-listener";
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -32,9 +31,6 @@ const Explore = () => {
     };
   }, []);
 
-  const handleBottomReached = () => {
-    dispatch(discoverPosts());
-  };
 
   return (
     <div className="container my-5">
@@ -56,18 +52,16 @@ const Explore = () => {
       </div>
       <h2 className="montserrat">Explore posts</h2>
       <div className="row mt-5">
-        <BottomScrollListener onBottom={handleBottomReached}>
-          {posts.map((post, i) => (
-            <div className="col-12 col-md-6 animated fadeIn" key={post.id + i}>
-              <Post {...post} />
-            </div>
-          ))}
-          {postsLoading && (
-            <div className="d-flex justify-content-center m-auto my-5 py-5">
-              <Loading />
-            </div>
-          )}
-        </BottomScrollListener>
+        {posts.map((post, i) => (
+          <div className="col-12 col-md-6 animated fadeIn" key={post.id + i}>
+            <Post {...post} />
+          </div>
+        ))}
+        {postsLoading && (
+          <div className="d-flex justify-content-center m-auto my-5 py-5">
+            <Loading />
+          </div>
+        )}
       </div>
     </div>
   );
