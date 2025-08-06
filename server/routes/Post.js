@@ -183,23 +183,20 @@ router.post(
       post.likes = await post.countLikedByUsers();
       await post.save();
 
-      // Fetch the updated post with all associations
-      const updatedPost = await Post.findByPk(id, {
-        include: [
+      // Return optimized response without additional query
+      // Include the user who just liked the post
+      const responsePost = {
+        ...post.toJSON(),
+        likedByUsers: [
+          ...(post.likedByUsers || []),
           {
-            model: User,
-            as: "author",
-            attributes: ["id", "username", "profilePic"],
-          },
-          {
-            model: User,
-            as: "likedByUsers",
-            attributes: ["id", "username"],
+            id: user.id,
+            username: user.username,
           },
         ],
-      });
+      };
 
-      res.status(200).json({ code: 200, response: updatedPost });
+      res.status(200).json({ code: 200, response: responsePost });
     } catch (err) {
       res.status(500).send("There was an error");
     }
@@ -236,23 +233,16 @@ router.post(
       post.likes = await post.countLikedByUsers();
       await post.save();
 
-      // Fetch the updated post with all associations
-      const updatedPost = await Post.findByPk(id, {
-        include: [
-          {
-            model: User,
-            as: "author",
-            attributes: ["id", "username", "profilePic"],
-          },
-          {
-            model: User,
-            as: "likedByUsers",
-            attributes: ["id", "username"],
-          },
-        ],
-      });
+      // Return optimized response without additional query
+      // Remove the user who just unliked the post from the current likes
+      const responsePost = {
+        ...post.toJSON(),
+        likedByUsers: (post.likedByUsers || []).filter(
+          (likedUser) => likedUser.id !== user.id
+        ),
+      };
 
-      res.status(200).json({ code: 200, response: updatedPost });
+      res.status(200).json({ code: 200, response: responsePost });
     } catch (err) {
       res.status(500).send("There was an error");
     }

@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/abdultolba/social-mern#readme",
   "dependencies": {
-    "concurrently": "^5.0.0"
+    "concurrently": "^9.2.0"
   }
 }

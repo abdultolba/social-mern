@@ -102,23 +102,27 @@ router.post(
         });
       }
 
-      // Create the comment
+      // Create the comment with user info included inline
       const comment = await Comment.create({
         message,
         postId,
         authorId: req.user.id,
       });
 
-      // Fetch the created comment with author info
-      const createdComment = await Comment.findByPk(comment.id, {
-        include: [
-          {
-            model: User,
-            as: "author",
-            attributes: ["id", "username", "profilePic"],
-          },
-        ],
+      // Get user info from the auth middleware instead of querying again
+      const user = await User.findByPk(req.user.id, {
+        attributes: ["id", "username", "profilePic"],
       });
+
+      // Build response with author info without additional query
+      const createdComment = {
+        ...comment.toJSON(),
+        author: {
+          id: user.id,
+          username: user.username,
+          profilePic: user.profilePic,
+        },
+      };
 
       res.status(201).json({
         code: 201,
@@ -247,23 +251,19 @@ router.post(
       comment.likes = await comment.countLikedByUsers();
       await comment.save();
 
-      // Fetch the updated comment with all associations
-      const updatedComment = await Comment.findByPk(id, {
-        include: [
+      // Return optimized response without additional query
+      const responseComment = {
+        ...comment.toJSON(),
+        likedByUsers: [
+          ...(comment.likedByUsers || []),
           {
-            model: User,
-            as: "author",
-            attributes: ["id", "username", "profilePic"],
-          },
-          {
-            model: User,
-            as: "likedByUsers",
-            attributes: ["id", "username"],
+            id: user.id,
+            username: user.username,
           },
         ],
-      });
+      };
 
-      res.status(200).json({ code: 200, response: updatedComment });
+      res.status(200).json({ code: 200, response: responseComment });
     } catch (err) {
       console.error("Error liking comment:", err);
       res.status(500).json({ error: "There was an error liking the comment" });
@@ -304,23 +304,15 @@ router.post(
       comment.likes = await comment.countLikedByUsers();
       await comment.save();
 
-      // Fetch the updated comment with all associations
-      const updatedComment = await Comment.findByPk(id, {
-        include: [
-          {
-            model: User,
-            as: "author",
-            attributes: ["id", "username", "profilePic"],
-          },
-          {
-            model: User,
-            as: "likedByUsers",
-            attributes: ["id", "username"],
-          },
-        ],
-      });
+      // Return optimized response without additional query
+      const responseComment = {
+        ...comment.toJSON(),
+        likedByUsers: (comment.likedByUsers || []).filter(
+          (likedUser) => likedUser.id !== user.id
+        ),
+      };
 
-      res.status(200).json({ code: 200, response: updatedComment });
+      res.status(200).json({ code: 200, response: responseComment });
     } catch (err) {
       console.error("Error unliking comment:", err);
       res
