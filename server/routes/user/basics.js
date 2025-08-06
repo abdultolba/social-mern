@@ -1,22 +1,24 @@
-const express = require("express");
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
 
-const { User, Post } = require("../../models");
+const { User, Post } = require('../../models')
 
-const { isAuth } = require("../../middlewares/auth");
-const { processMessageForEmbed } = require("../../services/linkPreview");
+const { isAuth } = require('../../middlewares/auth')
+const { processMessageForEmbed } = require('../../services/linkPreview')
+const {
+  validatePostContent,
+  validateUsername,
+  validateWallPostPermission,
+  validateContentSafety,
+  validateUserExists,
+  validateViewPermission,
+  rateLimit
+} = require('../../middlewares/validation')
 
-router.get("/:username", async (req, res) => {
+router.get("/:username", validateUsername, validateUserExists, async (req, res) => {
   try {
-    const { username } = req.params;
-    const normalizedUsername = username.toLowerCase();
-
-    const user = await User.findOne({
-      where: { username: normalizedUsername },
-    });
-    if (!user) {
-      return res.status(404).json({ code: 404, response: "User not found" });
-    }
+    // User data is already validated and available from middleware
+    const user = req.targetUser;
 
     // Count posts authored by this user
     const authoredPosts = await Post.count({ where: { authorId: user.id } });
@@ -55,9 +57,10 @@ router.get("/:username", async (req, res) => {
   }
 });
 
-router.get("/:username/posts", async (req, res) => {
+router.get("/:username/posts", validateUsername, validateUserExists, validateViewPermission, async (req, res) => {
   try {
-    const { username: profile } = req.params;
+    // User data is already validated and available from middleware
+    const user = req.targetUser;
 
     // Get current user from auth header (optional)
     let currentUser = null;
@@ -71,13 +74,6 @@ router.get("/:username/posts", async (req, res) => {
       } catch (err) {
         // Invalid token, continue as guest
       }
-    }
-
-    // Find the user first
-    const normalizedProfile = profile.toLowerCase();
-    const user = await User.findOne({ where: { username: normalizedProfile } });
-    if (!user) {
-      return res.status(404).json({ code: 404, response: "User not found" });
     }
 
     // Find all posts on this user's wall/profile (by profileId, not authorId)
@@ -117,18 +113,10 @@ router.get("/:username/posts", async (req, res) => {
   }
 });
 
-router.get("/:username/likes", async (req, res) => {
+router.get("/:username/likes", validateUsername, validateUserExists, validateViewPermission, async (req, res) => {
   try {
-    const { username } = req.params;
-    const normalizedUsername = username.toLowerCase();
-
-    // Find the user first
-    const user = await User.findOne({
-      where: { username: normalizedUsername },
-    });
-    if (!user) {
-      return res.status(404).json({ code: 404, response: "User not found" });
-    }
+    // User data is already validated and available from middleware
+    const user = req.targetUser;
 
     // Find posts liked by this user using the many-to-many relationship
     const likedPosts = await user.getLikedPosts({
@@ -153,26 +141,23 @@ router.get("/:username/likes", async (req, res) => {
   }
 });
 
-router.post("/:username/new/post", isAuth, async (req, res) => {
+router.post(
+  "/:username/new/post",
+  validateUsername,
+  isAuth,
+  rateLimit(5, 10 * 60 * 1000), // 5 posts per 10 minutes
+  validatePostContent,
+  validateContentSafety,
+  validateWallPostPermission,
+  async (req, res) => {
   const { message } = req.body;
   let { extra = null } = req.body;
-  const { username } = req.params;
   const authorId = req.user.id;
-
-  if (!message) {
-    return res.status(400).json({ code: 400, message: "Message is required" });
-  }
+  
+  // Profile owner data is already validated and available from middleware
+  const profileId = req.profileOwner.id;
 
   try {
-    // Find the profile owner (whose wall we're posting on)
-    const normalizedUsername = username.toLowerCase();
-    const profileOwner = await User.findOne({
-      where: { username: normalizedUsername },
-    });
-    if (!profileOwner) {
-      return res.status(404).json({ code: 404, message: "Profile not found" });
-    }
-    const profileId = profileOwner.id;
     // Process the extra data if provided, or check for embedded links
     let extraType = null;
     let extraValue = null;

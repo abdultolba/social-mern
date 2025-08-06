@@ -3,9 +3,36 @@ const router = express.Router();
 const { Post, User } = require("../models");
 const { isAuth } = require("../middlewares/auth");
 const { processMessageForEmbed } = require("../services/linkPreview");
+const {
+  validatePostContent,
+  rateLimit,
+  validateContentSafety
+} = require('../middlewares/validation');
+const { param, validationResult } = require('express-validator');
+
+// Validate post ID parameter
+const validatePostId = [
+  param('id')
+    .notEmpty()
+    .withMessage('Post ID is required')
+    .isLength({ min: 1 })
+    .withMessage('Post ID cannot be empty'),
+  
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid post ID',
+        errors: errors.array()
+      });
+    }
+    next();
+  }
+];
 
 // GET /api/post/:id
-router.get("/:id", async (req, res) => {
+router.get("/:id", validatePostId, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -28,7 +55,14 @@ router.get("/:id", async (req, res) => {
 });
 
 // PATCH /api/post/:id
-router.patch("/:id", isAuth, async (req, res) => {
+router.patch(
+  "/:id",
+  validatePostId,
+  isAuth,
+  rateLimit(3, 5 * 60 * 1000), // 3 edits per 5 minutes
+  validatePostContent,
+  validateContentSafety,
+  async (req, res) => {
   const { id } = req.params;
   const { message } = req.body;
 
@@ -69,7 +103,7 @@ router.patch("/:id", isAuth, async (req, res) => {
 });
 
 // DELETE /api/post/:id
-router.delete("/:id", isAuth, async (req, res) => {
+router.delete("/:id", validatePostId, isAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -95,7 +129,12 @@ router.delete("/:id", isAuth, async (req, res) => {
 });
 
 // POST /api/post/:id/like
-router.post("/:id/like", isAuth, async (req, res) => {
+router.post(
+  "/:id/like",
+  validatePostId,
+  isAuth,
+  rateLimit(20, 60 * 1000), // 20 likes per minute
+  async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -142,7 +181,12 @@ router.post("/:id/like", isAuth, async (req, res) => {
 });
 
 // POST /api/post/:id/unlike
-router.post("/:id/unlike", isAuth, async (req, res) => {
+router.post(
+  "/:id/unlike",
+  validatePostId,
+  isAuth,
+  rateLimit(20, 60 * 1000), // 20 unlikes per minute
+  async (req, res) => {
   const { id } = req.params;
 
   try {
