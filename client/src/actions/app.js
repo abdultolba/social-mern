@@ -19,7 +19,8 @@ export const ERROR = "[APP] ERROR",
   TOGGLE_PROFILE_PICTURE_MODAL = "[APP] TOGGLE_PROFILE_PICTURE_MODAL",
   TOGGLE_SETTINGS_MODAL = "[APP] TOGGLE_SETTINGS_MODAL",
   TOGGLE_DARK_MODE = "[APP] TOGGLE_DARK_MODE",
-  SET_DARK_MODE = "[APP] SET_DARK_MODE";
+  SET_DARK_MODE = "[APP] SET_DARK_MODE",
+  RESET_THEME_TO_SYSTEM = "[APP] RESET_THEME_TO_SYSTEM";
 
 export const setLoginLoad = (value) => {
   return (dispatch) =>
@@ -189,10 +190,11 @@ export const setDescription = (description) => {
 };
 
 export const toggleDarkMode = () => {
-  return (dispatch) => {
-    const currentTheme = localStorage.getItem("theme");
-    const newTheme = currentTheme === "dark" ? "light" : "dark";
+  return (dispatch, getState) => {
+    const currentIsDark = getState().app.theme.isDark;
+    const newTheme = currentIsDark ? "light" : "dark";
     
+    // Save user's manual preference
     localStorage.setItem("theme", newTheme);
     document.body.classList.toggle("dark-theme", newTheme === "dark");
     
@@ -211,6 +213,24 @@ export const setDarkMode = (isDark) => {
     dispatch({
       type: SET_DARK_MODE,
       payload: { isDark },
+    });
+  };
+};
+
+export const resetThemeToSystem = () => {
+  return (dispatch) => {
+    // Remove user's manual preference
+    localStorage.removeItem("theme");
+    
+    // Use OS preference or fallback to dark mode
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDarkMode = prefersDark !== undefined ? prefersDark : true; // Fallback to dark mode
+    
+    document.body.classList.toggle("dark-theme", isDarkMode);
+    
+    dispatch({
+      type: RESET_THEME_TO_SYSTEM,
+      payload: { isDark: isDarkMode },
     });
   };
 };

@@ -14,7 +14,8 @@ import {
 	SET_SETTINGS_LOADING,
 	RESET_LAST_CONNECTION,
 	TOGGLE_DARK_MODE,
-	SET_DARK_MODE
+	SET_DARK_MODE,
+	RESET_THEME_TO_SYSTEM
 } from '../actions/app'
 
 const defaultState = {
@@ -157,6 +158,7 @@ export default (state = defaultState, action) => {
 				}
 			}
 		case SET_DARK_MODE:
+		case RESET_THEME_TO_SYSTEM:
 			return {
 				...state,
 				theme: {
