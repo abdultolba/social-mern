@@ -112,7 +112,7 @@ const Navbar = () => {
           </div>
           <div className="d-none d-md-block">
             <img
-              src="/assets/images/small-logo.png"
+              src="/assets/images/friendly_logo.png"
               className="d-block mx-auto img-fluid"
               alt="Logo"
             />
