@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { Comment, User, Post } = require("../models");
 const { isAuth } = require("../middlewares/auth");
+const { createMentionNotifications, createPostCommentNotification, createCommentReplyNotification } = require("../utils/mentions");
 const { param, body, validationResult } = require("express-validator");
 const {
   rateLimit,
@@ -90,7 +91,7 @@ router.post(
   validateCommentContent,
   validateContentSafety,
   async (req, res) => {
-    const { message, postId } = req.body;
+    const { message, postId, parentCommentId } = req.body;
 
     try {
       // Verify the post exists
@@ -102,11 +103,40 @@ router.post(
         });
       }
 
+      let parentComment = null;
+      // If this is a reply, verify the parent comment exists and belongs to the same post
+      if (parentCommentId) {
+        parentComment = await Comment.findByPk(parentCommentId, {
+          include: [
+            {
+              model: User,
+              as: "author",
+              attributes: ["id", "username", "profilePic"],
+            },
+          ],
+        });
+        
+        if (!parentComment) {
+          return res.status(404).json({
+            code: 404,
+            message: "Parent comment not found",
+          });
+        }
+        
+        if (parentComment.postId !== postId) {
+          return res.status(400).json({
+            code: 400,
+            message: "Parent comment must belong to the same post",
+          });
+        }
+      }
+
       // Create the comment with user info included inline
       const comment = await Comment.create({
         message,
         postId,
         authorId: req.user.id,
+        parentCommentId: parentCommentId || null,
       });
 
       // Get user info from the auth middleware instead of querying again
@@ -114,7 +144,7 @@ router.post(
         attributes: ["id", "username", "profilePic"],
       });
 
-      // Build response with author info without additional query
+      // Build response with author info and parent comment info
       const createdComment = {
         ...comment.toJSON(),
         author: {
@@ -122,7 +152,53 @@ router.post(
           username: user.username,
           profilePic: user.profilePic,
         },
+        // Include parent comment info if this is a reply
+        parentComment: parentComment ? {
+          id: parentComment.id,
+          message: parentComment.message,
+          author: {
+            id: parentComment.author.id,
+            username: parentComment.author.username,
+            profilePic: parentComment.author.profilePic || null,
+          },
+        } : null,
       };
+
+      // Create notifications for mentioned users (asynchronous, don't block response)
+      createMentionNotifications(
+        message,
+        "mention_comment",
+        req.user.id,
+        postId,
+        comment.id,
+        user.username
+      ).catch((error) => {
+        console.error("Error creating mention notifications:", error);
+      });
+
+      // Create notification for post owner (asynchronous, don't block response)
+      createPostCommentNotification(
+        post.authorId,
+        req.user.id,
+        user.username,
+        postId,
+        comment.id
+      ).catch((error) => {
+        console.error("Error creating post owner notification:", error);
+      });
+
+      // If this is a reply to a comment, create notification for the original comment author
+      if (parentComment) {
+        createCommentReplyNotification(
+          parentComment.authorId,
+          req.user.id,
+          user.username,
+          postId,
+          comment.id
+        ).catch((error) => {
+          console.error("Error creating comment reply notification:", error);
+        });
+      }
 
       res.status(201).json({
         code: 201,

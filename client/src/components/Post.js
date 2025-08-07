@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import Linkify from "react-linkify";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import MentionText from "./MentionText";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
@@ -151,35 +151,36 @@ const Post = (props) => {
         </div>
       </div>
       <div className="card-body px-4 py-4">
-        <Linkify properties={{ target: "_blank" }}>
-          {editedPostId && props.id === editedPostId ? (
-            <div className="px-5 mb-3">
-              <form onSubmit={editPostHandler}>
-                <div className="form-group">
-                  <textarea
-                    className="form-control border-top-0 border-left-0 border-right-0 border-brand rounded-0 profile__body__textarea__input"
-                    id="message"
-                    defaultValue={props.message}
-                  ></textarea>
-                </div>
-                <div className="form-group d-flex justify-content-end">
-                  <button
-                    className="btn btn-brand-secondary text-white mr-2 rounded-pill"
-                    type="button"
-                    onClick={() => dispatch(toggleEditingPost(""))}
-                  >
-                    Cancel
-                  </button>
-                  <button className="btn btn-brand text-white rounded-pill">
-                    Update
-                  </button>
-                </div>
-              </form>
-            </div>
-          ) : (
-            <p className="my-0 py-0 ws-pre-line">{props.message}</p>
-          )}
-        </Linkify>
+        {editedPostId && props.id === editedPostId ? (
+          <div className="px-5 mb-3">
+            <form onSubmit={editPostHandler}>
+              <div className="form-group">
+                <textarea
+                  className="form-control border-top-0 border-left-0 border-right-0 border-brand rounded-0 profile__body__textarea__input"
+                  id="message"
+                  defaultValue={props.message}
+                  placeholder="What's on your mind? Use @username to mention someone"
+                ></textarea>
+              </div>
+              <div className="form-group d-flex justify-content-end">
+                <button
+                  className="btn btn-brand-secondary text-white mr-2 rounded-pill"
+                  type="button"
+                  onClick={() => dispatch(toggleEditingPost(""))}
+                >
+                  Cancel
+                </button>
+                <button className="btn btn-brand text-white rounded-pill">
+                  Update
+                </button>
+              </div>
+            </form>
+          </div>
+        ) : (
+          <MentionText className="my-0 py-0 ws-pre-line">
+            {props.message}
+          </MentionText>
+        )}
         <EmbedPreview post={props} />
         {/* Post Actions - Use flexbox layout instead of absolute positioning */}
         <div className="post-actions d-flex align-items-center justify-content-between mt-3">

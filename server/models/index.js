@@ -2,6 +2,7 @@ const sequelize = require("../db/sequelize");
 const User = require("./User");
 const Post = require("./Post");
 const Comment = require("./Comment");
+const Notification = require("./Notification");
 
 // Set up associations
 User.hasMany(Post, {
@@ -81,9 +82,56 @@ Comment.belongsToMany(User, {
   timestamps: false,
 });
 
+// Self-referencing associations for threaded comments
+Comment.hasMany(Comment, {
+  foreignKey: "parentCommentId",
+  as: "replies",
+  onDelete: "CASCADE",
+});
+
+Comment.belongsTo(Comment, {
+  foreignKey: "parentCommentId",
+  as: "parentComment",
+});
+
+// Notification associations
+User.hasMany(Notification, {
+  foreignKey: "recipientId",
+  as: "receivedNotifications",
+  onDelete: "CASCADE",
+});
+
+User.hasMany(Notification, {
+  foreignKey: "senderId",
+  as: "sentNotifications",
+  onDelete: "CASCADE",
+});
+
+Notification.belongsTo(User, {
+  foreignKey: "recipientId",
+  as: "recipient",
+});
+
+Notification.belongsTo(User, {
+  foreignKey: "senderId",
+  as: "sender",
+});
+
+// Optional associations for posts and comments
+Notification.belongsTo(Post, {
+  foreignKey: "postId",
+  as: "relatedPost",
+});
+
+Notification.belongsTo(Comment, {
+  foreignKey: "commentId",
+  as: "relatedComment",
+});
+
 module.exports = {
   sequelize,
   User,
   Post,
   Comment,
+  Notification,
 };

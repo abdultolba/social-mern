@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const { User, Post, Comment } = require("../../models");
+const { createMentionNotifications } = require("../../utils/mentions");
 
 const { isAuth } = require("../../middlewares/auth");
 const { processMessageForEmbed } = require("../../services/linkPreview");
@@ -243,6 +244,18 @@ router.post(
           as: "author",
           attributes: ["id", "username", "profilePic"],
         },
+      });
+
+      // Create notifications for mentioned users (asynchronous, don't block response)
+      createMentionNotifications(
+        message,
+        "mention_post",
+        authorId,
+        newPost.id,
+        null,
+        req.user.username
+      ).catch((error) => {
+        console.error("Error creating mention notifications:", error);
       });
 
       res.status(201).json({

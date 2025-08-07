@@ -46,6 +46,7 @@ router.get("/:id", validatePostId, async (req, res) => {
         {
           model: Comment,
           as: "comments",
+          required: false,
           include: [
             {
               model: User,
@@ -56,6 +57,17 @@ router.get("/:id", validatePostId, async (req, res) => {
               model: User,
               as: "likedByUsers",
               attributes: ["id", "username"],
+            },
+            {
+              model: Comment,
+              as: "parentComment",
+              include: [
+                {
+                  model: User,
+                  as: "author",
+                  attributes: ["id", "username", "profilePic"],
+                },
+              ],
             },
           ],
           order: [["createdAt", "ASC"]],

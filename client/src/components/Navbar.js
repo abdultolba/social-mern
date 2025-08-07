@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { fetchUnreadCount } from "../actions/notifications";
 
 import { logout, togglePostModal, toggleSettingsModal } from "../actions/app";
 
@@ -11,7 +12,22 @@ import DarkModeToggle from "./DarkModeToggle";
 const Navbar = () => {
   const isVisible = useSelector((state) => state.app.navbar.isVisible);
   const profile = useSelector((state) => state.app.logged);
+  const isLogged = useSelector((state) => state.app.logged.isLogged);
+  const unreadCount = useSelector((state) => state.notifications?.unreadCount || 0);
   const dispatch = useDispatch();
+
+  // Fetch unread notifications count when user is logged in
+  useEffect(() => {
+    if (isLogged) {
+      dispatch(fetchUnreadCount());
+      // Set up interval to periodically check for new notifications
+      const interval = setInterval(() => {
+        dispatch(fetchUnreadCount());
+      }, 60000); // Check every minute
+
+      return () => clearInterval(interval);
+    }
+  }, [isLogged, dispatch]);
 
   return (
     <>
@@ -69,6 +85,29 @@ const Navbar = () => {
                 <i className="fas fa-compass fa-2x"></i>
               </p>
             </NavLink>
+            <Auth>
+              <NavLink
+                to="/notifications"
+                className={({ isActive }) =>
+                  `navbar-cs__button position-relative ${isActive ? "bg-brand text-white" : ""}`
+                }
+                data-balloon-pos="left"
+                aria-label="Notifications"
+                data-balloon-blunt
+              >
+                <p className="text-center my-0">
+                  <i className="fas fa-bell fa-2x"></i>
+                  {unreadCount > 0 && (
+                    <span
+                      className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                      style={{ fontSize: "0.6rem" }}
+                    >
+                      {unreadCount > 99 ? "99+" : unreadCount}
+                    </span>
+                  )}
+                </p>
+              </NavLink>
+            </Auth>
             <a
               href="https://www.github.com/abdultolba/social-mern"
               className="navbar-cs__button"

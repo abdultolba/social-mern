@@ -6,6 +6,7 @@ const Profile = lazy(() => import("../pages/Profile"));
 const PostPage = lazy(() => import("../pages/PostPage"));
 const Error = lazy(() => import("../pages/Error"));
 const Explore = lazy(() => import("../pages/Explore"));
+const Notifications = lazy(() => import("../pages/Notifications"));
 
 const SettingsModal = lazy(() => import("../components/SettingsModal"));
 const NewPostModal = lazy(() => import("../components/NewPostModal"));
@@ -47,6 +48,14 @@ const AppRouter = () => {
             element={
               <AppLayout>
                 <PostPage />
+              </AppLayout>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <AppLayout>
+                <Notifications />
               </AppLayout>
             }
           />

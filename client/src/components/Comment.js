@@ -1,10 +1,10 @@
 import React, { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
-import Linkify from "react-linkify";
+import MentionText from "./MentionText";
 
 import {
   likeComment,
@@ -19,6 +19,7 @@ dayjs.extend(relativeTime);
 
 const Comment = (props) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const logged = useSelector((state) => state.app.logged.isLogged);
   const session = useSelector((state) => state.app.logged);
   const editingCommentId = useSelector((state) => state.posts.editingCommentId);
@@ -93,6 +94,16 @@ const Comment = (props) => {
     }
   }, [dispatch, logged, props.likedByUsers, props.id, props.postId, session]);
 
+  const handleReply = useCallback(() => {
+    if (!logged) {
+      return toast("Sorry, you need to be logged in to reply 😔", {
+        icon: "⚠️",
+      });
+    }
+    // Navigate to the expanded post view to enable threaded replies
+    navigate(`/post/${props.postId}`);
+  }, [logged, navigate, props.postId]);
+
   const isLiked =
     session?.id && props.likedByUsers?.some((user) => user.id === session.id);
 
@@ -153,53 +164,51 @@ const Comment = (props) => {
       </div>
 
       <div className="comment-content">
-        <Linkify properties={{ target: "_blank" }}>
-          {editingCommentId && props.id === editingCommentId ? (
-            <div className="mb-3">
-              <form onSubmit={editCommentHandler}>
-                <div className="form-group mb-2">
-                  <textarea
-                    className="form-control"
-                    id="message"
-                    rows="2"
-                    defaultValue={props.message}
-                    placeholder="Edit your comment..."
-                    style={{
-                      fontSize: "0.9rem",
-                      backgroundColor: "var(--input-bg)",
-                      color: "var(--text-primary)",
-                      border: "1px solid var(--border-color)",
-                    }}
-                  />
-                </div>
-                <div className="d-flex justify-content-end">
-                  <button
-                    className="btn btn-sm btn-secondary me-2"
-                    type="button"
-                    onClick={() => dispatch(toggleEditingComment(""))}
-                  >
-                    Cancel
-                  </button>
-                  <button className="btn btn-sm btn-primary">Update</button>
-                </div>
-              </form>
-            </div>
-          ) : (
-            <p
-              className="my-0 py-0 ws-pre-line"
-              style={{
-                fontSize: "0.9rem",
-                color: "var(--text-primary)",
-              }}
-            >
-              {props.message}
-            </p>
-          )}
-        </Linkify>
+        {editingCommentId && props.id === editingCommentId ? (
+          <div className="mb-3">
+            <form onSubmit={editCommentHandler}>
+              <div className="form-group mb-2">
+                <textarea
+                  className="form-control"
+                  id="message"
+                  rows="2"
+                  defaultValue={props.message}
+                  placeholder="Edit your comment... Use @username to mention someone"
+                  style={{
+                    fontSize: "0.9rem",
+                    backgroundColor: "var(--input-bg)",
+                    color: "var(--text-primary)",
+                    border: "1px solid var(--border-color)",
+                  }}
+                />
+              </div>
+              <div className="d-flex justify-content-end">
+                <button
+                  className="btn btn-sm btn-secondary me-2"
+                  type="button"
+                  onClick={() => dispatch(toggleEditingComment(""))}
+                >
+                  Cancel
+                </button>
+                <button className="btn btn-sm btn-primary">Update</button>
+              </div>
+            </form>
+          </div>
+        ) : (
+          <MentionText
+            className="my-0 py-0 ws-pre-line"
+            style={{
+              fontSize: "0.9rem",
+              color: "var(--text-primary)",
+            }}
+          >
+            {props.message}
+          </MentionText>
+        )}
       </div>
 
       {!editingCommentId && (
-        <div className="comment-actions mt-2">
+        <div className="comment-actions mt-2 d-flex align-items-center">
           <button
             onClick={handleLike}
             className={`btn btn-sm btn-link p-0 me-3 ${
@@ -209,6 +218,15 @@ const Comment = (props) => {
           >
             <i className={`${isLiked ? "fas" : "far"} fa-heart me-1`}></i>
             {props.likes || 0}
+          </button>
+          
+          <button
+            onClick={handleReply}
+            className="btn btn-sm btn-link p-0 me-3 text-muted"
+            style={{ fontSize: "0.8rem", textDecoration: "none" }}
+          >
+            <i className="far fa-reply me-1"></i>
+            Reply
           </button>
         </div>
       )}

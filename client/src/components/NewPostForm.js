@@ -18,6 +18,11 @@ class NewPostForm extends Component {
 
         this.handleNewPost = this.handleNewPost.bind(this)
         this.getRandomQuote = this.getRandomQuote.bind(this)
+        this.handleKeyDown = this.handleKeyDown.bind(this)
+        
+        // Detect platform for keyboard shortcut display
+        this.isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
+        this.shortcutText = this.isMac ? '⌘+Enter' : 'Ctrl+Enter'
     }
 
     componentWillUnmount() { }
@@ -45,6 +50,16 @@ class NewPostForm extends Component {
         e.target.message.value = ''
     }
 
+    handleKeyDown(e) {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault()
+            const form = e.target.closest('form')
+            if (form && e.target.value.trim()) {
+                this.handleNewPost({ preventDefault: () => {}, target: form })
+            }
+        }
+    }
+
     render() {
         return (
             <div className="d-flex">
@@ -59,8 +74,12 @@ class NewPostForm extends Component {
                                 name="message"
                                 className="form-control border-top-0 border-left-0 border-right-0 border-brand rounded-0 profile__body__textarea__input"
                                 required
-                                placeholder={this.state.selectedPlaceholderPhrase}>
+                                onKeyDown={this.handleKeyDown}
+                                placeholder={`${this.state.selectedPlaceholderPhrase} Use @username to mention someone`}>
                             </textarea>
+                            <small className="text-muted float-left mt-1">
+                                Tip: {this.shortcutText} to submit quickly
+                            </small>
                         </div>
                         <div className="form-group">
                             <button type="submit" className="btn btn-brand rounded-pill float-right text-white">

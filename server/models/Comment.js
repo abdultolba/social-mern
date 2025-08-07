@@ -29,6 +29,11 @@ Comment.init(
       allowNull: false,
       comment: "ID of the user who wrote this comment",
     },
+    parentCommentId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "ID of the parent comment if this is a reply (null for top-level comments)",
+    },
     likes: {
       type: DataTypes.INTEGER,
       defaultValue: 0,

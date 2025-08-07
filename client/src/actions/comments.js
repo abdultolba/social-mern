@@ -25,9 +25,9 @@ export const toggleEditingComment = (commentId) => {
 // Add a new comment to a post
 export const addComment = (data) => {
   return (dispatch) => {
-    const { message, postId, onSuccess } = data;
+    const { message, postId, parentCommentId, onSuccess } = data;
 
-    API.post("comment", { message, postId })
+    API.post("comment", { message, postId, parentCommentId })
       .then((res) => {
         if (res.code === 201) {
           toast.success("Comment added! 💬");

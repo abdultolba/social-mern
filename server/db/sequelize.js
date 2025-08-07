@@ -1,5 +1,6 @@
 const { Sequelize } = require('sequelize')
-const dotenv = require('dotenv').config();
+const path = require('path');
+const dotenv = require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const {
   DB_HOST = 'localhost',
