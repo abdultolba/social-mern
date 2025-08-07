@@ -173,7 +173,7 @@ const validateUserExists = async (req, res, next) => {
 
     const user = await User.findOne({
       where: { username: normalizedUsername },
-      attributes: ["id", "username", "openProfile", "verified"],
+      attributes: ["id", "username", "openProfile", "verified", "description", "profilePic"],
     });
 
     if (!user) {

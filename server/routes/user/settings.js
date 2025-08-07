@@ -119,7 +119,10 @@ router.patch("/description", isAuth, async (req, res) => {
     res.status(200).json({
       code: 200,
       message: "Description successfully updated!",
-      response: user,
+      response: {
+        newDescription: user.description,
+        user: user,
+      },
     });
   } catch (err) {
     res.status(500).send(err);
