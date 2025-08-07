@@ -25,6 +25,14 @@
       background-color: theme-color("brand");
       color: #ffffff;
     }
+
+    // Mobile notification badge positioning
+    .notification-badge {
+      top: 15px !important;
+      left: 70% !important;
+      transform: translate(0%, 0%) !important;
+      z-index: 101;
+    }
   }
 }
 
@@ -32,9 +40,19 @@
   .navbar-cs {
     width: 75px;
     height: 100vh;
+    // Add some padding from the right edge to account for scrollbar
+    right: 2px;
 
     &__button {
       width: 100%;
+      
+      // Adjust notifications badge positioning to avoid scrollbar
+      .notification-badge {
+        left: 50px !important;
+        top: 5px !important;
+        transform: translate(0%, 0%) !important;
+        z-index: 101;
+      }
     }
   }
 }
