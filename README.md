@@ -1,8 +1,9 @@
-# Social MERN - Modern Social Media Platform
+<p align="center">
+  <img src="https://res.cloudinary.com/friendly-social/image/upload/v1755207784/friendly_icon_horizontal_poaa8k.png" alt="Friend.ly Logo" width="200" style="margin-bottom:-80px;"><br>
+  <b>friend.ly</b> is a small social media platform that uses 'cards' to connect people virtually, built with the <a href="https://www.geeksforgeeks.org/node-js/what-is-pern-stack/"><i>PERN</i></a> stack (PostgreSQL, Express.js, React, Node.js).
+</p>
 
-A small social media platform that uses 'cards' to connect people virtually, built with the **PERN** stack (PostgreSQL, Express.js, React, Node.js).
-
-## 🚀 Features
+## Features
 
 - User authentication (sign up/sign in)
 - Create and share posts
@@ -12,12 +13,12 @@ A small social media platform that uses 'cards' to connect people virtually, bui
 - Modern UI with React 18 and Bootstrap 5
 - Dark Mode theme
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 
 - **Node.js** with Express.js 5 (latest with modern async/await patterns)
-- **PostgreSQL 17** with Sequelize ORM
+- **PostgreSQL 17** with [Sequelize ORM](https://sequelize.org/)
 - **JWT** for authentication
 - **bcrypt** for password hashing
 - **Cloudinary** for image storage (with local fallback)
