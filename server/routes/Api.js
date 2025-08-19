@@ -1,10 +1,19 @@
-const apiRouter = require("express").Router();
+import express from 'express'
 
-apiRouter.use("/auth", require("./Auth"));
-apiRouter.use("/user", require("./user"));
-apiRouter.use("/discover", require("./Discover"));
-apiRouter.use("/post", require("./Post"));
-apiRouter.use("/comment", require("./Comment"));
-apiRouter.use("/notifications", require("./Notification"));
+import AuthRouter from './Auth.js'
+import UserRouter from './user/index.js'
+import DiscoverRouter from './Discover.js'
+import PostRouter from './Post.js'
+import CommentRouter from './Comment.js'
+import NotificationRouter from './Notification.js'
 
-module.exports = apiRouter;
+const apiRouter = express.Router()
+
+apiRouter.use('/auth', AuthRouter)
+apiRouter.use('/user', UserRouter)
+apiRouter.use('/discover', DiscoverRouter)
+apiRouter.use('/post', PostRouter)
+apiRouter.use('/comment', CommentRouter)
+apiRouter.use('/notifications', NotificationRouter)
+
+export default apiRouter

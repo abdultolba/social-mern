@@ -1,19 +1,19 @@
-const express = require("express");
-const router = express.Router();
-const { Comment, User, Post } = require("../models");
-const { isAuth } = require("../middlewares/auth");
-const { 
-  createMentionNotifications, 
-  createPostCommentNotification, 
+import express from "express";
+import { createRequire } from "module";
+import { Comment, User, Post } from "../models/index.js";
+import {
+  createMentionNotifications,
+  createPostCommentNotification,
   createCommentReplyNotification,
   createCommentLikeNotification,
-  removeCommentLikeNotification
-} = require("../utils/mentions");
-const { param, body, validationResult } = require("express-validator");
-const {
-  rateLimit,
-  validateContentSafety,
-} = require("../middlewares/validation");
+  removeCommentLikeNotification,
+} from "../utils/mentions.js";
+import { param, body, validationResult } from "express-validator";
+const require = createRequire(import.meta.url);
+const { isAuth } = require("../middlewares/auth").default;
+const { rateLimit, validateContentSafety } =
+  require("../middlewares/validation").default;
+const router = express.Router();
 
 // Validate comment ID parameter
 const validateCommentId = [
@@ -121,14 +121,14 @@ router.post(
             },
           ],
         });
-        
+
         if (!parentComment) {
           return res.status(404).json({
             code: 404,
             message: "Parent comment not found",
           });
         }
-        
+
         if (parentComment.postId !== postId) {
           return res.status(400).json({
             code: 400,
@@ -159,15 +159,17 @@ router.post(
           profilePic: user.profilePic,
         },
         // Include parent comment info if this is a reply
-        parentComment: parentComment ? {
-          id: parentComment.id,
-          message: parentComment.message,
-          author: {
-            id: parentComment.author.id,
-            username: parentComment.author.username,
-            profilePic: parentComment.author.profilePic || null,
-          },
-        } : null,
+        parentComment: parentComment
+          ? {
+              id: parentComment.id,
+              message: parentComment.message,
+              author: {
+                id: parentComment.author.id,
+                username: parentComment.author.username,
+                profilePic: parentComment.author.profilePic || null,
+              },
+            }
+          : null,
       };
 
       // Create notifications for mentioned users (asynchronous, don't block response)
@@ -436,4 +438,4 @@ router.post(
   }
 );
 
-module.exports = router;
+export default router;

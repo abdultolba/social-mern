@@ -1,11 +1,12 @@
-const express = require("express");
-const router = express.Router();
+import express from "express";
+import { createRequire } from "module";
+import { User, Post, Comment } from "../../models/index.js";
+import { createMentionNotifications } from "../../utils/mentions.js";
 
-const { User, Post, Comment } = require("../../models");
-const { createMentionNotifications } = require("../../utils/mentions");
-
-const { isAuth } = require("../../middlewares/auth");
-const { processMessageForEmbed } = require("../../services/linkPreview");
+const require = createRequire(import.meta.url);
+const { isAuth } = require("../../middlewares/auth").default;
+const { processMessageForEmbed } =
+  require("../../services/linkPreview").default;
 const {
   validatePostContent,
   validateUsername,
@@ -14,7 +15,8 @@ const {
   validateUserExists,
   validateViewPermission,
   rateLimit,
-} = require("../../middlewares/validation");
+} = require("../../middlewares/validation").default;
+const router = express.Router();
 
 router.get(
   "/:username",
@@ -271,4 +273,4 @@ router.post(
   }
 );
 
-module.exports = router;
+export default router;

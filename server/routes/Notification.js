@@ -1,8 +1,10 @@
-const express = require("express");
+import express from "express";
+import { createRequire } from "module";
+import { Notification, User, Post, Comment } from "../models/index.js";
+import { param, validationResult } from "express-validator";
+const require = createRequire(import.meta.url);
+const { isAuth } = require("../middlewares/auth").default;
 const router = express.Router();
-const { Notification, User, Post, Comment } = require("../models");
-const { isAuth } = require("../middlewares/auth");
-const { param, validationResult } = require("express-validator");
 
 // Validate notification ID parameter
 const validateNotificationId = [
@@ -205,4 +207,4 @@ router.delete("/:id", validateNotificationId, isAuth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

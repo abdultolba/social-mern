@@ -1,14 +1,22 @@
-const dotenv = require("dotenv").config();
-const express = require("express");
-const router = express.Router();
-const { User } = require("../../models");
-const { isAuth } = require("../../middlewares/auth");
+import dotenv from "dotenv";
+import express from "express";
+import { createRequire } from "module";
+import { User } from "../../models/index.js";
+import { fileURLToPath } from "url";
+import path from "path";
+
+dotenv.config();
+const require = createRequire(import.meta.url);
+const { isAuth } = require("../../middlewares/auth").default;
 const Jimp = require("jimp");
 const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
-const { v4: uuidv4 } = require('uuid');
-const fs = require('fs').promises;
-const path = require('path');
+import { v4 as uuidv4 } from "uuid";
+import fs from "fs/promises";
+
+const router = express.Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } =
   process.env;
@@ -27,48 +35,52 @@ if (CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && CLOUDINARY_API_SECRET) {
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
+    if (file.mimetype.startsWith("image/")) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed!'), false);
+      cb(new Error("Only image files are allowed!"), false);
     }
   },
   limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
-  }
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
 });
 
 // Helper function to upload to Cloudinary
 const uploadToCloudinary = (buffer, options = {}) => {
   return new Promise((resolve, reject) => {
-    cloudinary.uploader.upload_stream(
-      {
-        folder: 'avatars',
-        transformation: [{ width: 200, height: 200, crop: 'limit', quality: 'auto' }],
-        ...options
-      },
-      (error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result);
+    cloudinary.uploader
+      .upload_stream(
+        {
+          folder: "avatars",
+          transformation: [
+            { width: 200, height: 200, crop: "limit", quality: "auto" },
+          ],
+          ...options,
+        },
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
         }
-      }
-    ).end(buffer);
+      )
+      .end(buffer);
   });
 };
 
 // Helper function to save file locally
 const saveFileLocally = async (buffer, filename) => {
-  const avatarsDir = path.join(__dirname, '../../public/images/avatars/');
-  
+  const avatarsDir = path.join(__dirname, "../../public/images/avatars/");
+
   // Ensure directory exists
   try {
     await fs.mkdir(avatarsDir, { recursive: true });
   } catch (err) {
     // Directory might already exist, that's okay
   }
-  
+
   const filepath = path.join(avatarsDir, filename);
   await fs.writeFile(filepath, buffer);
   return `/images/avatars/${filename}`;
@@ -137,58 +149,65 @@ router.patch(
     const file = req.file;
 
     if (!file) {
-      return res.status(400).json({ 
-        code: 400, 
-        message: "No file uploaded" 
+      return res.status(400).json({
+        code: 400,
+        message: "No file uploaded",
       });
     }
 
     // Validate file type (extra safety)
-    if (!file.mimetype.startsWith('image/')) {
-      return res.status(400).json({ 
-        code: 400, 
-        message: "Only image files are allowed" 
+    if (!file.mimetype.startsWith("image/")) {
+      return res.status(400).json({
+        code: 400,
+        message: "Only image files are allowed",
       });
     }
 
     try {
       const user = await User.findByPk(id);
       if (!user) {
-        return res.status(404).json({ 
-          code: 404, 
-          message: "User not found" 
+        return res.status(404).json({
+          code: 404,
+          message: "User not found",
         });
       }
 
       let profilePicUrl;
-      
+
       // Try Cloudinary first if configured
-      if (CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && CLOUDINARY_API_SECRET) {
+      if (
+        CLOUDINARY_CLOUD_NAME &&
+        CLOUDINARY_API_KEY &&
+        CLOUDINARY_API_SECRET
+      ) {
         try {
-          console.log('🌤️ Uploading to Cloudinary...');
+          console.log("🌤️ Uploading to Cloudinary...");
           const result = await uploadToCloudinary(file.buffer, {
             public_id: `avatar_${user.username}_${uuidv4()}`,
-            overwrite: true
+            overwrite: true,
           });
-          
+
           profilePicUrl = result.secure_url;
-          console.log('✅ Cloudinary upload successful:', profilePicUrl);
+          console.log("✅ Cloudinary upload successful:", profilePicUrl);
         } catch (cloudinaryError) {
-          console.warn('⚠️ Cloudinary upload failed, falling back to local storage:', cloudinaryError.message);
-          
+          console.warn(
+            "⚠️ Cloudinary upload failed, falling back to local storage:",
+            cloudinaryError.message
+          );
+
           // Fallback to local storage
-          const fileExtension = file.originalname.split('.').pop() || 'jpg';
+          const fileExtension = file.originalname.split(".").pop() || "jpg";
           const filename = `${user.username}_${uuidv4()}.${fileExtension}`;
           profilePicUrl = await saveFileLocally(file.buffer, filename);
-          console.log('✅ Local storage fallback successful:', profilePicUrl);
+          console.log("✅ Local storage fallback successful:", profilePicUrl);
         }
       } else {
         // Use local storage if Cloudinary not configured
-        console.log('💾 Using local storage (Cloudinary not configured)...');
-        const fileExtension = file.originalname.split('.').pop() || 'jpg';
+        console.log("💾 Using local storage (Cloudinary not configured)...");
+        const fileExtension = file.originalname.split(".").pop() || "jpg";
         const filename = `${user.username}_${uuidv4()}.${fileExtension}`;
         profilePicUrl = await saveFileLocally(file.buffer, filename);
-        console.log('✅ Local storage upload successful:', profilePicUrl);
+        console.log("✅ Local storage upload successful:", profilePicUrl);
       }
 
       // Update user profile picture
@@ -208,7 +227,7 @@ router.patch(
         },
       });
     } catch (err) {
-      console.error('❌ Error updating profile picture:', err);
+      console.error("❌ Error updating profile picture:", err);
       res.status(500).json({
         code: 500,
         message: "Internal server error",
@@ -218,4 +237,4 @@ router.patch(
   }
 );
 
-module.exports = router;
+export default router;

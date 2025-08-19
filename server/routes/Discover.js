@@ -1,7 +1,8 @@
-const express = require("express");
-const router = express.Router();
-
-const { User, Post, Comment } = require("../models");
+import express from 'express'
+import { createRequire } from 'module'
+import { User, Post, Comment } from '../models/index.js'
+const require = createRequire(import.meta.url)
+const router = express.Router()
 
 router.get("/users", async (req, res) => {
   try {
@@ -117,4 +118,4 @@ router.get("/posts", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router

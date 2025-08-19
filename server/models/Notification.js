@@ -1,6 +1,6 @@
-const { DataTypes, Model } = require("sequelize");
-const sequelize = require("../db/sequelize");
-const { nanoid } = require("nanoid");
+import { DataTypes, Model } from 'sequelize'
+import sequelize from '../db/sequelize.js'
+import { nanoid } from 'nanoid'
 
 class Notification extends Model {}
 
@@ -12,54 +12,54 @@ Notification.init(
       defaultValue: () => nanoid(),
     },
     type: {
-      type: DataTypes.ENUM("mention_post", "mention_comment", "comment_on_post", "comment_reply", "post_like", "comment_like"),
+      type: DataTypes.ENUM('mention_post', 'mention_comment', 'comment_on_post', 'comment_reply', 'post_like', 'comment_like'),
       allowNull: false,
-      comment: "Type of notification - mention, comment, reply, or like",
+      comment: 'Type of notification - mention, comment, reply, or like',
     },
     message: {
       type: DataTypes.TEXT,
       allowNull: false,
-      comment: "Notification message text",
+      comment: 'Notification message text',
     },
     isRead: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
-      comment: "Whether the notification has been read",
+      comment: 'Whether the notification has been read',
     },
     recipientId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      comment: "ID of the user receiving the notification",
+      comment: 'ID of the user receiving the notification',
     },
     senderId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      comment: "ID of the user who triggered the notification",
+      comment: 'ID of the user who triggered the notification',
     },
     postId: {
       type: DataTypes.STRING,
       allowNull: true,
-      comment: "ID of the related post (if applicable)",
+      comment: 'ID of the related post (if applicable)',
     },
     commentId: {
       type: DataTypes.STRING,
       allowNull: true,
-      comment: "ID of the related comment (if applicable)",
+      comment: 'ID of the related comment (if applicable)',
     },
   },
   {
     sequelize,
-    modelName: "Notification",
+    modelName: 'Notification',
     timestamps: true,
     indexes: [
       {
-        fields: ["recipientId", "createdAt"],
+        fields: ['recipientId', 'createdAt'],
       },
       {
-        fields: ["isRead"],
+        fields: ['isRead'],
       },
     ],
   }
-);
+)
 
-module.exports = Notification;
+export default Notification

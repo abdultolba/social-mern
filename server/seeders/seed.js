@@ -1,9 +1,7 @@
 const { User, Post, Comment, sequelize } = require("../models");
 const bcrypt = require("bcryptjs");
-const {
-  processMessageForEmbed,
-  EMBED_TYPES,
-} = require("../services/linkPreview");
+const { processMessageForEmbed, EMBED_TYPES } =
+  require("../services/linkPreview").default;
 const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");

@@ -1,5 +1,5 @@
-const { body, param, validationResult } = require("express-validator");
-const { User } = require("../models");
+import { body, param, validationResult } from "express-validator";
+import { User } from "../models/index.js";
 
 // Helper function to handle validation errors
 const handleValidationErrors = (req, res, next) => {
@@ -173,7 +173,14 @@ const validateUserExists = async (req, res, next) => {
 
     const user = await User.findOne({
       where: { username: normalizedUsername },
-      attributes: ["id", "username", "openProfile", "verified", "description", "profilePic"],
+      attributes: [
+        "id",
+        "username",
+        "openProfile",
+        "verified",
+        "description",
+        "profilePic",
+      ],
     });
 
     if (!user) {
@@ -205,7 +212,7 @@ const validateViewPermission = (req, res, next) => {
   return next();
 };
 
-module.exports = {
+export default {
   validatePostContent,
   validateUsername,
   validateWallPostPermission,

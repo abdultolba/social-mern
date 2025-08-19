@@ -1,18 +1,17 @@
-const express = require("express");
-const router = express.Router();
-const { Post, User, Comment } = require("../models");
-const { isAuth } = require("../middlewares/auth");
-const { processMessageForEmbed } = require("../services/linkPreview");
-const {
-  validatePostContent,
-  rateLimit,
-  validateContentSafety,
-} = require("../middlewares/validation");
-const { param, validationResult } = require("express-validator");
-const {
+import express from "express";
+import { createRequire } from "module";
+import { Post, User, Comment } from "../models/index.js";
+const require = createRequire(import.meta.url);
+const { isAuth } = require("../middlewares/auth").default;
+const { processMessageForEmbed } = require("../services/linkPreview").default;
+const { validatePostContent, rateLimit, validateContentSafety } =
+  require("../middlewares/validation").default;
+import { param, validationResult } from "express-validator";
+import {
   createPostLikeNotification,
   removePostLikeNotification,
-} = require("../utils/mentions");
+} from "../utils/mentions.js";
+const router = express.Router();
 
 // Validate post ID parameter
 const validatePostId = [
@@ -276,13 +275,11 @@ router.post(
       await post.save();
 
       // Remove notification for post owner (asynchronous, don't block response)
-      removePostLikeNotification(
-        post.author.id,
-        user.id,
-        post.id
-      ).catch((error) => {
-        console.error("Error removing post like notification:", error);
-      });
+      removePostLikeNotification(post.author.id, user.id, post.id).catch(
+        (error) => {
+          console.error("Error removing post like notification:", error);
+        }
+      );
 
       // Return optimized response without additional query
       // Remove the user who just unliked the post from the current likes
@@ -300,4 +297,4 @@ router.post(
   }
 );
 
-module.exports = router;
+export default router;

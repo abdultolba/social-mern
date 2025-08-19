@@ -1,6 +1,6 @@
-const { DataTypes, Model } = require("sequelize");
-const sequelize = require("../db/sequelize");
-const { nanoid } = require("nanoid");
+import { DataTypes, Model } from 'sequelize'
+import sequelize from '../db/sequelize.js'
+import { nanoid } from 'nanoid'
 
 class Comment extends Model {}
 
@@ -22,17 +22,17 @@ Comment.init(
     postId: {
       type: DataTypes.STRING,
       allowNull: false,
-      comment: "ID of the post this comment belongs to",
+      comment: 'ID of the post this comment belongs to',
     },
     authorId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      comment: "ID of the user who wrote this comment",
+      comment: 'ID of the user who wrote this comment',
     },
     parentCommentId: {
       type: DataTypes.STRING,
       allowNull: true,
-      comment: "ID of the parent comment if this is a reply (null for top-level comments)",
+      comment: 'ID of the parent comment if this is a reply (null for top-level comments)',
     },
     likes: {
       type: DataTypes.INTEGER,
@@ -41,9 +41,9 @@ Comment.init(
   },
   {
     sequelize,
-    modelName: "Comment",
+    modelName: 'Comment',
     timestamps: true,
   }
-);
+)
 
-module.exports = Comment;
+export default Comment

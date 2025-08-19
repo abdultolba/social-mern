@@ -1,4 +1,4 @@
-const { User, Notification } = require("../models");
+import { User, Notification } from '../models/index.js'
 
 /**
  * Extract usernames from text that are mentioned with @ symbol
@@ -378,7 +378,7 @@ function convertMentionsToLinks(text) {
   return tmp;
 }
 
-module.exports = {
+export {
   extractMentions,
   createMentionNotifications,
   createPostCommentNotification,

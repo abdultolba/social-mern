@@ -1,7 +1,13 @@
-const UserRouter = require('express').Router()
+import express from 'express'
 
-UserRouter.use('/settings', require('./settings'))
-UserRouter.use('/new', require('./new'))
-UserRouter.use('/', require('./basics'))
+import SettingsRouter from './settings.js'
+import NewRouter from './new.js'
+import BasicsRouter from './basics.js'
 
-module.exports = UserRouter
+const UserRouter = express.Router()
+
+UserRouter.use('/settings', SettingsRouter)
+UserRouter.use('/new', NewRouter)
+UserRouter.use('/', BasicsRouter)
+
+export default UserRouter

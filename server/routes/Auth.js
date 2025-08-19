@@ -1,103 +1,119 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv').config();
-const { User } = require('../models'); // Use Sequelize User model
-const router = express.Router();
+import { Router } from 'express'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+import { User } from '../models/index.js' // Sequelize User model
+const router = Router()
 
+dotenv.config();
 const { SECRET_KEY } = process.env;
 
 // POST /api/auth/sign-up
-router.post('/sign-up', async (req, res) => {
-	let { username, password } = req.body;
+router.post("/sign-up", async (req, res) => {
+  let { username, password } = req.body;
 
-	if (!username || !password) {
-		return res.status(400).json({ code: 400, message: 'Please provide all required information.' });
-	}
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ code: 400, message: "Please provide all required information." });
+  }
 
-	// Normalize username to lowercase for case-insensitive comparison
-	username = username.toLowerCase();
+  // Normalize username to lowercase for case-insensitive comparison
+  username = username.toLowerCase();
 
-	try {
-		const existingUser = await User.findOne({ where: { username } });
-		if (existingUser) {
-			return res.status(403).json({ code: 403, message: 'User already registered.' });
-		}
+  try {
+    const existingUser = await User.findOne({ where: { username } });
+    if (existingUser) {
+      return res
+        .status(403)
+        .json({ code: 403, message: "User already registered." });
+    }
 
-		const salt = await bcrypt.genSalt(10);
-		const hashedPassword = await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-		const newUser = await User.create({ 
-			username, 
-			password: hashedPassword 
-		});
+    const newUser = await User.create({
+      username,
+      password: hashedPassword,
+    });
 
-		const userResponse = newUser.get({ plain: true });
-		delete userResponse.password;
+    const userResponse = newUser.get({ plain: true });
+    delete userResponse.password;
 
-		const token = jwt.sign(
-			{ data: userResponse },
-			SECRET_KEY,
-			{ expiresIn: '1h' } // Modern JWT expiration
-		);
+    const token = jwt.sign(
+      { data: userResponse },
+      SECRET_KEY,
+      { expiresIn: "1h" } // Modern JWT expiration
+    );
 
-		res.status(201).json({
-			code: 201,
-			response: {
-				token,
-				...userResponse
-			}
-		});
-	} catch (error) {
-		console.error('Sign-up error:', error);
-		res.status(500).json({ code: 500, message: 'An unexpected error occurred.' });
-	}
+    res.status(201).json({
+      code: 201,
+      response: {
+        token,
+        ...userResponse,
+      },
+    });
+  } catch (error) {
+    console.error("Sign-up error:", error);
+    res
+      .status(500)
+      .json({ code: 500, message: "An unexpected error occurred." });
+  }
 });
 
 // POST /api/auth/sign-in
-router.post('/sign-in', async (req, res) => {
-	let { username, password } = req.body;
+router.post("/sign-in", async (req, res) => {
+  let { username, password } = req.body;
 
-	if (!username || !password) {
-		return res.status(400).json({ code: 400, message: 'You must provide a username and password.' });
-	}
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({
+        code: 400,
+        message: "You must provide a username and password.",
+      });
+  }
 
-	// Normalize username to lowercase for case-insensitive comparison
-	username = username.toLowerCase();
+  // Normalize username to lowercase for case-insensitive comparison
+  username = username.toLowerCase();
 
-	try {
-		const user = await User.findOne({ where: { username } });
+  try {
+    const user = await User.findOne({ where: { username } });
 
-		if (!user) {
-			return res.status(404).json({ code: 404, message: 'User not found.' });
-		}
+    if (!user) {
+      return res.status(404).json({ code: 404, message: "User not found." });
+    }
 
-		const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
-		if (!isMatch) {
-			return res.status(403).json({ code: 403, message: 'Invalid credentials.' });
-		}
+    if (!isMatch) {
+      return res
+        .status(403)
+        .json({ code: 403, message: "Invalid credentials." });
+    }
 
-		const userResponse = user.get({ plain: true });
-		delete userResponse.password;
+    const userResponse = user.get({ plain: true });
+    delete userResponse.password;
 
-		const token = jwt.sign(
-			{ data: userResponse },
-			SECRET_KEY,
-			{ expiresIn: '1h' } // Modern JWT expiration
-		);
+    const token = sign(
+      { data: userResponse },
+      SECRET_KEY,
+      { expiresIn: "1h" } // Modern JWT expiration
+    );
 
-		res.status(200).json({
-			code: 200,
-			response: {
-				token,
-				...userResponse
-			}
-		});
-	} catch (error) {
-		console.error('Sign-in error:', error);
-		res.status(500).json({ code: 500, message: 'An unexpected error occurred.' });
-	}
+    res.status(200).json({
+      code: 200,
+      response: {
+        token,
+        ...userResponse,
+      },
+    });
+  } catch (error) {
+    console.error("Sign-in error:", error);
+    res
+      .status(500)
+      .json({ code: 500, message: "An unexpected error occurred." });
+  }
 });
 
-module.exports = router;
+export default router;

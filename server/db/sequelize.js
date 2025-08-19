@@ -1,6 +1,12 @@
-const { Sequelize } = require('sequelize')
-const path = require('path');
-const dotenv = require('dotenv').config({ path: path.join(__dirname, '../.env') });
+import { Sequelize } from 'sequelize'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import dotenv from 'dotenv'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+dotenv.config({ path: path.join(__dirname, '../.env') })
 
 const {
   DB_HOST = 'localhost',
@@ -39,4 +45,4 @@ sequelize.authenticate()
     console.error('❌ Unable to connect to PostgreSQL:', err)
   })
 
-module.exports = sequelize
+export default sequelize

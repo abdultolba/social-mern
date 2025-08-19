@@ -1,33 +1,35 @@
-const jwt = require('jsonwebtoken')
-const { User } = require('../models')
-const { SECRET_KEY } = process.env
+import jwt from "jsonwebtoken";
+import { User } from "../models/index.js";
+const { SECRET_KEY } = process.env;
 
 const isAuth = async (req, res, next) => {
-  const authHeader = req.header('Authorization')
+  const authHeader = req.header("Authorization");
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ code: 401, message: 'Authentication token is required.' })
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res
+      .status(401)
+      .json({ code: 401, message: "Authentication token is required." });
   }
 
-  const token = authHeader.split(' ')[1]
+  const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, SECRET_KEY)
-    
+    const decoded = jwt.verify(token, SECRET_KEY);
+
     // Check if user exists in the database
-    const user = await User.findByPk(decoded.data.id)
+    const user = await User.findByPk(decoded.data.id);
     if (!user) {
-      return res.status(404).json({ code: 404, message: 'User not found.' })
+      return res.status(404).json({ code: 404, message: "User not found." });
     }
 
-    req.user = user.get({ plain: true }) // Attach user to request
-    next()
+    req.user = user.get({ plain: true }); // Attach user to request
+    next();
   } catch (err) {
-    if (err instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({ code: 401, message: 'Session expired.' })
+    if (err?.name === "TokenExpiredError") {
+      return res.status(401).json({ code: 401, message: "Session expired." });
     }
-    return res.status(401).json({ code: 401, message: 'Invalid token.' })
+    return res.status(401).json({ code: 401, message: "Invalid token." });
   }
-}
+};
 
-module.exports = { isAuth }
+export default { isAuth };

@@ -1,6 +1,6 @@
-const { DataTypes, Model } = require("sequelize");
-const sequelize = require("../db/sequelize");
-const { nanoid } = require("nanoid");
+import { DataTypes, Model } from 'sequelize'
+import sequelize from '../db/sequelize.js'
+import { nanoid } from 'nanoid'
 
 class Post extends Model {}
 
@@ -29,14 +29,14 @@ Post.init(
     profileId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      comment: "ID of the user whose profile/wall this post appears on",
+      comment: 'ID of the user whose profile/wall this post appears on',
     },
   },
   {
     sequelize,
-    modelName: "Post",
+    modelName: 'Post',
     timestamps: true,
   }
-);
+)
 
-module.exports = Post;
+export default Post
