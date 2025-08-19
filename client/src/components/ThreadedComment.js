@@ -74,8 +74,9 @@ const ThreadedComment = ({ comment, postId, level = 0, isExpandedView = false })
 
   const canEditOrDeleteComment = useCallback(() => {
     // Only the comment author can edit/delete their comment
-    return session.id && comment.author.id && session.id === comment.author.id;
-  }, [session.id, comment.author.id]);
+    // Add safety check for comment.author since it might be undefined after like/unlike operations
+    return session.id && comment.author && comment.author.id && session.id === comment.author.id;
+  }, [session.id, comment.author]);
 
   const handleLike = useCallback(() => {
     if (!logged) {
@@ -144,9 +145,9 @@ const ThreadedComment = ({ comment, postId, level = 0, isExpandedView = false })
         <div className="d-flex justify-content-between align-items-start mb-2">
           <div className="d-flex align-items-center">
             <div className="comment__avatar me-2">
-              <Link to={"/u/" + comment.author.username}>
+              <Link to={"/u/" + (comment.author?.username || "unknown")}>
                 <img
-                  src={comment.author.profilePic}
+                  src={comment.author?.profilePic || "/images/avatars/default/avatar_default_0.png"}
                   className="img-fluid cursor-pointer rounded-circle"
                   alt="Profile"
                   style={{ width: "32px", height: "32px", objectFit: "cover" }}
@@ -155,11 +156,11 @@ const ThreadedComment = ({ comment, postId, level = 0, isExpandedView = false })
             </div>
             <div>
               <Link
-                to={"/u/" + comment.author.username}
+                to={"/u/" + (comment.author?.username || "unknown")}
                 className="fw-bold text-decoration-none"
                 style={{ color: "var(--text-primary)" }}
               >
-                {comment.author.username}
+                {comment.author?.username || "Unknown User"}
               </Link>
               <div>
                 <small className="text-muted">
@@ -306,7 +307,7 @@ const ThreadedComment = ({ comment, postId, level = 0, isExpandedView = false })
           <CommentForm
             postId={postId}
             parentCommentId={comment.id}
-            parentCommentAuthor={comment.author.username}
+            parentCommentAuthor={comment.author?.username || "unknown"}
             isExpandedView={isExpandedView}
             onCancel={handleCancelReply}
           />

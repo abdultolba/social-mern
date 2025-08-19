@@ -142,6 +142,157 @@ async function createCommentReplyNotification(originalCommentAuthorId, replierId
 }
 
 /**
+ * Create notification for post owner when someone likes their post
+ * @param {number} postOwnerId - ID of the post owner
+ * @param {number} likerId - ID of the user liking the post
+ * @param {string} likerUsername - Username of the liker
+ * @param {string} postId - ID of the post
+ */
+async function createPostLikeNotification(postOwnerId, likerId, likerUsername, postId) {
+  try {
+    // Don't notify if the post owner is liking their own post
+    if (postOwnerId === likerId) {
+      return;
+    }
+
+    // Check if a notification for this user liking this post already exists
+    const existingNotification = await Notification.findOne({
+      where: {
+        type: 'post_like',
+        recipientId: postOwnerId,
+        senderId: likerId,
+        postId: postId
+      }
+    });
+
+    // If notification already exists, don't create a duplicate
+    if (existingNotification) {
+      return;
+    }
+
+    const notification = {
+      type: 'post_like',
+      message: `${likerUsername} liked your post`,
+      recipientId: postOwnerId,
+      senderId: likerId,
+      postId,
+      commentId: null,
+    };
+
+    await Notification.create(notification);
+    return 1;
+  } catch (error) {
+    console.error('Error creating post like notification:', error);
+    throw error;
+  }
+}
+
+/**
+ * Create notification for comment author when someone likes their comment
+ * @param {number} commentOwnerId - ID of the comment author
+ * @param {number} likerId - ID of the user liking the comment
+ * @param {string} likerUsername - Username of the liker
+ * @param {string} postId - ID of the post
+ * @param {string} commentId - ID of the comment
+ */
+async function createCommentLikeNotification(commentOwnerId, likerId, likerUsername, postId, commentId) {
+  try {
+    // Don't notify if the comment author is liking their own comment
+    if (commentOwnerId === likerId) {
+      return;
+    }
+
+    // Check if a notification for this user liking this comment already exists
+    const existingNotification = await Notification.findOne({
+      where: {
+        type: 'comment_like',
+        recipientId: commentOwnerId,
+        senderId: likerId,
+        commentId: commentId
+      }
+    });
+
+    // If notification already exists, don't create a duplicate
+    if (existingNotification) {
+      return;
+    }
+
+    const notification = {
+      type: 'comment_like',
+      message: `${likerUsername} liked your comment`,
+      recipientId: commentOwnerId,
+      senderId: likerId,
+      postId,
+      commentId,
+    };
+
+    await Notification.create(notification);
+    return 1;
+  } catch (error) {
+    console.error('Error creating comment like notification:', error);
+    throw error;
+  }
+}
+
+/**
+ * Remove notification when someone unlikes a post
+ * @param {number} postOwnerId - ID of the post owner
+ * @param {number} unlikerId - ID of the user unliking the post
+ * @param {string} postId - ID of the post
+ */
+async function removePostLikeNotification(postOwnerId, unlikerId, postId) {
+  try {
+    // Don't try to remove notification if the post owner is unliking their own post
+    if (postOwnerId === unlikerId) {
+      return;
+    }
+
+    await Notification.destroy({
+      where: {
+        type: 'post_like',
+        recipientId: postOwnerId,
+        senderId: unlikerId,
+        postId: postId
+      }
+    });
+
+    return 1;
+  } catch (error) {
+    console.error('Error removing post like notification:', error);
+    throw error;
+  }
+}
+
+/**
+ * Remove notification when someone unlikes a comment
+ * @param {number} commentOwnerId - ID of the comment author
+ * @param {number} unlikerId - ID of the user unliking the comment
+ * @param {string} commentId - ID of the comment
+ */
+async function removeCommentLikeNotification(commentOwnerId, unlikerId, commentId) {
+  try {
+    // Don't try to remove notification if the comment author is unliking their own comment
+    if (commentOwnerId === unlikerId) {
+      return;
+    }
+
+    await Notification.destroy({
+      where: {
+        type: 'comment_like',
+        recipientId: commentOwnerId,
+        senderId: unlikerId,
+        commentId: commentId
+      }
+    });
+
+    return 1;
+  } catch (error) {
+    console.error('Error removing comment like notification:', error);
+    throw error;
+  }
+}
+
+/**
  * Replace @username mentions with clickable links in text
  * @param {string} text - The text to process
  * @returns {string} - Text with mentions converted to links
@@ -158,5 +309,9 @@ module.exports = {
   createMentionNotifications,
   createPostCommentNotification,
   createCommentReplyNotification,
+  createPostLikeNotification,
+  createCommentLikeNotification,
+  removePostLikeNotification,
+  removeCommentLikeNotification,
   convertMentionsToLinks,
 };

@@ -254,13 +254,26 @@ export default (state = defaultState, action) => {
         ...state,
         items: state.items.map((post) => {
           if (post.id === action.payload.postId) {
+            // Helper function to update comment recursively in threaded structure
+            const updateCommentInThread = (comments) => {
+              return comments.map((comment) => {
+                if (comment.id === action.payload.comment.id) {
+                  return { ...comment, ...action.payload.comment, liked: true };
+                }
+                // If this comment has replies, recursively update them
+                if (comment.replies && comment.replies.length > 0) {
+                  return {
+                    ...comment,
+                    replies: updateCommentInThread(comment.replies),
+                  };
+                }
+                return comment;
+              });
+            };
+
             return {
               ...post,
-              comments: post.comments.map((comment) =>
-                comment.id === action.payload.comment.id
-                  ? { ...action.payload.comment, liked: true }
-                  : comment
-              ),
+              comments: updateCommentInThread(post.comments),
             };
           }
           return post;
@@ -271,13 +284,26 @@ export default (state = defaultState, action) => {
         ...state,
         items: state.items.map((post) => {
           if (post.id === action.payload.postId) {
+            // Helper function to update comment recursively in threaded structure
+            const updateCommentInThread = (comments) => {
+              return comments.map((comment) => {
+                if (comment.id === action.payload.comment.id) {
+                  return { ...comment, ...action.payload.comment, liked: false };
+                }
+                // If this comment has replies, recursively update them
+                if (comment.replies && comment.replies.length > 0) {
+                  return {
+                    ...comment,
+                    replies: updateCommentInThread(comment.replies),
+                  };
+                }
+                return comment;
+              });
+            };
+
             return {
               ...post,
-              comments: post.comments.map((comment) =>
-                comment.id === action.payload.comment.id
-                  ? { ...action.payload.comment, liked: false }
-                  : comment
-              ),
+              comments: updateCommentInThread(post.comments),
             };
           }
           return post;

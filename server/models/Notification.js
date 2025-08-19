@@ -12,9 +12,9 @@ Notification.init(
       defaultValue: () => nanoid(),
     },
     type: {
-      type: DataTypes.ENUM("mention_post", "mention_comment", "comment_on_post", "comment_reply"),
+      type: DataTypes.ENUM("mention_post", "mention_comment", "comment_on_post", "comment_reply", "post_like", "comment_like"),
       allowNull: false,
-      comment: "Type of notification - mention in post/comment, comment on post, or reply to comment",
+      comment: "Type of notification - mention, comment, reply, or like",
     },
     message: {
       type: DataTypes.TEXT,

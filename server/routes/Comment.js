@@ -2,7 +2,13 @@ const express = require("express");
 const router = express.Router();
 const { Comment, User, Post } = require("../models");
 const { isAuth } = require("../middlewares/auth");
-const { createMentionNotifications, createPostCommentNotification, createCommentReplyNotification } = require("../utils/mentions");
+const { 
+  createMentionNotifications, 
+  createPostCommentNotification, 
+  createCommentReplyNotification,
+  createCommentLikeNotification,
+  removeCommentLikeNotification
+} = require("../utils/mentions");
 const { param, body, validationResult } = require("express-validator");
 const {
   rateLimit,
@@ -327,19 +333,34 @@ router.post(
       comment.likes = await comment.countLikedByUsers();
       await comment.save();
 
-      // Return optimized response without additional query
-      const responseComment = {
-        ...comment.toJSON(),
-        likedByUsers: [
-          ...(comment.likedByUsers || []),
+      // Fetch the comment with author info for the response
+      const commentWithAuthor = await Comment.findByPk(id, {
+        include: [
           {
-            id: user.id,
-            username: user.username,
+            model: User,
+            as: "author",
+            attributes: ["id", "username", "profilePic"],
+          },
+          {
+            model: User,
+            as: "likedByUsers",
+            attributes: ["id", "username"],
           },
         ],
-      };
+      });
 
-      res.status(200).json({ code: 200, response: responseComment });
+      // Create notification for comment owner (asynchronous, don't block response)
+      createCommentLikeNotification(
+        commentWithAuthor.author.id,
+        user.id,
+        user.username,
+        comment.postId,
+        comment.id
+      ).catch((error) => {
+        console.error("Error creating comment like notification:", error);
+      });
+
+      res.status(200).json({ code: 200, response: commentWithAuthor });
     } catch (err) {
       console.error("Error liking comment:", err);
       res.status(500).json({ error: "There was an error liking the comment" });
@@ -380,15 +401,32 @@ router.post(
       comment.likes = await comment.countLikedByUsers();
       await comment.save();
 
-      // Return optimized response without additional query
-      const responseComment = {
-        ...comment.toJSON(),
-        likedByUsers: (comment.likedByUsers || []).filter(
-          (likedUser) => likedUser.id !== user.id
-        ),
-      };
+      // Fetch the comment with author info for the response
+      const commentWithAuthor = await Comment.findByPk(id, {
+        include: [
+          {
+            model: User,
+            as: "author",
+            attributes: ["id", "username", "profilePic"],
+          },
+          {
+            model: User,
+            as: "likedByUsers",
+            attributes: ["id", "username"],
+          },
+        ],
+      });
 
-      res.status(200).json({ code: 200, response: responseComment });
+      // Remove notification for comment owner (asynchronous, don't block response)
+      removeCommentLikeNotification(
+        commentWithAuthor.author.id,
+        user.id,
+        comment.id
+      ).catch((error) => {
+        console.error("Error removing comment like notification:", error);
+      });
+
+      res.status(200).json({ code: 200, response: commentWithAuthor });
     } catch (err) {
       console.error("Error unliking comment:", err);
       res

@@ -9,6 +9,10 @@ const {
   validateContentSafety,
 } = require("../middlewares/validation");
 const { param, validationResult } = require("express-validator");
+const {
+  createPostLikeNotification,
+  removePostLikeNotification,
+} = require("../utils/mentions");
 
 // Validate post ID parameter
 const validatePostId = [
@@ -175,7 +179,15 @@ router.post(
     const { id } = req.params;
 
     try {
-      const post = await Post.findByPk(id);
+      const post = await Post.findByPk(id, {
+        include: [
+          {
+            model: User,
+            as: "author",
+            attributes: ["id", "username"],
+          },
+        ],
+      });
 
       if (!post) {
         return res.status(404).json({ code: 404, message: "Post not found" });
@@ -194,6 +206,16 @@ router.post(
       await post.addLikedByUser(user);
       post.likes = await post.countLikedByUsers();
       await post.save();
+
+      // Create notification for post owner (asynchronous, don't block response)
+      createPostLikeNotification(
+        post.author.id,
+        user.id,
+        user.username,
+        post.id
+      ).catch((error) => {
+        console.error("Error creating post like notification:", error);
+      });
 
       // Return optimized response without additional query
       // Include the user who just liked the post
@@ -225,7 +247,15 @@ router.post(
     const { id } = req.params;
 
     try {
-      const post = await Post.findByPk(id);
+      const post = await Post.findByPk(id, {
+        include: [
+          {
+            model: User,
+            as: "author",
+            attributes: ["id", "username"],
+          },
+        ],
+      });
 
       if (!post) {
         return res.status(404).json({ code: 404, message: "Post not found" });
@@ -244,6 +274,15 @@ router.post(
       await post.removeLikedByUser(user);
       post.likes = await post.countLikedByUsers();
       await post.save();
+
+      // Remove notification for post owner (asynchronous, don't block response)
+      removePostLikeNotification(
+        post.author.id,
+        user.id,
+        post.id
+      ).catch((error) => {
+        console.error("Error removing post like notification:", error);
+      });
 
       // Return optimized response without additional query
       // Remove the user who just unliked the post from the current likes
