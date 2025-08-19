@@ -1,12 +1,11 @@
 import express from "express";
-import { createRequire } from "module";
 import { User, Post, Comment } from "../../models/index.js";
 import { createMentionNotifications } from "../../utils/mentions.js";
-
-const require = createRequire(import.meta.url);
-const { isAuth } = require("../../middlewares/auth").default;
-const { processMessageForEmbed } =
-  require("../../services/linkPreview").default;
+import Auth from "../../middlewares/auth.js";
+import LinkPreview from "../../services/linkPreview.js";
+import Validation from "../../middlewares/validation.js";
+const { isAuth } = Auth;
+const { processMessageForEmbed } = LinkPreview;
 const {
   validatePostContent,
   validateUsername,
@@ -15,7 +14,7 @@ const {
   validateUserExists,
   validateViewPermission,
   rateLimit,
-} = require("../../middlewares/validation").default;
+} = Validation;
 const router = express.Router();
 
 router.get(

@@ -1,8 +1,7 @@
 import express from "express";
-import { createRequire } from "module";
 import { Post, User } from "../../models/index.js";
-const require = createRequire(import.meta.url);
-const { isAuth } = require("../../middlewares/auth").default;
+import Auth from "../../middlewares/auth.js";
+const { isAuth } = Auth;
 const router = express.Router();
 
 // This file is for routes under /api/user/new/...

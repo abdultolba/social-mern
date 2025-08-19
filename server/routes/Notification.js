@@ -1,9 +1,8 @@
 import express from "express";
-import { createRequire } from "module";
 import { Notification, User, Post, Comment } from "../models/index.js";
 import { param, validationResult } from "express-validator";
-const require = createRequire(import.meta.url);
-const { isAuth } = require("../middlewares/auth").default;
+import Auth from "../middlewares/auth.js";
+const { isAuth } = Auth;
 const router = express.Router();
 
 // Validate notification ID parameter

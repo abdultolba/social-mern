@@ -1,7 +1,5 @@
 import express from 'express'
-import { createRequire } from 'module'
 import { User, Post, Comment } from '../models/index.js'
-const require = createRequire(import.meta.url)
 const router = express.Router()
 
 router.get("/users", async (req, res) => {

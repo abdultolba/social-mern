@@ -1,11 +1,11 @@
 import express from "express";
-import { createRequire } from "module";
 import { Post, User, Comment } from "../models/index.js";
-const require = createRequire(import.meta.url);
-const { isAuth } = require("../middlewares/auth").default;
-const { processMessageForEmbed } = require("../services/linkPreview").default;
-const { validatePostContent, rateLimit, validateContentSafety } =
-  require("../middlewares/validation").default;
+import Auth from "../middlewares/auth.js";
+import LinkPreview from "../services/linkPreview.js";
+import Validation from "../middlewares/validation.js";
+const { isAuth } = Auth;
+const { processMessageForEmbed } = LinkPreview;
+const { validatePostContent, rateLimit, validateContentSafety } = Validation;
 import { param, validationResult } from "express-validator";
 import {
   createPostLikeNotification,

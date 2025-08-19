@@ -1,5 +1,4 @@
 import express from "express";
-import { createRequire } from "module";
 import { Comment, User, Post } from "../models/index.js";
 import {
   createMentionNotifications,
@@ -9,10 +8,10 @@ import {
   removeCommentLikeNotification,
 } from "../utils/mentions.js";
 import { param, body, validationResult } from "express-validator";
-const require = createRequire(import.meta.url);
-const { isAuth } = require("../middlewares/auth").default;
-const { rateLimit, validateContentSafety } =
-  require("../middlewares/validation").default;
+import Auth from "../middlewares/auth.js";
+import Validation from "../middlewares/validation.js";
+const { isAuth } = Auth;
+const { rateLimit, validateContentSafety } = Validation;
 const router = express.Router();
 
 // Validate comment ID parameter
