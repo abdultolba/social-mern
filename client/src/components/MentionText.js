@@ -14,7 +14,8 @@ const MentionText = ({ children, className = "" }) => {
   // Function to render mentions as links
   const renderTextWithMentions = (text) => {
     // Split text by mentions while preserving the mention pattern
-    const mentionRegex = /@([a-zA-Z0-9_-]{3,30})\b/g;
+    // Only match mentions at start or after whitespace to avoid inside URLs/emails
+    const mentionRegex = /(\s|^)@([a-zA-Z0-9_-]{3,30})\b/g;
     const parts = [];
     let lastIndex = 0;
     let match;
@@ -30,10 +31,11 @@ const MentionText = ({ children, className = "" }) => {
       }
 
       // Add the mention as a link
+      // match[2] is the username because of the leading group
       parts.push({
         type: "mention",
-        content: match[0], // Full match with @
-        username: match[1], // Just the username
+        content: match[0].trimStart(), // preserve without leading space
+        username: match[2],
         key: `mention-${match.index}`,
       });
 
@@ -57,23 +59,26 @@ const MentionText = ({ children, className = "" }) => {
     return parts.map((part) => {
       if (part.type === "mention") {
         return (
-          <Link
-            key={part.key}
-            to={`/u/${part.username}`}
-            className="mention-link text-primary fw-bold text-decoration-none"
-            style={{ 
-              color: "var(--brand-color)",
-              transition: "color 0.2s ease"
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.textDecoration = "underline";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.textDecoration = "none";
-            }}
-          >
-            {part.content}
-          </Link>
+          <>
+            {" "}
+            <Link
+              key={part.key}
+              to={`/u/${part.username}`}
+              className="mention-link text-primary fw-bold text-decoration-none"
+              style={{
+                color: "var(--brand-color)",
+                transition: "color 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.textDecoration = "underline";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.textDecoration = "none";
+              }}
+            >
+              {part.content.trim()}
+            </Link>
+          </>
         );
       }
       return part.content;
@@ -82,9 +87,7 @@ const MentionText = ({ children, className = "" }) => {
 
   return (
     <Linkify properties={{ target: "_blank" }}>
-      <span className={className}>
-        {renderTextWithMentions(children)}
-      </span>
+      <span className={className}>{renderTextWithMentions(children)}</span>
     </Linkify>
   );
 };

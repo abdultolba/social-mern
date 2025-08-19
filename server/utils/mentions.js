@@ -7,14 +7,24 @@ const { User, Notification } = require("../models");
  */
 function extractMentions(text) {
   if (!text) return [];
-  
-  // Regular expression to match @username (alphanumeric, underscore, hyphen)
-  const mentionRegex = /@([a-zA-Z0-9_-]{3,30})\b/g;
+
+  // Remove URLs and emails to avoid false positives like /@username in links
+  const withoutUrls = text
+    // strip http/https URLs
+    .replace(/https?:\/\/[^\s)]+/gi, " ")
+    // strip www. URLs
+    .replace(/\bwww\.[^\s)]+/gi, " ")
+    // strip emails
+    .replace(/\b[^\s@]+@[^\s@]+\.[^\s@]+\b/gi, " ");
+
+  // Match mentions only when preceded by start or whitespace
+  // capture the leading whitespace so we can ignore it when extracting
+  const mentionRegex = /(\s|^)@([a-zA-Z0-9_-]{3,30})\b/g;
   const mentions = [];
   let match;
 
-  while ((match = mentionRegex.exec(text)) !== null) {
-    const username = match[1].toLowerCase(); // Convert to lowercase as usernames are stored in lowercase
+  while ((match = mentionRegex.exec(withoutUrls)) !== null) {
+    const username = match[2].toLowerCase();
     if (!mentions.includes(username)) {
       mentions.push(username);
     }
@@ -32,10 +42,17 @@ function extractMentions(text) {
  * @param {string} commentId - ID of the related comment (optional)
  * @param {string} senderUsername - Username of the sender for notification message
  */
-async function createMentionNotifications(text, type, senderId, postId, commentId = null, senderUsername = null) {
+async function createMentionNotifications(
+  text,
+  type,
+  senderId,
+  postId,
+  commentId = null,
+  senderUsername = null
+) {
   try {
     const mentionedUsernames = extractMentions(text);
-    
+
     if (mentionedUsernames.length === 0) {
       return;
     }
@@ -43,19 +60,20 @@ async function createMentionNotifications(text, type, senderId, postId, commentI
     // Find all mentioned users
     const mentionedUsers = await User.findAll({
       where: {
-        username: mentionedUsernames
+        username: mentionedUsernames,
       },
-      attributes: ['id', 'username']
+      attributes: ["id", "username"],
     });
 
     // Create notifications for each mentioned user (except the sender)
     const notifications = mentionedUsers
-      .filter(user => user.id !== senderId) // Don't notify yourself
-      .map(user => {
-        const message = type === 'mention_post' 
-          ? `${senderUsername || 'Someone'} mentioned you in a post`
-          : `${senderUsername || 'Someone'} mentioned you in a comment`;
-        
+      .filter((user) => user.id !== senderId) // Don't notify yourself
+      .map((user) => {
+        const message =
+          type === "mention_post"
+            ? `${senderUsername || "Someone"} mentioned you in a post`
+            : `${senderUsername || "Someone"} mentioned you in a comment`;
+
         return {
           type,
           message,
@@ -72,7 +90,7 @@ async function createMentionNotifications(text, type, senderId, postId, commentI
 
     return notifications.length;
   } catch (error) {
-    console.error('Error creating mention notifications:', error);
+    console.error("Error creating mention notifications:", error);
     throw error;
   }
 }
@@ -85,7 +103,13 @@ async function createMentionNotifications(text, type, senderId, postId, commentI
  * @param {string} postId - ID of the post
  * @param {string} commentId - ID of the comment
  */
-async function createPostCommentNotification(postOwnerId, commenterId, commenterUsername, postId, commentId) {
+async function createPostCommentNotification(
+  postOwnerId,
+  commenterId,
+  commenterUsername,
+  postId,
+  commentId
+) {
   try {
     // Don't notify if the post owner is commenting on their own post
     if (postOwnerId === commenterId) {
@@ -93,7 +117,7 @@ async function createPostCommentNotification(postOwnerId, commenterId, commenter
     }
 
     const notification = {
-      type: 'comment_on_post',
+      type: "comment_on_post",
       message: `${commenterUsername} commented on your post`,
       recipientId: postOwnerId,
       senderId: commenterId,
@@ -104,7 +128,7 @@ async function createPostCommentNotification(postOwnerId, commenterId, commenter
     await Notification.create(notification);
     return 1;
   } catch (error) {
-    console.error('Error creating post comment notification:', error);
+    console.error("Error creating post comment notification:", error);
     throw error;
   }
 }
@@ -117,7 +141,13 @@ async function createPostCommentNotification(postOwnerId, commenterId, commenter
  * @param {string} postId - ID of the post
  * @param {string} replyCommentId - ID of the reply comment
  */
-async function createCommentReplyNotification(originalCommentAuthorId, replierId, replierUsername, postId, replyCommentId) {
+async function createCommentReplyNotification(
+  originalCommentAuthorId,
+  replierId,
+  replierUsername,
+  postId,
+  replyCommentId
+) {
   try {
     // Don't notify if the user is replying to their own comment
     if (originalCommentAuthorId === replierId) {
@@ -125,7 +155,7 @@ async function createCommentReplyNotification(originalCommentAuthorId, replierId
     }
 
     const notification = {
-      type: 'comment_reply',
+      type: "comment_reply",
       message: `${replierUsername} replied to your comment`,
       recipientId: originalCommentAuthorId,
       senderId: replierId,
@@ -136,7 +166,7 @@ async function createCommentReplyNotification(originalCommentAuthorId, replierId
     await Notification.create(notification);
     return 1;
   } catch (error) {
-    console.error('Error creating comment reply notification:', error);
+    console.error("Error creating comment reply notification:", error);
     throw error;
   }
 }
@@ -148,7 +178,12 @@ async function createCommentReplyNotification(originalCommentAuthorId, replierId
  * @param {string} likerUsername - Username of the liker
  * @param {string} postId - ID of the post
  */
-async function createPostLikeNotification(postOwnerId, likerId, likerUsername, postId) {
+async function createPostLikeNotification(
+  postOwnerId,
+  likerId,
+  likerUsername,
+  postId
+) {
   try {
     // Don't notify if the post owner is liking their own post
     if (postOwnerId === likerId) {
@@ -158,11 +193,11 @@ async function createPostLikeNotification(postOwnerId, likerId, likerUsername, p
     // Check if a notification for this user liking this post already exists
     const existingNotification = await Notification.findOne({
       where: {
-        type: 'post_like',
+        type: "post_like",
         recipientId: postOwnerId,
         senderId: likerId,
-        postId: postId
-      }
+        postId: postId,
+      },
     });
 
     // If notification already exists, don't create a duplicate
@@ -171,7 +206,7 @@ async function createPostLikeNotification(postOwnerId, likerId, likerUsername, p
     }
 
     const notification = {
-      type: 'post_like',
+      type: "post_like",
       message: `${likerUsername} liked your post`,
       recipientId: postOwnerId,
       senderId: likerId,
@@ -182,7 +217,7 @@ async function createPostLikeNotification(postOwnerId, likerId, likerUsername, p
     await Notification.create(notification);
     return 1;
   } catch (error) {
-    console.error('Error creating post like notification:', error);
+    console.error("Error creating post like notification:", error);
     throw error;
   }
 }
@@ -195,7 +230,13 @@ async function createPostLikeNotification(postOwnerId, likerId, likerUsername, p
  * @param {string} postId - ID of the post
  * @param {string} commentId - ID of the comment
  */
-async function createCommentLikeNotification(commentOwnerId, likerId, likerUsername, postId, commentId) {
+async function createCommentLikeNotification(
+  commentOwnerId,
+  likerId,
+  likerUsername,
+  postId,
+  commentId
+) {
   try {
     // Don't notify if the comment author is liking their own comment
     if (commentOwnerId === likerId) {
@@ -205,11 +246,11 @@ async function createCommentLikeNotification(commentOwnerId, likerId, likerUsern
     // Check if a notification for this user liking this comment already exists
     const existingNotification = await Notification.findOne({
       where: {
-        type: 'comment_like',
+        type: "comment_like",
         recipientId: commentOwnerId,
         senderId: likerId,
-        commentId: commentId
-      }
+        commentId: commentId,
+      },
     });
 
     // If notification already exists, don't create a duplicate
@@ -218,7 +259,7 @@ async function createCommentLikeNotification(commentOwnerId, likerId, likerUsern
     }
 
     const notification = {
-      type: 'comment_like',
+      type: "comment_like",
       message: `${likerUsername} liked your comment`,
       recipientId: commentOwnerId,
       senderId: likerId,
@@ -229,7 +270,7 @@ async function createCommentLikeNotification(commentOwnerId, likerId, likerUsern
     await Notification.create(notification);
     return 1;
   } catch (error) {
-    console.error('Error creating comment like notification:', error);
+    console.error("Error creating comment like notification:", error);
     throw error;
   }
 }
@@ -249,16 +290,16 @@ async function removePostLikeNotification(postOwnerId, unlikerId, postId) {
 
     await Notification.destroy({
       where: {
-        type: 'post_like',
+        type: "post_like",
         recipientId: postOwnerId,
         senderId: unlikerId,
-        postId: postId
-      }
+        postId: postId,
+      },
     });
 
     return 1;
   } catch (error) {
-    console.error('Error removing post like notification:', error);
+    console.error("Error removing post like notification:", error);
     throw error;
   }
 }
@@ -269,7 +310,11 @@ async function removePostLikeNotification(postOwnerId, unlikerId, postId) {
  * @param {number} unlikerId - ID of the user unliking the comment
  * @param {string} commentId - ID of the comment
  */
-async function removeCommentLikeNotification(commentOwnerId, unlikerId, commentId) {
+async function removeCommentLikeNotification(
+  commentOwnerId,
+  unlikerId,
+  commentId
+) {
   try {
     // Don't try to remove notification if the comment author is unliking their own comment
     if (commentOwnerId === unlikerId) {
@@ -278,16 +323,16 @@ async function removeCommentLikeNotification(commentOwnerId, unlikerId, commentI
 
     await Notification.destroy({
       where: {
-        type: 'comment_like',
+        type: "comment_like",
         recipientId: commentOwnerId,
         senderId: unlikerId,
-        commentId: commentId
-      }
+        commentId: commentId,
+      },
     });
 
     return 1;
   } catch (error) {
-    console.error('Error removing comment like notification:', error);
+    console.error("Error removing comment like notification:", error);
     throw error;
   }
 }
@@ -299,9 +344,37 @@ async function removeCommentLikeNotification(commentOwnerId, unlikerId, commentI
  */
 function convertMentionsToLinks(text) {
   if (!text) return text;
-  
-  // Replace @username with clickable links
-  return text.replace(/@([a-zA-Z0-9_-]{3,30})\b/g, '<a href="/u/$1" class="mention-link">@$1</a>');
+
+  // First, skip converting inside URLs/emails by temporarily removing them
+  const placeholders = [];
+  let tmp = text
+    .replace(/https?:\/\/[^\s)]+/gi, (m) => {
+      placeholders.push(m);
+      return `__URL_PLACEHOLDER_${placeholders.length - 1}__`;
+    })
+    .replace(/\bwww\.[^\s)]+/gi, (m) => {
+      placeholders.push(m);
+      return `__URL_PLACEHOLDER_${placeholders.length - 1}__`;
+    })
+    .replace(/\b[^\s@]+@[^\s@]+\.[^\s@]+\b/gi, (m) => {
+      placeholders.push(m);
+      return `__URL_PLACEHOLDER_${placeholders.length - 1}__`;
+    });
+
+  // Replace @username with clickable links only when preceded by whitespace or start
+  tmp = tmp.replace(
+    /(\s|^)@([a-zA-Z0-9_-]{3,30})\b/g,
+    (full, lead, uname) =>
+      `${lead}\u003ca href="/u/${uname}" class="mention-link"\u003e@${uname}\u003c/a\u003e`
+  );
+
+  // Restore placeholders
+  tmp = tmp.replace(
+    /__URL_PLACEHOLDER_(\d+)__/g,
+    (_, i) => placeholders[Number(i)]
+  );
+
+  return tmp;
 }
 
 module.exports = {

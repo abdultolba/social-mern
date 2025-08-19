@@ -19,7 +19,8 @@ Post.init(
       type: DataTypes.STRING,
     },
     extraValue: {
-      type: DataTypes.STRING,
+      // Store serialized embed metadata (can exceed 255 chars)
+      type: DataTypes.TEXT,
     },
     likes: {
       type: DataTypes.INTEGER,
