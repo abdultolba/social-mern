@@ -18,8 +18,9 @@ function extractMentions(text) {
     .replace(/\b[^\s@]+@[^\s@]+\.[^\s@]+\b/gi, " ");
 
   // Match mentions only when preceded by start or whitespace
+  // Allow dots in usernames as well
   // capture the leading whitespace so we can ignore it when extracting
-  const mentionRegex = /(\s|^)@([a-zA-Z0-9_-]{3,30})\b/g;
+  const mentionRegex = /(\s|^)@([a-zA-Z0-9_.-]{3,30})(?![a-zA-Z0-9_.-])/g;
   const mentions = [];
   let match;
 
@@ -363,7 +364,7 @@ function convertMentionsToLinks(text) {
 
   // Replace @username with clickable links only when preceded by whitespace or start
   tmp = tmp.replace(
-    /(\s|^)@([a-zA-Z0-9_-]{3,30})\b/g,
+    /(\s|^)@([a-zA-Z0-9_.-]{3,30})(?![a-zA-Z0-9_.-])/g,
     (full, lead, uname) =>
       `${lead}\u003ca href="/u/${uname}" class="mention-link"\u003e@${uname}\u003c/a\u003e`
   );

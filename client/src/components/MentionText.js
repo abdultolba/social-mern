@@ -15,7 +15,7 @@ const MentionText = ({ children, className = "" }) => {
   const renderTextWithMentions = (text) => {
     // Split text by mentions while preserving the mention pattern
     // Only match mentions at start or after whitespace to avoid inside URLs/emails
-    const mentionRegex = /(\s|^)@([a-zA-Z0-9_-]{3,30})\b/g;
+    const mentionRegex = /(\s|^)@([a-zA-Z0-9_.-]{3,30})(?![a-zA-Z0-9_.-])/g;
     const parts = [];
     let lastIndex = 0;
     let match;
