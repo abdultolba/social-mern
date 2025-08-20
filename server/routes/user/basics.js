@@ -4,6 +4,7 @@ import { createMentionNotifications } from "../../utils/mentions.js";
 import Auth from "../../middlewares/auth.js";
 import LinkPreview from "../../services/linkPreview.js";
 import Validation from "../../middlewares/validation.js";
+import jwt from 'jsonwebtoken'
 const { isAuth } = Auth;
 const { processMessageForEmbed } = LinkPreview;
 const {
@@ -79,7 +80,6 @@ router.get(
       const authHeader = req.header("Authorization");
       if (authHeader && authHeader.startsWith("Bearer ")) {
         try {
-          const jwt = require("jsonwebtoken");
           const token = authHeader.split(" ")[1];
           const decoded = jwt.verify(token, process.env.SECRET_KEY);
           currentUser = await User.findByPk(decoded.data.id);

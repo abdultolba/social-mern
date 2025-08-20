@@ -1,5 +1,6 @@
 import express from 'express'
 import { User, Post, Comment } from '../models/index.js'
+import jwt from 'jsonwebtoken'
 const router = express.Router()
 
 router.get("/users", async (req, res) => {
@@ -43,7 +44,6 @@ router.get("/posts", async (req, res) => {
     const authHeader = req.header("Authorization");
     if (authHeader && authHeader.startsWith("Bearer ")) {
       try {
-        const jwt = require("jsonwebtoken");
         const token = authHeader.split(" ")[1];
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         currentUser = await User.findByPk(decoded.data.id);

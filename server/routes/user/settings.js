@@ -1,18 +1,16 @@
 import dotenv from "dotenv";
 import express from "express";
-import { createRequire } from "module";
 import { User } from "../../models/index.js";
 import { fileURLToPath } from "url";
 import path from "path";
-
-dotenv.config();
-const require = createRequire(import.meta.url);
-const { isAuth } = require("../../middlewares/auth").default;
-const Jimp = require("jimp");
-const cloudinary = require("cloudinary").v2;
-const multer = require("multer");
+import Auth from "../../middlewares/auth.js";
+import { v2 as cloudinary } from "cloudinary";
+import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs/promises";
+
+dotenv.config();
+const { isAuth } = Auth;
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
