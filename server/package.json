@@ -6,6 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "start:maybe-seed": "sh -c 'if [ \"$RUN_DB_SEED\" = \"1\" ]; then npm run db:seed || true; fi && node server.js'",
     "dev": "nodemon server.js",
     "db:create": "createdb social_mern_db",
     "db:drop": "dropdb social_mern_db --if-exists",

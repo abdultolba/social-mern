@@ -4,6 +4,11 @@ import LinkPreview from "../services/linkPreview.js";
 import { promises } from "fs";
 const fsp = promises;
 import { resolve } from "path";
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Sample data arrays
 const maleFirstNames = [
