@@ -6,7 +6,8 @@ import { logout } from "../actions/app";
 
 class Api {
   constructor() {
-    this.baseUrl = "http://localhost:3000/api";
+    const base = import.meta.env.VITE_API_BASE || window.location.origin;
+    this.baseUrl = `${base}/api`;
   }
 
   /**
