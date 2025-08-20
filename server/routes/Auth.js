@@ -1,9 +1,9 @@
-import { Router } from 'express'
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
-import dotenv from 'dotenv'
-import { User } from '../models/index.js' // Sequelize User model
-const router = Router()
+import { Router } from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import { User } from "../models/index.js"; // Sequelize User model
+const router = Router();
 
 dotenv.config();
 const { SECRET_KEY } = process.env;
@@ -66,12 +66,10 @@ router.post("/sign-in", async (req, res) => {
   let { username, password } = req.body;
 
   if (!username || !password) {
-    return res
-      .status(400)
-      .json({
-        code: 400,
-        message: "You must provide a username and password.",
-      });
+    return res.status(400).json({
+      code: 400,
+      message: "You must provide a username and password.",
+    });
   }
 
   // Normalize username to lowercase for case-insensitive comparison
@@ -95,7 +93,7 @@ router.post("/sign-in", async (req, res) => {
     const userResponse = user.get({ plain: true });
     delete userResponse.password;
 
-    const token = sign(
+    const token = jwt.sign(
       { data: userResponse },
       SECRET_KEY,
       { expiresIn: "1h" } // Modern JWT expiration
