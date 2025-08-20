@@ -1,10 +1,9 @@
-const { User, Post, Comment, sequelize } = require("../models");
-const bcrypt = require("bcryptjs");
-const { processMessageForEmbed, EMBED_TYPES } =
-  require("../services/linkPreview").default;
-const fs = require("fs");
-const fsp = fs.promises;
-const path = require("path");
+import { User, Post, Comment, sequelize } from "../models/index.js";
+import { hash } from "bcryptjs";
+import LinkPreview from "../services/linkPreview.js";
+import { promises } from "fs";
+const fsp = promises;
+import { resolve } from "path";
 
 // Sample data arrays
 const maleFirstNames = [
@@ -184,10 +183,7 @@ let femaleAvatars = [];
 let unknownAvatars = [];
 async function ensureLocalAvatarsCopied() {
   try {
-    const destDir = path.resolve(
-      __dirname,
-      "../public/images/avatars/ai_faces"
-    );
+    const destDir = resolve(__dirname, "../public/images/avatars/ai_faces");
 
     // Ensure destination directory exists
     await fsp.mkdir(destDir, { recursive: true });
@@ -314,7 +310,7 @@ const createUsers = async (count = 50) => {
     }
     usedUsernames.add(username);
 
-    const hashedPassword = await bcrypt.hash("password123", 10);
+    const hashedPassword = await hash("password123", 10);
 
     const topic = pickTopic();
     const picPool = gender === "female" ? femaleAvatars : maleAvatars;
@@ -505,7 +501,7 @@ const createPosts = async (users, metas, postsPerUser = { min: 1, max: 8 }) => {
   const createdPosts = await Post.bulkCreate(posts);
 
   for (const post of createdPosts) {
-    const embed = await processMessageForEmbed(post.message);
+    const embed = await LinkPreview.processMessageForEmbed(post.message);
     if (embed) {
       await post.update({
         extraType: embed.type,
@@ -728,7 +724,7 @@ async function createYouTubePostsWithReplies(users, metas) {
     });
 
     // Process embed
-    const embed = await processMessageForEmbed(post.message);
+    const embed = await LinkPreview.processMessageForEmbed(post.message);
     if (embed) {
       await post.update({
         extraType: embed.type,
@@ -867,7 +863,7 @@ const seedDatabase = async () => {
 };
 
 // Run seeder if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   seedDatabase()
     .then(() => {
       process.exit(0);
@@ -878,4 +874,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { seedDatabase };
+export default { seedDatabase };
