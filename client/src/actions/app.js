@@ -119,7 +119,7 @@ export const signUp = ({ username, password }) => {
 
     API.post("auth/sign-up", { username, password })
       .then((res) => {
-        if (res.code == 200) {
+        if (res.code == 200 || res.code == 201) {
           toast.success(`Welcome, @${res.response.username}!`);
           dispatch({
             type: SIGN_UP,
@@ -193,11 +193,11 @@ export const toggleDarkMode = () => {
   return (dispatch, getState) => {
     const currentIsDark = getState().app.theme.isDark;
     const newTheme = currentIsDark ? "light" : "dark";
-    
+
     // Save user's manual preference
     localStorage.setItem("theme", newTheme);
     document.body.classList.toggle("dark-theme", newTheme === "dark");
-    
+
     dispatch({
       type: TOGGLE_DARK_MODE,
     });
@@ -209,7 +209,7 @@ export const setDarkMode = (isDark) => {
     const theme = isDark ? "dark" : "light";
     localStorage.setItem("theme", theme);
     document.body.classList.toggle("dark-theme", isDark);
-    
+
     dispatch({
       type: SET_DARK_MODE,
       payload: { isDark },
@@ -221,13 +221,15 @@ export const resetThemeToSystem = () => {
   return (dispatch) => {
     // Remove user's manual preference
     localStorage.removeItem("theme");
-    
+
     // Use OS preference or fallback to dark mode
-    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
     const isDarkMode = prefersDark !== undefined ? prefersDark : true; // Fallback to dark mode
-    
+
     document.body.classList.toggle("dark-theme", isDarkMode);
-    
+
     dispatch({
       type: RESET_THEME_TO_SYSTEM,
       payload: { isDark: isDarkMode },
